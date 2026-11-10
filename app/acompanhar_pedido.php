@@ -1,7 +1,5 @@
 <?php
-require_once __DIR__ . '/banco/crud.php';
-require_once __DIR__ . 'init.php';
-require_once __DIR__ . 'database.php';
+require_once __DIR__ . '/init.php';
 
 $id_agendamento = $_GET['id'] ?? 3001; 
 $agendamento = read($pdo, 'agendamento', "id_agendamento = $id_agendamento");

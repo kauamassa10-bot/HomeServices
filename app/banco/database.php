@@ -14,7 +14,7 @@ function database(): PDO
     $port = getenv('DB_PORT') ?: '3307';
     $database = getenv('DB_DATABASE') ?: 'HomeServices';
     $username = getenv('DB_USERNAME') ?: 'root';
-    $password = getenv('DB_PASSWORD') ?: 'sena@i123';
+    $password = getenv('DB_PASSWORD') ?: 'senai@123';
 
     $dsn = "mysql:host={$host};port={$port};dbname={$database};charset=utf8mb4";
 
