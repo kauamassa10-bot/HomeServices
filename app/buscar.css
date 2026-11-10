@@ -1,0 +1,266 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: #F8F9FA;
+    color: #333;
+    padding-bottom: 3rem;
+}
+
+/* Header */
+.topbar {
+    background: #fff;
+    border-bottom: 1px solid #E2E8F0;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: #111827;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 0.875rem;
+    color: #4B5563;
+}
+
+.menu a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.menu a:hover {
+    color: #111827;
+}
+
+.avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: #E5E7EB;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #6B7280;
+}
+
+/* Main Container */
+.container {
+    max-width: 1024px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Busca */
+.search-bar {
+    display: flex;
+    gap: 1rem;
+}
+
+.search-bar input {
+    flex: 1;
+    border: 1px solid #D1D5DB;
+    border-radius: 9999px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    outline: none;
+}
+
+.search-bar input:focus {
+    border-color: #425B96;
+}
+
+.btn-primary {
+    background: #425B96;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: #34487A;
+}
+
+/* Tags de Categorias */
+.category-tags {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.tag {
+    background: #C6D8FF;
+    color: #425B96;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.tag:hover {
+    background: #b0c8ff;
+}
+
+.tag.active {
+    background: #425B96;
+    color: #fff;
+}
+
+/* Layout Grid */
+.content-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+@media (min-width: 768px) {
+    .content-grid {
+        flex-direction: row;
+    }
+}
+
+/* Sidebar (Filtros) */
+.sidebar {
+    width: 100%;
+    background: #EAF0F6;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    height: fit-content;
+}
+
+@media (min-width: 768px) {
+    .sidebar {
+        width: 16rem;
+        flex-shrink: 0;
+    }
+}
+
+.sidebar h3 {
+    margin-bottom: 1.5rem;
+    color: #1F2937;
+}
+
+.filter-group {
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    color: #4B5563;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.filter-group h4 {
+    color: #1F2937;
+    margin-bottom: -0.25rem;
+}
+
+.filter-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+/* Lista de Profissionais */
+.provider-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.provider-card {
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+
+@media (min-width: 640px) {
+    .provider-card {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.provider-photo {
+    width: 5rem;
+    height: 5rem;
+    background: #E2E2E2;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9CA3AF;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.provider-info {
+    flex: 1;
+}
+
+.provider-info h3 {
+    font-size: 1rem;
+    color: #111827;
+}
+
+.provider-info h3 span {
+    font-weight: normal;
+    color: #6B7280;
+}
+
+.rating, .price {
+    font-size: 0.875rem;
+    color: #4B5563;
+    margin-top: 0.25rem;
+}
+
+.badge {
+    display: inline-block;
+    background: #A8E6CF;
+    color: #2D6A4F;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    margin-top: 0.5rem;
+}
+
+.provider-card .btn-primary {
+    width: 100%;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .provider-card .btn-primary {
+        width: auto;
+    }
+}

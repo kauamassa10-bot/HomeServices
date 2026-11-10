@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 $databaseStatus = 'Conectado';
 
+require_once __DIR__ . '/banco/crud.php';
+require_once __DIR__ . '/init.php';
+
 try {
     require_once __DIR__ . '/init.php';
     $pdo->query('SELECT 1');
