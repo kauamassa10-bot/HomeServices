@@ -30,6 +30,9 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $servicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+$cliente = read($pdo, "usuario");
+
+$iniciaisUsuarios = pegarIniciais($cliente["nome_usuario"]);
 ?>
 
 <!DOCTYPE html>
@@ -50,6 +53,9 @@ $servicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <a href="">Serviços</a>
             <a href="">Contato</a>
         </nav>
+        <div class="avatar">
+            <?= $iniciaisUsuarios; ?>
+        </div>
     </header>
 
     <main>
@@ -111,8 +117,9 @@ $servicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             ?>
 
             <div class="servicos">
-
+                
                 <?php
+                // Aqui é onde os serviços serão exibidos
                 if (!empty($servicos)) {
                     foreach ($servicos as $servico) {
 
@@ -132,7 +139,6 @@ $servicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }
                 ?>
             </div>
-        </section>
         </section>
     </main>
 
