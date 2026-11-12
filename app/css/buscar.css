@@ -64,12 +64,12 @@ header {
 }
 
 /* Busca */
-.search-bar {
+.formulario-busca {
     display: flex;
     gap: 1rem;
 }
 
-.search-bar input {
+.formulario-busca input {
     flex: 1;
     border: 1px solid #D1D5DB;
     border-radius: 9999px;
@@ -78,11 +78,11 @@ header {
     outline: none;
 }
 
-.search-bar input:focus {
+.formulario-busca input:focus {
     border-color: #425B96;
 }
 
-.btn-primary {
+.btn-busca {
     background: #425B96;
     color: #fff;
     border: none;
@@ -93,7 +93,7 @@ header {
     transition: background 0.2s;
 }
 
-.btn-primary:hover {
+.btn-busca:hover {
     background: #34487A;
 }
 

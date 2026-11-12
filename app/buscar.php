@@ -2,34 +2,6 @@
 
 require_once __DIR__ . '/init.php';
 
-$sql = "
-    SELECT 
-        s.id_servico,
-        s.nome_servico,
-        s.desc_servico,
-        s.valor_base,
-        c.nome_categoria,
-        u.nome_usuario AS nome_prestador,
-        COUNT(a.id_avaliacao) as total_avaliacoes,
-        IFNULL(AVG(a.numero_nota), 0) as nota_media
-    FROM servico s
-    INNER JOIN usuario u ON s.id_prestador = u.id_usuario
-    INNER JOIN categoria c ON s.id_categoria = c.id_categoria
-    LEFT JOIN avaliacao a ON u.id_usuario = a.id_avaliado
-    WHERE s.status_ativo = 1
-    GROUP BY 
-        s.id_servico, 
-        s.nome_servico, 
-        s.desc_servico, 
-        s.valor_base, 
-        c.nome_categoria, 
-        u.nome_usuario;        
-";
-
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$servicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 $cliente = read($pdo, "usuario");
 
 $iniciaisUsuarios = pegarIniciais($cliente["nome_usuario"]);
@@ -61,11 +33,13 @@ $iniciaisUsuarios = pegarIniciais($cliente["nome_usuario"]);
     <main>
         <section class="busca">
             <h2>Buscar Serviços</h2>
-            <form method="GET" action="">
-                <label for="pesquisa">Pesquisar:</label>
-                <input type="text" id="pesquisa" name="pesquisa" placeholder="Digite o serviço desejado">
-                <button type="submit">Buscar</button>
-            </form>
+            <div class="formulario-busca">
+                <form method="GET" action="">
+                    <label for="pesquisa">Pesquisar:</label>
+                    <input type="text" id="pesquisa" name="pesquisa" placeholder="Digite o serviço desejado">
+                    <button type="submit" class="btn-busca">Buscar</button>
+                </form>
+            </div>
         </section>
         <section class="categorias">
             <div class="botao-categorias">
@@ -77,6 +51,39 @@ $iniciaisUsuarios = pegarIniciais($cliente["nome_usuario"]);
                 }
                 ?>
             </div>
+        </section>
+        <section class="sidebar">
+            <form method="GET" action="">
+                <aside>
+                    <div class="gp-filtros">
+                        <h4>Avaliação</h4>
+                        <label for="maior-avaliacao">
+                            <input type="radio" name="pref-avaliacao" id="maior-avaliacao" value="maior-4"> Mais
+                            que 4 estrelas
+                        </label>
+                        <br>
+                        <label for="menor-avaliacao">
+                            <input type="radio" name="pref-avaliacao" id="menor-avaliacao" value="menor-4"> Menor que 4
+                            estrelas
+                        </label>
+                    </div>
+
+                    <div class="gp-filtros">
+                        <h4>Faixa de preço</h4>
+                        <label for="entre-150-e-350">
+                            <input type="radio" name="pref-preco" id="entre-150-e-350" value="150-350"> Entre R$150,00 a
+                            R$350,00
+                        </label>
+                        <label for="entre-350-e-500">
+                            <input type="radio" name="pref-preco" id="entre-350-e-500" value="350-500"> Entre R$350,00 a R$500,00
+                        </label>
+                    </div>
+
+                    <!-- Botão para aplicar os filtros -->
+                    <button type="submit" class="btn-filtros">Aplicar Filtros</button>
+                </aside>
+            </form>
+
         </section>
         <section class="conteudo-principal">
             <?php
@@ -108,8 +115,24 @@ $iniciaisUsuarios = pegarIniciais($cliente["nome_usuario"]);
                 $params[] = $_GET['categoria'];
             }
 
-            // Adicionar o GROUP BY no final
-            $sqlBusca .= " GROUP BY s.id_servico, s.nome_servico, s.desc_servico, s.valor_base, c.nome_categoria, u.nome_usuario";
+            if(isset($_GET['pref-preco'])) {
+                if($_GET['pref-preco'] === '150-350') {
+                    $sqlBusca .= " AND s.valor_base BETWEEN 150 AND 350 ";
+                } elseif($_GET['pref-preco'] === '350-500') {
+                    $sqlBusca .= " AND s.valor_base BETWEEN 350 AND 500 ";
+                }
+            } 
+
+            $sqlBusca .= " GROUP BY s.id_servico, s.nome_servico, s.desc_servico, s.valor_base, c.nome_categoria, u.nome_usuario, u.id_usuario";
+
+            //HAVING sempre depois do GROUP BY para não gerar conflito com o WHERE
+            if(isset($_GET['pref-avaliacao'])) {
+                if($_GET['pref-avaliacao'] === 'maior-4') {
+                    $sqlBusca .= " HAVING nota_media >= 4 ";                  
+                } elseif($_GET['pref-avaliacao'] === 'menor-4') {
+                    $sqlBusca .= " HAVING nota_media < 4 ";
+                }
+            }
 
             $stmtBusca = $pdo->prepare($sqlBusca);
             $stmtBusca->execute($params);
@@ -117,7 +140,7 @@ $iniciaisUsuarios = pegarIniciais($cliente["nome_usuario"]);
             ?>
 
             <div class="servicos">
-                
+
                 <?php
                 // Aqui é onde os serviços serão exibidos
                 if (!empty($servicos)) {
@@ -127,11 +150,8 @@ $iniciaisUsuarios = pegarIniciais($cliente["nome_usuario"]);
                         echo '<p>Prestador: ' . htmlspecialchars($servico['nome_prestador'], ENT_QUOTES, 'UTF-8') . '</p>';
                         echo '<p>' . htmlspecialchars($servico['desc_servico'], ENT_QUOTES, 'UTF-8') . '</p>';
                         echo '<p>Categoria: ' . htmlspecialchars($servico['nome_categoria'], ENT_QUOTES, 'UTF-8') . '</p>';
-                        $sqlAvaliacoes = "SELECT COUNT(*) as total_avaliacoes, IFNULL(AVG(numero_nota), 0) as nota_media FROM avaliacao WHERE id_avaliado = ?";
-                        $stmtAvaliacoes = $pdo->prepare($sqlAvaliacoes);
-                        $stmtAvaliacoes->execute([$servico["id_prestador"]]);
-                        $avaliacoes = $stmtAvaliacoes->fetch(PDO::FETCH_ASSOC);
-                        echo '<p>Nota: ' . number_format((float) $avaliacoes['nota_media'], 1, ',', '.') . ' (' . $avaliacoes['total_avaliacoes'] . ' avaliações)</p>';
+                        echo '<p>Valor Base: R$ ' . number_format((float) $servico['valor_base'], 2, ',', '.') . '</p>';
+                        echo '<p>Nota: ' . number_format((float) $servico['nota_media'], 1, ',', '.') . ' (' . $servico['total_avaliacoes'] . ' avaliações)</p>';
                         echo '<button><a href="orcamento.php?id=' . $servico['id_servico'] . '">Solicitar Serviço</a></button>';
                     }
                 } else {
