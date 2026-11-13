@@ -1,0 +1,87 @@
+.container-geral {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.secao-tabela {
+    margin-bottom: 45px;
+}
+
+.secao-tabela h3 {
+    color: #1f2937;
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+    border-left: 4px solid #3b5998;
+    padding-left: 10px;
+}
+
+.tabela-dados {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tabela-dados th,
+.tabela-dados td {
+    padding: 13px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.95rem;
+}
+
+.tabela-dados th {
+    background-color: #3b5998;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.tabela-dados tr:hover {
+    background-color: #f9fafb;
+}
+
+.alerta-sucesso {
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    border: 1px solid #a7f3d0;
+}
+
+.erro {
+    background-color: #fee2e2;
+    color: #991b1b;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #fecaca;
+}
+
+.campo-select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #ffffff;
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+.badge-ativo {
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.vazio-linha {
+    text-align: center;
+    color: #6b7280;
+    padding: 24px;
+}

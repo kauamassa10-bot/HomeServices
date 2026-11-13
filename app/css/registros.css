@@ -1,0 +1,267 @@
+.container-geral {
+    max-width: 1140px;
+    margin: 40px auto;
+    padding: 0 24px 60px;
+}
+
+.container-geral > h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+}
+
+.container-geral > .subtitulo {
+    color: #6b7280;
+    font-size: 0.98rem;
+    margin-bottom: 32px;
+}
+
+/* Barra superior do administrador */
+.barra-admin {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e293b;
+    color: #f8fafc;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+}
+
+.btn-sair {
+    background: #ef4444;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease;
+}
+
+.btn-sair:hover {
+    background: #dc2626;
+}
+
+/* Formulário inline para nova categoria */
+.form-inline-admin {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.form-inline-admin input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.btn-add-categoria {
+    padding: 10px 20px;
+}
+
+/* Cartão que envolve cada seção de tabela */
+.secao-tabela {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+    overflow-x: auto;
+}
+
+.secao-tabela h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1f2937;
+    margin: 0 0 18px 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.secao-tabela h3::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(180deg, #3b5998 0%, #2563eb 100%);
+    border-radius: 4px;
+}
+
+/* Estilo da Tabela */
+.tabela-dados {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+.tabela-dados thead th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.tabela-dados tbody td {
+    padding: 14px 16px;
+    color: #334155;
+    font-size: 0.93rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.tabela-dados tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabela-dados tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.tabela-dados tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Coluna de ID com estilo discreto */
+.tabela-dados tbody td:first-child {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 600;
+    width: 70px;
+}
+
+/* Destaque nos nomes principais */
+.tabela-dados tbody td strong {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+/* Destaque na coluna de Valor Base da tabela de serviços */
+.secao-tabela:last-of-type .tabela-dados tbody td:nth-child(5) {
+    font-weight: 700;
+    color: #1e40af;
+    white-space: nowrap;
+}
+
+/* Badges de Status */
+.badge-ativo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-ativo::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #10b981;
+}
+
+.badge-inativo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-inativo::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #ef4444;
+}
+
+/* Botões de Ação Administrativa nas Tabelas */
+.acoes-cell {
+    display: flex;
+    gap: 6px;
+}
+
+.form-inline-acao {
+    display: inline;
+}
+
+.btn-acao {
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.btn-acao:hover {
+    opacity: 0.85;
+}
+
+.btn-bloquear {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.btn-ativar {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.btn-excluir {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Alerta de confirmação no topo */
+.alerta-sucesso {
+    display: flex;
+    align-items: center;
+    background-color: #ecfdf5;
+    color: #065f46;
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 28px;
+    border: 1px solid #a7f3d0;
+    border-left: 4px solid #10b981;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.08);
+}
+
+/* Linha quando a tabela está vazia */
+.vazio-linha {
+    text-align: center !important;
+    color: #94a3b8 !important;
+    padding: 32px 16px !important;
+    font-style: italic;
+}
