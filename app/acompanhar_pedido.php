@@ -1,5 +1,10 @@
 <?php
 require_once __DIR__ . '/init.php';
+// if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] !== 'cliente') {
+
+//     header("Location: login.php?erro=acesso_negado");
+//     exit; 
+// }
 
 $id_agendamento = $_GET['id'] ?? null;
 
@@ -45,7 +50,9 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
 <body>
 
     <header class="cabecalho">
-        <div class="logo">HomeServices</div>
+        <div class="logo">
+            <p>HomeServices</p>
+        </div>
         <nav class="links">
             <a href="#">Categorias</a>
             <a href="#">Meus pedidos</a>
@@ -96,8 +103,45 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
             <div class="caixa acoes">
                 <h3>Status do Serviço</h3>
                 <p class="tempo">Situação atual: <strong><?= htmlspecialchars($agendamento['status_agendamento']) ?></strong></p>
-                <button class="botao">Enviar mensagem</button>
-                <button class="botaosecundario">Reagendar ou cancelar</button>
+
+                <?php if ($passoAtual < 5): ?>
+                    <!-- Formulário de Mensagem usando o seu <details> -->
+                    <div class="botao caixa-details">
+                        <details>
+                            <summary>Enviar mensagem</summary>
+                            <form action="processar_mensagem.php" method="POST" class="form-mensagem">
+                                <input type="hidden" name="id_agendamento" value="<?= $agendamento['id_agendamento'] ?>">
+                                <input type="hidden" name="id_prestador" value="<?= $agendamento['id_prestador'] ?>">
+                                
+                                <textarea name="mensagem" required placeholder="Escreva a sua mensagem..."></textarea>
+                                <button type="submit" class="botao">Enviar</button>
+                            </form>
+                        </details>
+                    </div>
+
+                    <a href="cancelar_pedido.php?id=<?= $agendamento['id_agendamento'] ?>" class="botaosecundario">Reagendar ou cancelar</a>
+                
+                <?php else: ?>
+                    <div class="caixa-avaliacao">
+                        <h4>Avalie o serviço</h4>
+                        <form action="processar_avaliacao.php" method="POST" class="form-avaliacao">
+                            <input type="hidden" name="id_agendamento" value="<?= $agendamento['id_agendamento'] ?>">
+                            <input type="hidden" name="id_prestador" value="<?= $agendamento['id_prestador'] ?>">
+                            
+                            <select name="nota" required class="input-avaliacao">
+                                <option value="" disabled selected>Escolha uma nota...</option>
+                                <option value="5"> (5/5) ⭐⭐⭐⭐⭐</option>
+                                <option value="4"> (4/5) ⭐⭐⭐⭐ </option>
+                                <option value="3"> (3/5) ⭐⭐⭐</option>
+                                <option value="2"> (2/5) ⭐⭐</option>
+                                <option value="1"> (1/5) ⭐</option>
+                            </select>
+                            
+                            <textarea name="comentario" placeholder="Deixe um comentário (opcional)..." class="input-avaliacao"></textarea>
+                            <button type="submit" class="botao">Enviar Avaliação</button>
+                        </form>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </main>
