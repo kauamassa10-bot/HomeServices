@@ -1,116 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 @keyframes pulseStatus {
     0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
     70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
     100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f3f4f6;
-    color: #111827;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-}
-
-.cabecalho {
-    background: #ffffff;
-    padding: 0 40px;
-    height: 72px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-}
-
-.logo {
-    font-size: 22px;
-    font-weight: 700;
-    color: #111827;
-    letter-spacing: -0.5px;
-    transition: transform 0.3s ease;
-}
-
-.logo:hover {
-    transform: scale(1.05);
-}
-
-.links {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-}
-
-.links a {
-    text-decoration: none;
-    color: #6b7280;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.links a::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -4px;
-    left: 0;
-    background-color: #111827;
-    transition: width 0.3s ease;
-}
-
-.links a:hover {
-    color: #111827;
-}
-
-.links a:hover::after {
-    width: 100%;
-}
-
-.foto {
-    width: 40px;
-    height: 40px;
-    background: #f3f4f6;
-    color: #374151;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 14px;
-    border: 1px solid #d1d5db;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.foto:hover {
-    background: #e5e7eb;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .conteudo {
@@ -298,47 +189,6 @@ body {
     animation: pulseStatus 2s infinite;
 }
 
-.botao, .botaosecundario {
-    width: 100%;
-    padding: 14px 20px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 500;
-    font-family: 'Poppins', sans-serif;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-    margin-bottom: 16px;
-}
-
-.botao {
-    background: #111827;
-    color: #ffffff;
-    box-shadow: 0 4px 10px rgba(17, 24, 39, 0.2);
-}
-
-.botao:hover {
-    background: #374151;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(17, 24, 39, 0.3);
-}
-
-.botao:active {
-    transform: translateY(0);
-}
-
-.botaosecundario {
-    background: #ffffff;
-    color: #374151;
-    border: 1px solid #d1d5db;
-}
-
-.botaosecundario:hover {
-    background: #f9fafb;
-    border-color: #9ca3af;
-    transform: translateY(-2px);
-}
-
 @media (max-width: 900px) {
     .bloco {
         grid-template-columns: 1fr;
@@ -369,6 +219,7 @@ body {
         display: none;
     }
 }
+
 .caixa-avaliacao {
     margin-top: 32px;
     animation: fadeInUp 0.6s ease-out forwards;
@@ -388,7 +239,6 @@ body {
     gap: 16px;
 }
 
-/* Estilo moderno para o select e textarea */
 .input-avaliacao,
 .form-mensagem textarea {
     width: 100%;
@@ -404,7 +254,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Efeito ao clicar no campo (Fica com a borda verde do seu tema) */
 .input-avaliacao:focus,
 .form-mensagem textarea:focus {
     border-color: #10b981;
@@ -418,10 +267,10 @@ textarea.input-avaliacao,
     resize: vertical;
 }
 
-/* Ajustes para o botão details/summary da mensagem */
 .caixa-details {
     padding: 0;
 }
+
 .caixa-details summary {
     padding: 14px 20px;
     cursor: pointer;
