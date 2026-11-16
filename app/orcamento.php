@@ -1,11 +1,25 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/init.php';
+require_once __DIR__ . '/banco/database.php';
+
+
+// Apenas CLIENTES podem solicitar orçamentos
+if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'CLIENTE') {
+    header("Location: login_cliente.php?erro=acesso_negado");
+    exit;
+}
+
+
+
 
 $mensagem = '';
+$id_cliente = (int) $_SESSION['id_usuario'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id_cliente = 1; // ID fixo simulando cliente logado
-    $id_categoria = 1; // Categoria padrão obrigatória pela chave estrangeira do banco
+    $id_categoria = 1; // Ajuste para pegar do formulário caso o cliente precise selecionar
     $tipo_servico = trim($_POST['tipo_servico']);
     $descricao = trim($_POST['descricao']);
     $endereco = trim($_POST['endereco']);
@@ -32,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: pedidos.php?sucesso=1");
         exit;
     } catch (PDOException $e) {
-        $mensagem = "<div class='erro'>Erro ao enviar pedido: " . $e->getMessage() . "</div>";
+        $mensagem = "<div class='erro'>Erro ao enviar pedido: " . htmlspecialchars($e->getMessage()) . "</div>";
     }
 }
 ?>
@@ -42,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <title>Novo Pedido - HomeServices</title>
     <link rel="stylesheet" href="css/orcamento.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 <body class="fundo-claro">
 
@@ -49,12 +64,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="header-container">
             <h1 class="logo-texto">HomeServices</h1>
             <nav class="menu-topo">
-                <a href="orcamento.php">Novo Pedido</a>
-                <a href="pedidos.php">Meus pedidos</a>
-                <a href="cadastro_cliente.php">Cadastrar novos clientes</a>
-                <a href="cadastro_profissional.php">Cadastrar novos profissionais</a>
-                <a href="cadastro_servicos.php">Cadastrar novos servicos</a>
-                <a href="registros.php">Registros</a>
+                <a href="buscar.php">Buscar Serviços</a>
+                <a href="pedidos.php">Meus Pedidos</a>
+                <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
+                <a href="logout.php">Sair</a>
             </nav>
         </div>
     </header>
@@ -69,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form method="POST" action="" class="form-pedido-leitura">
                 
                 <div class="campo-simples">
-                    <input type="text" name="tipo_servico" placeholder="Ex: Eletricista, Limpeza residencial..." required>
+                    <input type="text" name="" value="<?= $_GET['nome_servico'] ?>" required>
                 </div>
 
                 <div class="campo-simples">
@@ -86,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
 
                 <div class="botoes-rodape">
-                    <button type="submit" class="btn-solido" style="width: 100%;">Enviar Pedido para Profissionais</button>
+                    <button type="submit" class="btn-solido" style="width: 100%;">Enviar Pedido para Profissional</button>
                 </div>
             </form>
         </section>
