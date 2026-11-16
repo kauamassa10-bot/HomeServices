@@ -1,0 +1,241 @@
+
+.conteudo {
+    max-width: 1024px;
+    margin: 40px auto 80px;
+    padding: 0 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.titulo {
+    margin-bottom: 32px;
+}
+
+.titulo h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 8px;
+}
+
+.titulo p {
+    color: #718096;
+    font-size: 15px;
+}
+
+.bloco-agendamento {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    align-items: start;
+}
+
+.caixa {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 32px;
+}
+
+.caixa h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 20px;
+}
+
+.mt-40 {
+    margin-top: 40px;
+}
+
+.dias-semana {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.dia-card {
+    background: #ffffff;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    padding: 12px 16px;
+    min-width: 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.dia-card:hover {
+    border-color: #3182ce;
+}
+
+.dia-card.ativo {
+    background: #3182ce;
+    border-color: #3182ce;
+    color: #ffffff;
+}
+
+.dia-nome {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #718096;
+    margin-bottom: 4px;
+}
+
+.dia-card.ativo .dia-nome,
+.dia-card.ativo .dia-mes {
+    color: #ebf8ff;
+}
+
+.dia-numero {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.dia-mes {
+    font-size: 12px;
+    font-weight: 500;
+    color: #718096;
+}
+
+.grade-horarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+}
+
+.horario-slot {
+    background: #ffffff;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    padding: 12px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2d3748;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.horario-slot:hover {
+    border-color: #3182ce;
+    color: #3182ce;
+}
+
+.horario-slot.ativo {
+    background: #3b5998;
+    border-color: #3b5998;
+    color: #ffffff;
+}
+
+.horario-slot.ocupado {
+    background: #edf2f7;
+    color: #a0aec0;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+.campo-texto {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    background-color: #ffffff;
+    font-size: 14px;
+    color: #2d3748;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.campo-texto:focus {
+    border-color: #3182ce;
+}
+
+.resumo-agendamento {
+    background: #f0f4f8;
+    border: none;
+    padding: 32px;
+}
+
+.detalhes-resumo {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.item-resumo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.item-resumo span {
+    font-size: 12px;
+    color: #718096;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.item-resumo strong {
+    font-size: 14px;
+    color: #1a202c;
+    font-weight: 500;
+}
+
+.destaque-verde {
+    color: #38a169 !important;
+}
+
+.divisor-resumo {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 24px 0;
+}
+
+.valor-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.valor-total span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.valor-total strong {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a202c;
+}
+
+.botao {
+    width: 100%;
+    background: #3b5998;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 14px 0;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.botao:hover {
+    background: #2d4373;
+}
+
+@media (max-width: 860px) {
+    .bloco-agendamento {
+        grid-template-columns: 1fr;
+    }
+}

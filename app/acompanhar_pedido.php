@@ -106,7 +106,6 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
                 <p class="tempo">Situação atual: <strong><?= htmlspecialchars($agendamento['status_agendamento']) ?></strong></p>
 
                 <?php if ($passoAtual < 5): ?>
-                    <!-- Formulário de Mensagem usando o seu <details> -->
                     <div class="botao caixa-details">
                         <details>
                             <summary>Enviar mensagem</summary>
