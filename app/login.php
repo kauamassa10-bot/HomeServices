@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login Administrador - HomeServices</title>
     <link rel="stylesheet" href="css/orcamento.css">
     <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 <body class="fundo-claro">
 

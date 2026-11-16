@@ -72,6 +72,7 @@ $servicos = $pdo->query($sqlServicos)->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="css/orcamento.css">
     <link rel="stylesheet" href="css/cadastros.css">
     <link rel="stylesheet" href="css/registros.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 <body class="fundo-claro">
 

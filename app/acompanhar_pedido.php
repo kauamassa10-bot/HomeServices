@@ -45,6 +45,7 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acompanhar Pedido</title>
     <link rel="stylesheet" href="css/styleacompanhar-pedido.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 
 <body>

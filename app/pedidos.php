@@ -20,6 +20,7 @@ try {
     <title>Meus Pedidos - HomeServices</title>
     <link rel="stylesheet" href="css/orcamento.css">
     <link rel="stylesheet" href="css/pedidos.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 <body class="fundo-claro">
 

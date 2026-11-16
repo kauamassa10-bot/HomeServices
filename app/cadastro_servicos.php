@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Cadastrar Serviço - HomeServices</title>
     <link rel="stylesheet" href="css/orcamento.css">
     <link rel="stylesheet" href="css/cadastros.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 <body class="fundo-claro">
 
