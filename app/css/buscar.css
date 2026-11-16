@@ -49,15 +49,14 @@ main {
 }
 
 .categorias {
-    display: inline-flex;
+    display: flex;
     gap: 20px;
     overflow-x: auto;
     padding-bottom: 10px;
-    border-top: 1px solid #e5e7eb;
+    
     border-bottom: 1px solid #e5e7eb;
     margin-top: 25px;
-    align-items: center;
-    justify-content: center;
+    
 }
 
 .categorias a {
