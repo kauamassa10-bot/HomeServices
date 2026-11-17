@@ -138,6 +138,11 @@
     background-color: #2e467c;
 }
 
+.btn-solido a {
+    color: white;
+    text-decoration: none;
+}
+
 /* Coluna Direita (Cartão de Informações) */
 .coluna-direita {
     flex: 1;

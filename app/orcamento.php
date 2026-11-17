@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/init.php';
-require_once __DIR__ . '/banco/database.php';
+
 
 
 // Apenas CLIENTES podem solicitar orçamentos
@@ -12,52 +12,30 @@ if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '
     exit;
 }
 
-
-
+$servicoDesejado = read($pdo, 'servico', 'id_servico = ?', [$_GET['id'] ?? 0]);
 
 $mensagem = '';
 $id_cliente = (int) $_SESSION['id_usuario'];
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id_categoria = 1; // Ajuste para pegar do formulário caso o cliente precise selecionar
-    $tipo_servico = trim($_POST['tipo_servico']);
-    $descricao = trim($_POST['descricao']);
-    $endereco = trim($_POST['endereco']);
-    $data_desejada = $_POST['data_desejada'];
-
-    $sql = "INSERT INTO solicitacao 
-            (id_cliente, id_categoria, desc_titulo, desc_solicitacao, desc_endereco_atendimento, status_solicitacao, data_solicitacao) 
-            VALUES 
-            (:id_cliente, :id_categoria, :desc_titulo, :desc_solicitacao, :desc_endereco_atendimento, 'aberto', :data_solicitacao)";
-    
-    $stmt = $pdo->prepare($sql);
-    
-    try {
-        $stmt->execute([
-            ':id_cliente' => $id_cliente,
-            ':id_categoria' => $id_categoria,
-            ':desc_titulo' => $tipo_servico,
-            ':desc_solicitacao' => $descricao,
-            ':desc_endereco_atendimento' => $endereco,
-            ':data_solicitacao' => $data_desejada
-        ]);
-        
-        // Redireciona direto para Meus Pedidos após salvar
-        header("Location: pedidos.php?sucesso=1");
-        exit;
-    } catch (PDOException $e) {
-        $mensagem = "<div class='erro'>Erro ao enviar pedido: " . htmlspecialchars($e->getMessage()) . "</div>";
+$id_servico = (int) ($_GET['id'] ?? 0);
+if ($id_servico <= 0) {
+    $mensagem = "<div class='erro'>Serviço inválido. Por favor, tente novamente.</div>";
+} else {
+    if (!$id_servico) {
+        $mensagem = "<div class='erro'>Serviço não encontrado. Por favor, tente novamente.</div>";
     }
 }
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>Novo Pedido - HomeServices</title>
     <link rel="stylesheet" href="css/orcamento.css">
     <link rel="stylesheet" href="css/global.css">
 </head>
+
 <body class="fundo-claro">
 
     <header class="header-simples">
@@ -80,26 +58,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?= $mensagem ?>
 
             <form method="POST" action="" class="form-pedido-leitura">
-                
+
                 <div class="campo-simples">
-                    <input type="text" name="" value="<?= $_GET['nome_servico'] ?>" required>
+                    <label for="servDesejado">Nome do Serviço:</label>
+                    <input type="text" name="servDesejado" value="<?= htmlspecialchars($servicoDesejado['nome_servico'] ?? '') ?>" required readonly>
                 </div>
 
                 <div class="campo-simples">
-                    <textarea name="descricao" placeholder="Descreva o serviço detalhadamente..." required></textarea>
+                    <textarea name="descricao" placeholder="Descreva o serviço desejado detalhadamente..." required></textarea>
                 </div>
 
                 <div class="linha-dupla">
                     <div class="campo-simples">
                         <input type="text" name="endereco" placeholder="Endereço / CEP" required>
                     </div>
-                    <div class="campo-simples">
-                        <input type="date" name="data_desejada" required>
-                    </div>
                 </div>
 
                 <div class="botoes-rodape">
-                    <button type="submit" class="btn-solido" style="width: 100%;">Enviar Pedido para Profissional</button>
+                    <button type="submit" class="btn-solido"><a href="agendamento.php">Prosseguir para agendamento</a></button>
                 </div>
             </form>
         </section>
@@ -116,4 +92,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </main>
 
 </body>
+
 </html>
