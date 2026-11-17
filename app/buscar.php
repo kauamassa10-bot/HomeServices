@@ -2,10 +2,10 @@
 
 require_once __DIR__ . '/init.php';
 
-// if(!isset($_SESSION['usuario'])) {
-//     header('Location: login.php');
-//     exit;
-// }
+if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'CLIENTE') {
+    header("Location: login_cliente.php?erro=acesso_negado");
+    exit;
+}
 
 $clientes = readAll($pdo, "usuario");
 $categorias = readAll($pdo, "categoria");
@@ -203,7 +203,7 @@ $iniciaisUsuarios = pegarIniciais($clientes[0]["nome_usuario"]);
                         echo '  </div>';
 
                         echo '  <div class="card-acao">';
-                        echo '    <a href="orcamento.php?id=' . $servico['id_servico'] . '" class="btn-orcamento">Pedir orçamento</a>';
+                        echo '    <a href="orcamento.php?id=' . $servico['id_servico'] . '" class="btn-orcamento">Pedir Orçamento</a>';
                         echo '  </div>';
 
                         echo '</div>';
