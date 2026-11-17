@@ -2,6 +2,11 @@
 
 require_once __DIR__ . '/init.php';
 
+// if(!isset($_SESSION['usuario'])) {
+//     header('Location: login.php');
+//     exit;
+// }
+
 $clientes = readAll($pdo, "usuario");
 $categorias = readAll($pdo, "categoria");
 
