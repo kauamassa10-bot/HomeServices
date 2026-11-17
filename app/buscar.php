@@ -23,6 +23,7 @@ $iniciaisUsuarios = pegarIniciais($clientes[0]["nome_usuario"]);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HomeServices | Buscar</title>
     <link rel="stylesheet" href="css/buscar.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 
 <body>

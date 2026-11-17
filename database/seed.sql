@@ -23,8 +23,8 @@ INSERT INTO solicitacao (id_solicitacao, id_cliente, id_categoria, desc_titulo, 
 INSERT INTO proposta (id_proposta, id_solicitacao, id_prestador, valor_proposta, desc_proposta, status_proposta, data_proposta) VALUES
 (12001, 8001, 1001, 220.00, 'Incluso disjuntor NEMA 40A, cabo 6mm flexível e teste de carga', 'ACEITA', '2026-10-29');
 
-INSERT INTO agendamento (id_agendamento, id_solicitacao, id_proposta, id_cliente, id_prestador, data_agendamento, status_agendamento, data_criacao) VALUES
-(3001, 8001, 12001, 2001, 1001, '2026-10-31 09:00:00', 'CONCLUIDO', '2026-10-29');
+INSERT INTO agendamento (id_agendamento, id_solicitacao, id_proposta, id_cliente, id_prestador, data_agendamento, hora_agendamento, observacoes, status_agendamento, data_criacao) VALUES
+(3001, 8001, 12001, 2001, 1001, '2026-10-31', '09:00', 'Tocar a campainha ao chegar.', 'CONCLUIDO', '2026-10-29');
 
 INSERT INTO avaliacao (id_avaliacao, id_agendamento, id_avaliador, id_avaliado, numero_nota, desc_comentario, data_avaliacao) VALUES
 (4001, 3001, 2001, 1001, 5, 'Serviço excelente, muito pontual, caprichoso e limpo!', '2026-10-31');
