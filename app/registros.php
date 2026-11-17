@@ -80,8 +80,6 @@ $servicos = $pdo->query($sqlServicos)->fetchAll(PDO::FETCH_ASSOC);
         <div class="header-container">
             <h1 class="logo-texto">HomeServices</h1>
             <nav class="menu-topo">
-                <a href="cadastro_cliente.php">Novo Cliente</a>
-                <a href="cadastro_profissional.php">Novo Profissional</a>
                 <a href="cadastro_servicos.php">Novo Serviço</a>
                 <a href="registros.php">Painel Admin</a>
             </nav>

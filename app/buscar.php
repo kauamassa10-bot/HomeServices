@@ -32,16 +32,14 @@ $iniciaisUsuarios = pegarIniciais($clientes[0]["nome_usuario"]);
             <p>HomeServices</p>
         </div>
         <nav class="links">
-
             <a href="buscar.php">Buscar Serviços</a>
-            <a href="pedidos.php">Meus pedidos</a>
-            <a href="Acompanhar_pedidos.php">Acompanhar Pedidos</a>
+            <a href="pedidos.php">Meus Pedidos</a>
+            <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
             <a href="logout.php">Sair</a>
-
+            <div class="foto">
+                <?= $iniciaisUsuarios; ?>
+            </div>
         </nav>
-        <div class="foto">
-            <a href="perfil.php"><?= $iniciaisUsuarios; ?></a>
-        </div>
     </header>
 
     <main>
@@ -68,12 +66,10 @@ $iniciaisUsuarios = pegarIniciais($clientes[0]["nome_usuario"]);
                 <aside>
                     <div class="gp-filtros">
                         <h4>Avaliação</h4>
-
                         <label for="maior-avaliacao">
                             <input type="radio" name="pref-avaliacao" id="maior-avaliacao" value="maior-4"> Mais
                             que 4 estrelas
                         </label>
-
                         <label for="menor-avaliacao">
                             <input type="radio" name="pref-avaliacao" id="menor-avaliacao" value="menor-4"> Menor que 4
                             estrelas
@@ -86,7 +82,6 @@ $iniciaisUsuarios = pegarIniciais($clientes[0]["nome_usuario"]);
                             <input type="radio" name="pref-preco" id="entre-150-e-350" value="150-350"> Entre R$150,00 a
                             R$350,00
                         </label>
-
                         <label for="entre-350-e-500">
                             <input type="radio" name="pref-preco" id="entre-350-e-500" value="350-500"> Entre R$350,00 a
                             R$500,00
