@@ -32,9 +32,10 @@ $iniciaisUsuarios = pegarIniciais($clientes[0]["nome_usuario"]);
         </div>
         <nav class="links">
 
-            <a href="">Início</a>
-            <a href="">Serviços</a>
-            <a href="">Contato</a>
+            <a href="buscar.php">Buscar Serviços</a>
+            <a href="pedidos.php">Meus pedidos</a>
+            <a href="Acompanhar_pedidos.php">Acompanhar Pedidos</a>
+            <a href="logout.php">Sair</a>
 
         </nav>
         <div class="foto">
