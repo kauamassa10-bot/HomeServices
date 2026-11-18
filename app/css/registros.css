@@ -18,7 +18,6 @@
     margin-bottom: 32px;
 }
 
-/* Barra superior do administrador */
 .barra-admin {
     display: flex;
     justify-content: space-between;
@@ -46,7 +45,6 @@
     background: #dc2626;
 }
 
-/* Formulário inline para nova categoria */
 .form-inline-admin {
     display: flex;
     gap: 10px;
@@ -66,7 +64,6 @@
     padding: 10px 20px;
 }
 
-/* Cartão que envolve cada seção de tabela */
 .secao-tabela {
     background: #ffffff;
     border-radius: 12px;
@@ -96,7 +93,6 @@
     border-radius: 4px;
 }
 
-/* Estilo da Tabela */
 .tabela-dados {
     width: 100%;
     border-collapse: separate;
@@ -139,7 +135,6 @@
     background-color: #f8fafc;
 }
 
-/* Coluna de ID com estilo discreto */
 .tabela-dados tbody td:first-child {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 0.85rem;
@@ -148,20 +143,17 @@
     width: 70px;
 }
 
-/* Destaque nos nomes principais */
 .tabela-dados tbody td strong {
     color: #0f172a;
     font-weight: 600;
 }
 
-/* Destaque na coluna de Valor Base da tabela de serviços */
 .secao-tabela:last-of-type .tabela-dados tbody td:nth-child(5) {
     font-weight: 700;
     color: #1e40af;
     white-space: nowrap;
 }
 
-/* Badges de Status */
 .badge-ativo {
     display: inline-flex;
     align-items: center;
@@ -204,7 +196,6 @@
     background-color: #ef4444;
 }
 
-/* Botões de Ação Administrativa nas Tabelas */
 .acoes-cell {
     display: flex;
     gap: 6px;
@@ -243,7 +234,6 @@
     color: #991b1b;
 }
 
-/* Alerta de confirmação no topo */
 .alerta-sucesso {
     display: flex;
     align-items: center;
@@ -258,7 +248,6 @@
     box-shadow: 0 2px 6px rgba(16, 185, 129, 0.08);
 }
 
-/* Linha quando a tabela está vazia */
 .vazio-linha {
     text-align: center !important;
     color: #94a3b8 !important;

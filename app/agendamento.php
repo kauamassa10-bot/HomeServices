@@ -19,73 +19,53 @@ $prestador   = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_prestad
 $cliente     = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_cliente']]);
 $proposta    = read($pdo, 'proposta', 'id_proposta = ?', [$agendamento['id_proposta']]);
 $iniciaisAvatar = pegarIniciais($cliente['nome_usuario']);
-
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendamento - HomeServices</title>
     <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/agendamento.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
-
 <body>
-  <header class="cabecalho">
-        <div class="logo">HomeServices</div>
+    <header class="cabecalho">
+        <a href="buscar.html" class="logo">HomeServices</a>
         <nav class="links">
-            <a href="buscar.php">Buscar Serviços</a>
-            <a href="pedidos.php">Meus Pedidos</a>
-            <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
-            <a href="logout.php">Sair</a>
-            <div class="foto"><?= $iniciaisAvatar ?></div>
+            <a href="buscar.html">Categorias</a>
+            <a href="pedidos.html">Meus pedidos</a>
+            <a href="#">Ajuda</a>
+            <a href="perfil.html" class="foto"><?= $iniciaisAvatar ?></a>
         </nav>
     </header>
     
-        <main class="conteudo">
+    <main class="conteudo">
         <div class="titulo">
             <h1>Agende o serviço</h1>
             <p>Escolha a melhor data e horário para receber o <?= htmlspecialchars($prestador['nome_usuario']) ?>.</p>
         </div>
 
         <form action="salvar_agendamento.php" method="POST" id="formAgendamento">
-            <!-- Inputs escondidos para o backend -->
             <input type="hidden" name="id_agendamento" value="<?= $agendamento['id_agendamento'] ?>">
             <input type="hidden" name="data_escolhida" id="input_data">
             <input type="hidden" name="hora_escolhida" id="input_hora">
 
             <div class="bloco bloco-agendamento">
-                
-                <!-- COLUNA ESQUERDA: DATAS E HORAS -->
                 <div class="caixa selecao-tempo">
                     <h3>1. Escolha a Data</h3>
-                    <div class="dias-semana">
-                        <!-- Exemplo estático: no futuro, gere isto com um ciclo foreach no PHP -->
-                        <button type="button" class="dia-card" data-data="14-11-2026">
-                            <span class="dia-nome">Sáb</span>
-                            <span class="dia-numero">14</span>
-                            <span class="dia-mes">Nov</span>
-                        </button>
-                        <button type="button" class="dia-card" data-data="15-11-2026">
-                            <span class="dia-nome">Dom</span>
-                            <span class="dia-numero">15</span>
-                            <span class="dia-mes">Nov</span>
-                        </button>
-                    </div>
-
+                    <input type="text" id="calendario-inline" style="display: none;">
+                    
                     <h3 class="mt-40">2. Escolha o Horário</h3>
-                    <div class="grade-horarios">
-                        <button type="button" class="horario-slot">08:00</button>
-                        <button type="button" class="horario-slot">10:00</button>
-                        <button type="button" class="horario-slot">14:00</button>
+                    <div class="grade-horarios" id="container-horarios">
+                        <p style="color: #718096; font-size: 14px;">Selecione uma data primeiro.</p>
                     </div>
 
                     <h3 class="mt-40">3. Observações</h3>
                     <textarea name="observacoes" class="campo-texto" placeholder="Instruções para o profissional..."></textarea>
                 </div>
 
-                <!-- COLUNA DIREITA: RESUMO -->
                 <div class="caixa resumo-agendamento">
                     <h3>Resumo do Serviço</h3>
                     <div class="detalhes-resumo">
@@ -116,42 +96,70 @@ $iniciaisAvatar = pegarIniciais($cliente['nome_usuario']);
         </form>
     </main>
 
-    <!-- SCRIPT PARA SELEÇÃO DE BOTÕES -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
     <script>
-        const botoesData = document.querySelectorAll('.dia-card');
         const inputData = document.getElementById('input_data');
-        const botoesHora = document.querySelectorAll('.horario-slot:not(.ocupado)');
         const inputHora = document.getElementById('input_hora');
+        const containerHorarios = document.getElementById('container-horarios');
         const textoResumo = document.getElementById('resumo_data_hora');
+        const idPrestador = <?= $prestador['id_usuario'] ?>;
 
-        function atualizarResumo() {
-            if (inputData.value && inputHora.value) {
-                const dataAtiva = document.querySelector('.dia-card.ativo');
-                const dia = dataAtiva.querySelector('.dia-numero').innerText;
-                const mes = dataAtiva.querySelector('.dia-mes').innerText;
-                textoResumo.innerText = `${dia} ${mes} às ${inputHora.value}`;
+        flatpickr("#calendario-inline", {
+            inline: true,
+            locale: "pt",
+            minDate: "today",
+            onChange: function(selectedDates, dateStr) {
+                inputData.value = dateStr;
+                inputHora.value = '';
+                buscarHorarios(dateStr);
+            }
+        });
+
+        async function buscarHorarios(dataEscolhida) {
+            containerHorarios.innerHTML = '<p style="color: #718096; font-size: 14px;">A carregar horários...</p>';
+            
+            try {
+                const resposta = await fetch(`buscar_horarios.php?data=${dataEscolhida}&prestador=${idPrestador}`);
+                const dados = await resposta.json();
+                
+                containerHorarios.innerHTML = '';
+
+                if(dados.horarios.length === 0) {
+                    containerHorarios.innerHTML = '<p style="color: #718096; font-size: 14px;">Nenhum horário disponível.</p>';
+                    return;
+                }
+
+                dados.horarios.forEach(horario => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = horario.ocupado ? 'horario-slot ocupado' : 'horario-slot';
+                    btn.innerText = horario.hora;
+                    
+                    if(!horario.ocupado) {
+                        btn.addEventListener('click', function() {
+                            document.querySelectorAll('.horario-slot').forEach(b => b.classList.remove('ativo'));
+                            this.classList.add('ativo');
+                            inputHora.value = this.innerText;
+                            atualizarResumo();
+                        });
+                    }
+                    containerHorarios.appendChild(btn);
+                });
+                atualizarResumo();
+            } catch (erro) {
+                containerHorarios.innerHTML = '<p style="color: #e53e3e; font-size: 14px;">Erro ao carregar horários.</p>';
             }
         }
 
-        botoesData.forEach(botao => {
-            botao.addEventListener('click', function() {
-                botoesData.forEach(b => b.classList.remove('ativo'));
-                this.classList.add('ativo');
-                inputData.value = this.getAttribute('data-data');
-                atualizarResumo();
-            });
-        });
-
-        botoesHora.forEach(botao => {
-            botao.addEventListener('click', function() {
-                botoesHora.forEach(b => b.classList.remove('ativo'));
-                this.classList.add('ativo');
-                inputHora.value = this.innerText;
-                atualizarResumo();
-            });
-        });
+        function atualizarResumo() {
+            if (inputData.value && inputHora.value) {
+                const dataParts = inputData.value.split('-');
+                textoResumo.innerText = `${dataParts[2]}/${dataParts[1]}/${dataParts[0]} às ${inputHora.value}`;
+            } else {
+                textoResumo.innerText = "Selecione ao lado";
+            }
+        }
     </script>
-
 </body>
-
 </html>
