@@ -59,13 +59,15 @@ create table  if not exists usuario(
     foreign key (id_prestador) references usuario(id_usuario)
 );
 
-create table  if not exists agendamento(
-    id_agendamento bigint not null primary key,
+create table if not exists agendamento(
+    id_agendamento bigint not null primary key auto_increment,
     id_solicitacao bigint not null,
     id_proposta bigint not null,
     id_cliente bigint not null,
     id_prestador bigint not null,
-    data_agendamento timestamp,
+    data_agendamento date,
+    hora_agendamento varchar(5),
+    observacoes text,
     status_agendamento varchar(20),
     data_criacao date,
     foreign key (id_solicitacao) references solicitacao(id_solicitacao),

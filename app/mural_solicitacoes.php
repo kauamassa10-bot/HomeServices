@@ -18,7 +18,6 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,9 +67,7 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
                     <div class="detalhe-solicitacao descricao">Tomadas queimando, preciso trocar 4 unidades.</div>
                     <div class="detalhe-solicitacao data">Publicado em 10/11</div>
                 </div>
-                <a href="enviar_proposta.php?id=1" class="btn-proposta"
-                    style="display: block; text-align: center; text-decoration: none; box-sizing: border-box;">Fazer
-                    Proposta</a>
+                <button class="btn-proposta">Fazer Proposta</button>
             </div>
 
             <!-- Pedido 2 -->
@@ -82,9 +79,7 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
                     <div class="detalhe-solicitacao descricao">Cano goteja há dois dias e molha o armário.</div>
                     <div class="detalhe-solicitacao data">Publicado em 10/11</div>
                 </div>
-                <a href="enviar_proposta.php?id=2" class="btn-proposta"
-                    style="display: block; text-align: center; text-decoration: none; box-sizing: border-box;">Fazer
-                    Proposta</a>
+                <button class="btn-proposta">Fazer Proposta</button>
             </div>
 
             <!-- Pedido 3 -->
@@ -96,9 +91,7 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
                     <div class="detalhe-solicitacao descricao">Cerca de 40 m², paredes brancas para cinza.</div>
                     <div class="detalhe-solicitacao data">Publicado em 09/11</div>
                 </div>
-                <a href="enviar_proposta.php?id=3" class="btn-proposta"
-                    style="display: block; text-align: center; text-decoration: none; box-sizing: border-box;">Fazer
-                    Proposta</a>
+                <button class="btn-proposta">Fazer Proposta</button>
             </div>
 
             <!-- Pedido 4 -->
@@ -110,9 +103,7 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
                     <div class="detalhe-solicitacao descricao">Chuveiro novo, fiação já existente.</div>
                     <div class="detalhe-solicitacao data">Publicado em 09/11</div>
                 </div>
-                <a href="enviar_proposta.php?id=4" class="btn-proposta"
-                    style="display: block; text-align: center; text-decoration: none; box-sizing: border-box;">Fazer
-                    Proposta</a>
+                <button class="btn-proposta">Fazer Proposta</button>
             </div>
 
             <!-- Pedido 5 -->
@@ -124,9 +115,7 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
                     <div class="detalhe-solicitacao descricao">Ralo do banheiro com água acumulada.</div>
                     <div class="detalhe-solicitacao data">Publicado em 08/11</div>
                 </div>
-                <a href="enviar_proposta.php?id=5" class="btn-proposta"
-                    style="display: block; text-align: center; text-decoration: none; box-sizing: border-box;">Fazer
-                    Proposta</a>
+                <button class="btn-proposta">Fazer Proposta</button>
             </div>
 
             <!-- Pedido 6 -->
@@ -138,16 +127,11 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
                     <div class="detalhe-solicitacao descricao">Portão de ferro com ferrugem.</div>
                     <div class="detalhe-solicitacao data">Publicado em 08/11</div>
                 </div>
-                <a href="enviar_proposta.php?id=6" class="btn-proposta"
-                    style="display: block; text-align: center; text-decoration: none; box-sizing: border-box;">Fazer
-                    Proposta</a>
+                <button class="btn-proposta">Fazer Proposta</button>
             </div>
-
-        </div>
 
         </div>
     </main>
 
 </body>
-
 </html>

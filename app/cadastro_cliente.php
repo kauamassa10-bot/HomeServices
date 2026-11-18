@@ -56,11 +56,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastrar Cliente - HomeServices</title>
     <link rel="stylesheet" href="css/orcamento.css">
-    <link rel="stylesheet" href="css/cadastros.css">
+    <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/global.css">
 </head>
 <body class="fundo-claro">
-
     <header class="header-simples">
         <div class="header-container">
             <h1 class="logo-texto">HomeServices</h1>
@@ -81,24 +80,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h2><?= $isAdmin ? 'Cadastrar Cliente' : 'Criar Conta de Cliente' ?></h2>
             <p class="subtitulo">Preencha os dados para registrar um novo cliente</p>
 
-            <?= $mensagem ?>
+            <?php if (!empty($erro)): ?>
+                <div class="alerta-erro"><?= htmlspecialchars($erro) ?></div>
+            <?php endif; ?>
 
-            <form method="POST" action="" class="form-pedido-leitura">
-                <div class="campo-simples">
-                    <input type="text" name="nome_usuario" placeholder="Nome completo" required>
+            <form method="POST" action="" class="form-login" autocomplete="off">
+                <div class="grupo-campo">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" name="nome" placeholder="O seu nome" required>
                 </div>
 
-                <div class="campo-simples">
-                    <input type="email" name="email" placeholder="E-mail (ex: ana@email.com)" required>
+                <div class="grupo-campo">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" required>
                 </div>
 
-                <div class="linha-dupla">
-                    <div class="campo-simples">
-                        <input type="text" name="telefone" placeholder="Telefone (ex: 11999998888)" required>
-                    </div>
-                    <div class="campo-simples">
-                        <input type="password" name="senha" placeholder="Senha de acesso" required>
-                    </div>
+                <div class="grupo-campo">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required minlength="6">
                 </div>
 
                 <div class="botoes-rodape">
@@ -113,17 +112,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 <?php endif; ?>
             </form>
-        </section>
 
-        <aside class="coluna-direita">
-            <div class="card-resumo">
-                <div class="detalhes-resumo">
-                    <strong>Cadastro de Clientes</strong>
-                    <p>Os clientes cadastrados ficam habilitados para solicitar orçamentos e agendar serviços.</p>
-                </div>
+            <div style="margin-top: 15px; text-align: center; font-size: 0.9rem;">
+                Já tem uma conta? <a href="login_cliente.php" style="color: #2b5cbf; font-weight: bold;">Faça login aqui</a>
             </div>
-        </aside>
+        </div>
     </main>
-
 </body>
 </html>
