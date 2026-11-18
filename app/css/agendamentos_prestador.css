@@ -1,0 +1,170 @@
+/* Estilos para a página de Meus Agendamentos */
+body {
+    background-color: #f7f8fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.agendamentos-main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.titulo-pagina {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #111;
+}
+
+/* Abas / Filtros */
+.tabs-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.tab-btn {
+    background-color: #eaf1fc;
+    color: #5c85d6;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 20px; /* Estilo de pílula */
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    background-color: #d8e5f9;
+}
+
+.tab-btn.active {
+    background-color: #fca55d; /* Laranja da aba ativa */
+    color: #111;
+}
+
+/* Grid de Cartões */
+.agendamentos-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Cartão de Agendamento */
+.agendamento-card {
+    border-radius: 12px;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+/* Cores de fundo do cartão dependendo do status */
+.bg-pendente {
+    background-color: #fdf5eb; /* Laranja bem claro */
+}
+
+.bg-execucao {
+    background-color: #f0f4fa; /* Azul bem claro */
+}
+
+/* Informações à esquerda */
+.info-pedido {
+    max-width: 60%;
+}
+
+.info-pedido h4 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+}
+
+.info-pedido p {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Ações à direita */
+.acoes-pedido {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+/* Badge superior direito */
+.badge-status-top {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+}
+
+.badge-laranja {
+    background-color: #fca55d;
+    color: #111;
+}
+
+.badge-azul {
+    background-color: #719df2;
+}
+
+/* Botões de fluxo de status */
+.titulo-status {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #111;
+}
+
+.botoes-status {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-passo {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* Estados dos botões */
+.btn-passo.inativo {
+    background-color: white;
+    color: #666;
+    border-color: #ccc;
+}
+
+.btn-passo.inativo:hover {
+    background-color: #f9f9f9;
+}
+
+.btn-passo.laranja-ativo {
+    background-color: #fca55d;
+    color: #111;
+}
+
+.btn-passo.verde-concluido {
+    background-color: #a7f3d0; /* Verde claro */
+    color: #065f46;
+}
+
+.btn-passo.azul-ativo {
+    background-color: #719df2;
+    color: white;
+}
