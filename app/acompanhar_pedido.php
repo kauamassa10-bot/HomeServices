@@ -47,7 +47,7 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acompanhar Pedido</title>
-    <link rel="stylesheet" href="css/acompanhar_pedido.css">
+    <link rel="stylesheet" href="css/styleacompanhar-pedido.css">
     <link rel="stylesheet" href="css/global.css">
 </head>
 
@@ -110,7 +110,6 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
                 <p class="tempo">Situação atual: <strong><?= htmlspecialchars($agendamento['status_agendamento']) ?></strong></p>
 
                 <?php if ($passoAtual < 5): ?>
-                    <!-- Formulário de Mensagem usando o seu <details> -->
                     <div class="botao caixa-details">
                         <details>
                             <summary>Enviar mensagem</summary>
