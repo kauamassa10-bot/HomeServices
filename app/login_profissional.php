@@ -63,14 +63,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="fundo-claro">
 
     <header class="header-simples">
-        <div class="header-container">
-            <h1 class="logo-texto">HomeServices</h1>
-            <nav class="menu-topo">
-                <a href="index.php">Início</a>
-                <a href="cadastro_profissional.php">Quero ser um profissional</a>
-            </nav>
-        </div>
-    </header>
+    <div class="header-container">
+        <h1 class="logo-texto">HomeServices</h1>
+        <nav class="menu-topo">
+            <a href="index.php">Início</a>   
+            <a href="login_profissional.php">Sou profissional</a>
+            <a href="login_admin.php">Sou administrador</a>
+        </nav>
+    </div>
+</header>
 
     <main class="layout-duas-colunas" style="justify-content: center; margin-top: 50px;">
         <section class="coluna-esquerda" style="max-width: 500px; margin: 0 auto;">
@@ -91,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="botoes-rodape" style="margin-top: 20px;">
-                    <button type="submit" class="btn-solido" style="width: 100%;">Entrar</button>
+                    <button type="submit" class="btn-solido" style="width: 100%;">Entrar como Profissional</button>
                 </div>
 
                 <div style="margin-top: 20px; text-align: center; font-size: 0.9rem;">
