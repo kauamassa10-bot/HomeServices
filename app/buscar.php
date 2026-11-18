@@ -1,15 +1,21 @@
 <?php
-
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/init.php';
 
-// if(!isset($_SESSION['id_usuario']) || $_SESSION['id_usuario'] !== 'cliente' ]) {
-//     header('Location: login.php');
-//     exit();
-// }
+// Verificação correta de segurança (tem de ser em maiúsculas porque foi registado assim no cadastro)
+if(!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'CLIENTE') {
+    header('Location: login_cliente.php?erro=acesso_negado');
+    exit();
+}
 
-$cliente = read($pdo, "usuario");
+// Buscar APENAS o utilizador que tem a sessão iniciada
+$cliente = read($pdo, "usuario", "id_usuario = ?", [$_SESSION['id_usuario']]);
 
-$iniciaisUsuarios = pegarIniciais($cliente["nome_usuario"]);
+// Evitar erros caso a base de dados falhe ao devolver o nome
+$nome = $cliente ? $cliente["nome_usuario"] : 'Usuario';
+$iniciaisUsuarios = pegarIniciais($nome);
 ?>
 
 <!DOCTYPE html>
