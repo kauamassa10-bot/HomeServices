@@ -1,0 +1,139 @@
+/* Estilos específicos para a página de Meus Serviços (Tabela) */
+body {
+    background-color: #f7f8fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.meus-servicos-main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Cabeçalho da página (Título + Botão) */
+.header-acoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.titulo-pagina {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: #111;
+}
+
+.btn-novo-servico {
+    background-color: #719df2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.btn-novo-servico:hover {
+    background-color: #5c85d6;
+}
+
+/* Container da Tabela */
+.tabela-container {
+    background-color: white;
+    border: 1px solid #e1e5eb;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    overflow: hidden;
+}
+
+/* Barra de ferramentas tipo Notion (ícones) */
+.toolbar-tabela {
+    padding: 12px 20px;
+    border-bottom: 1px solid #e1e5eb;
+    display: flex;
+    gap: 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+.toolbar-tabela span {
+    cursor: pointer;
+}
+
+.toolbar-tabela span:hover {
+    color: #111;
+}
+
+/* Tabela */
+.tabela-servicos {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.tabela-servicos th, 
+.tabela-servicos td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.tabela-servicos th {
+    color: #555;
+    font-weight: 600;
+    background-color: #fafbfc;
+}
+
+.tabela-servicos td {
+    color: #444;
+}
+
+.tabela-servicos tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabela-servicos tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Coluna de ID/Número */
+.col-id {
+    color: #999 !important;
+    width: 30px;
+}
+
+/* Badges de Status */
+.badge-status {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.status-ativo {
+    background-color: #86efac; /* Verde claro */
+    color: #166534;
+}
+
+.status-inativo {
+    background-color: #e5e7eb; /* Cinza claro */
+    color: #4b5563;
+}
+
+/* Linha final com botão de + */
+.linha-adicionar {
+    padding: 12px 20px;
+    border-top: 1px solid #e1e5eb;
+    color: #666;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: #fafbfc;
+}

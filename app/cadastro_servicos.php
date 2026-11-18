@@ -115,12 +115,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <?php endforeach; ?>
                         </select>
                     </div>
-                <?php endif; ?>
+                <?php endif; 
+                ?>
 
                 <div class="campo-simples">
                     <select name="id_categoria" class="campo-select" required>
                         <option value="">Selecione a Categoria...</option>
-                        <?php foreach ($categorias as$c): ?>
+                        <?php foreach ($categorias as $c): ?>
                             <option value="<?= $c['id_categoria'] ?>"><?= htmlspecialchars($c['nome_categoria']) ?></option>
                         <?php endforeach; ?>
                     </select>
