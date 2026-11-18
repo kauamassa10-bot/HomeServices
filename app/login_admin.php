@@ -50,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="header-container">
             <h1 class="logo-texto">HomeServices</h1>
             <nav class="menu-topo">
-                <a href="index.php">Início</a>
                 <a href="login_cliente.php">Login do cliente</a>
                 <a href="login_profissional.php">Login do profissional</a>
             </nav>

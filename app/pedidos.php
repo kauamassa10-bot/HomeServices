@@ -19,19 +19,14 @@ if (!$id_usuario) {
 $pedidos = [];
 
 try {
-    // Adicionamos o "a.id_agendamento" e os JOINS para vincular a solicitação ao agendamento (se existir)
+    // Se for CLIENTE, vê os pedidos que ele solicitou. Se for PRESTADOR, vê os pedidos direcionados a ele.
     if ($tipo_usuario === 'CLIENTE') {
-        $sql = "SELECT s.*, a.id_agendamento 
-                FROM solicitacao s 
-                LEFT JOIN agendamento a ON s.id_solicitacao = a.id_solicitacao 
-                WHERE s.id_cliente = :id 
-                ORDER BY s.id_solicitacao DESC";
+        $sql = "SELECT * FROM solicitacao WHERE id_cliente = :id ORDER BY id_solicitacao DESC";
     } elseif ($tipo_usuario === 'PRESTADOR') {
-        $sql = "SELECT s.*, a.id_agendamento 
-                FROM solicitacao s 
+        // Exemplo: o prestador vê agendamentos atrelados aos serviços dele (ajuste conforme a modelagem exata do seu banco)
+        $sql = "SELECT s.* FROM solicitacao s 
                 INNER JOIN agendamento a ON s.id_solicitacao = a.id_solicitacao 
-                WHERE a.id_prestador = :id 
-                ORDER BY s.id_solicitacao DESC";
+                WHERE a.id_prestador = :id ORDER BY s.id_solicitacao DESC";
     } else {
         // Admin não tem painel de pedidos próprio, volta para registros
         header("Location: registros.php");

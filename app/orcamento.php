@@ -3,6 +3,17 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/init.php';
+require_once __DIR__ . '/banco/database.php';
+
+
+// Apenas CLIENTES podem solicitar orçamentos
+if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'CLIENTE') {
+    header("Location: login_cliente.php?erro=acesso_negado");
+    exit;
+}
+
+
+
 
 
 
@@ -17,12 +28,35 @@ $servicoDesejado = read($pdo, 'servico', 'id_servico = ?', [$_GET['id'] ?? 0]);
 $mensagem = '';
 $id_cliente = (int) $_SESSION['id_usuario'];
 
-$id_servico = (int) ($_GET['id'] ?? 0);
-if ($id_servico <= 0) {
-    $mensagem = "<div class='erro'>Serviço inválido. Por favor, tente novamente.</div>";
-} else {
-    if (!$id_servico) {
-        $mensagem = "<div class='erro'>Serviço não encontrado. Por favor, tente novamente.</div>";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id_categoria = 1; // Ajuste para pegar do formulário caso o cliente precise selecionar
+    $tipo_servico = trim($_POST['tipo_servico']);
+    $descricao = trim($_POST['descricao']);
+    $endereco = trim($_POST['endereco']);
+    $data_desejada = $_POST['data_desejada'];
+
+    $sql = "INSERT INTO solicitacao 
+            (id_cliente, id_categoria, desc_titulo, desc_solicitacao, desc_endereco_atendimento, status_solicitacao, data_solicitacao) 
+            VALUES 
+            (:id_cliente, :id_categoria, :desc_titulo, :desc_solicitacao, :desc_endereco_atendimento, 'aberto', :data_solicitacao)";
+    
+    $stmt = $pdo->prepare($sql);
+    
+    try {
+        $stmt->execute([
+            ':id_cliente' => $id_cliente,
+            ':id_categoria' => $id_categoria,
+            ':desc_titulo' => $tipo_servico,
+            ':desc_solicitacao' => $descricao,
+            ':desc_endereco_atendimento' => $endereco,
+            ':data_solicitacao' => $data_desejada
+        ]);
+        
+        // Redireciona direto para Meus Pedidos após salvar
+        header("Location: pedidos.php?sucesso=1");
+        exit;
+    } catch (PDOException $e) {
+        $mensagem = "<div class='erro'>Erro ao enviar pedido: " . htmlspecialchars($e->getMessage()) . "</div>";
     }
 }
 ?>
@@ -60,8 +94,7 @@ if ($id_servico <= 0) {
             <form method="POST" action="" class="form-pedido-leitura">
 
                 <div class="campo-simples">
-                    <label for="servDesejado">Nome do Serviço:</label>
-                    <input type="text" name="servDesejado" value="<?= htmlspecialchars($servicoDesejado['nome_servico'] ?? '') ?>" required readonly>
+                    <input type="text" name="" value="<?= $_GET['nome_servico'] ?>" required>
                 </div>
 
                 <div class="campo-simples">
@@ -75,7 +108,7 @@ if ($id_servico <= 0) {
                 </div>
 
                 <div class="botoes-rodape">
-                    <button type="submit" class="btn-solido"><a href="agendamento.php">Prosseguir para agendamento</a></button>
+                    <button type="submit" class="btn-solido" style="width: 100%;">Enviar Pedido para Profissional</button>
                 </div>
             </form>
         </section>
