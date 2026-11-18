@@ -1,0 +1,175 @@
+/* Estilos específicos do Dashboard copiados do seu design */
+body {
+    background-color: #f7f8fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* HEADER */
+.dashboard-header {
+    background-color: #f2f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    border-bottom: 1px solid #e1e5eb;
+}
+
+.dashboard-logo {
+    color: #2b5cbf;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.dashboard-nav {
+    display: flex;
+    gap: 30px;
+}
+
+.dashboard-nav a {
+    text-decoration: none;
+    color: #666;
+    font-size: 14px;
+}
+
+.dashboard-nav a.active {
+    color: #2b5cbf;
+    font-weight: 600;
+}
+
+.avatar {
+    background-color: #6896f1;
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* MAIN CONTENT */
+.dashboard-main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.saudacao {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+/* CARDS RESUMO */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.card-resumo {
+    border-radius: 12px;
+    padding: 25px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.card-resumo .titulo-card {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.card-resumo .valor-card {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.card-verde { background-color: #eaf8ee; color: #167d36; }
+.card-azul { background-color: #eaf1fa; color: #2b5cbf; }
+.card-laranja { background-color: #fcf1e6; color: #9c5c1c; }
+.card-amarelo { background-color: #fcf8e6; color: #9c7b1c; }
+
+/* LISTA DE AGENDAMENTOS */
+.agendamentos-container {
+    background-color: white;
+    border: 1px solid #e1e5eb;
+    border-radius: 12px;
+    padding: 30px;
+}
+
+.agendamentos-container h3 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.lista-agendamentos {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.agendamento-item {
+    background-color: #f2f5f9;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.agendamento-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.agendamento-info strong {
+    color: #000;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.agendamento-acoes {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* BADGES DE STATUS */
+.badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.badge-pendente { background-color: #faddbb; color: #a15516; }
+.badge-execucao { background-color: #cde1ff; color: #2b5cbf; }
+.badge-confirmado { background-color: #aaf1cd; color: #167d36; }
+
+/* BOTAO ACAO */
+.btn-acao {
+    background-color: #719df2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-acao:hover {
+    background-color: #5c85d6;
+}

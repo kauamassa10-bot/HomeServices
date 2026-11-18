@@ -19,14 +19,19 @@ if (!$id_usuario) {
 $pedidos = [];
 
 try {
-    // Se for CLIENTE, vê os pedidos que ele solicitou. Se for PRESTADOR, vê os pedidos direcionados a ele.
+    // Adicionamos o "a.id_agendamento" e os JOINS para vincular a solicitação ao agendamento (se existir)
     if ($tipo_usuario === 'CLIENTE') {
-        $sql = "SELECT * FROM solicitacao WHERE id_cliente = :id ORDER BY id_solicitacao DESC";
+        $sql = "SELECT s.*, a.id_agendamento 
+                FROM solicitacao s 
+                LEFT JOIN agendamento a ON s.id_solicitacao = a.id_solicitacao 
+                WHERE s.id_cliente = :id 
+                ORDER BY s.id_solicitacao DESC";
     } elseif ($tipo_usuario === 'PRESTADOR') {
-        // Exemplo: o prestador vê agendamentos atrelados aos serviços dele (ajuste conforme a modelagem exata do seu banco)
-        $sql = "SELECT s.* FROM solicitacao s 
+        $sql = "SELECT s.*, a.id_agendamento 
+                FROM solicitacao s 
                 INNER JOIN agendamento a ON s.id_solicitacao = a.id_solicitacao 
-                WHERE a.id_prestador = :id ORDER BY s.id_solicitacao DESC";
+                WHERE a.id_prestador = :id 
+                ORDER BY s.id_solicitacao DESC";
     } else {
         // Admin não tem painel de pedidos próprio, volta para registros
         header("Location: registros.php");
@@ -101,6 +106,7 @@ try {
                         <th>Endereço / CEP</th>
                         <th>Data Desejada</th>
                         <th>Status</th>
+                        <th>Ação</th> <!-- Nova Coluna Adicionada -->
                     </tr>
                 </thead>
                 <tbody>
@@ -112,6 +118,15 @@ try {
                             <td><?= htmlspecialchars($pedido['desc_endereco_atendimento']) ?></td>
                             <td><?= date('d/m/Y', strtotime($pedido['data_solicitacao'])) ?></td>
                             <td><?= htmlspecialchars(ucfirst($pedido['status_solicitacao'])) ?></td>
+                            
+                            <!-- Botão que envia o ID do agendamento pela URL -->
+                            <td>
+                                <?php if (!empty($pedido['id_agendamento'])): ?>
+                                    <a href="acompanhar_pedido.php?id=<?= $pedido['id_agendamento'] ?>" class="btn-solido" style="padding: 6px 12px; font-size: 0.85rem; text-decoration: none; border-radius: 4px;">Acompanhar</a>
+                                <?php else: ?>
+                                    <span style="font-size: 0.85rem; color: #888; font-style: italic;">Aguardando Profissional</span>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

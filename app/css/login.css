@@ -96,3 +96,32 @@
     font-size: 0.88rem;
     margin-bottom: 20px;
 }
+
+
+.header-simples .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+
+.header-simples .menu-topo,
+.header-simples a:not(.logo-texto) {
+    display: flex;
+    gap: 30px; 
+    align-items: center;
+    text-decoration: none;
+    color: #444; 
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.header-simples a:not(.logo-texto):hover {
+    color: #2b5cbf;
+}
+
+
+.header-simples > div > a:not(.logo-texto) {
+    margin-left: 20px;
+}

@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $check->execute([':email' => $email]);
 
     if ($check->fetch()) {
-        $mensagem = "<div class='erro'>Este e-mail já está cadastrado. Tente fazer login ou use outro e-mail.</div>";
+        $mensagem = "<div class='erro' style='color: red; margin-bottom: 15px;'>Este e-mail já está cadastrado. Tente fazer login ou use outro e-mail.</div>";
     } else {
         $sql = "INSERT INTO usuario (nome_usuario, email, senha, telefone, tipo_usuario, status_ativo, data_cadastro) 
                 VALUES (:nome, :email, :senha, :telefone, 'PRESTADOR', 1, NOW())";
@@ -37,15 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':telefone' => $telefone
             ]);
 
-            // Redirecionamento condicional
+            // Redirecionamento inteligente
             if ($isAdmin) {
+                // Se for o dono do sistema cadastrando
                 header("Location: registros.php?sucesso=profissional");
             } else {
+                // Se for o próprio profissional se cadastrando
                 header("Location: login_profissional.php?sucesso=cadastro");
             }
             exit;
         } catch (PDOException $e) {
-            $mensagem = "<div class='erro'>Erro ao cadastrar profissional: " . htmlspecialchars($e->getMessage()) . "</div>";
+            $mensagem = "<div class='erro' style='color: red; margin-bottom: 15px;'>Erro ao cadastrar profissional: " . htmlspecialchars($e->getMessage()) . "</div>";
         }
     }
 }
@@ -75,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </nav>
             <?php else: ?>
                  <nav class="menu-topo">
+                     <a href="index.php">Início</a>
                      <a href="login_profissional.php">Fazer Login</a>
                  </nav>
             <?php endif; ?>
@@ -84,25 +87,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <main class="layout-duas-colunas">
         <section class="coluna-esquerda">
             <h2><?= $isAdmin ? 'Cadastrar Profissional' : 'Cadastro de Profissional' ?></h2>
-            <p class="subtitulo">Registre um prestador de serviços na plataforma</p>
+            <p class="subtitulo">Registre-se como prestador de serviços na plataforma</p>
 
             <?= $mensagem ?>
 
             <form method="POST" action="" class="form-pedido-leitura">
                 <div class="campo-simples">
-                    <input type="text" name="nome_usuario" placeholder="Nome do profissional ou empresa" required>
+                    <label>Nome Completo ou Empresa</label>
+                    <input type="text" name="nome_usuario" placeholder="Ex: João Silva Encanamentos" required>
                 </div>
 
                 <div class="campo-simples">
-                    <input type="email" name="email" placeholder="E-mail profissional" required>
+                    <label>E-mail Profissional</label>
+                    <input type="email" name="email" placeholder="contato@exemplo.com" required>
                 </div>
 
                 <div class="linha-dupla">
                     <div class="campo-simples">
-                        <input type="text" name="telefone" placeholder="Telefone / WhatsApp" required>
+                        <label>Telefone / WhatsApp</label>
+                        <input type="text" name="telefone" placeholder="(11) 99999-9999" required>
                     </div>
                     <div class="campo-simples">
-                        <input type="password" name="senha" placeholder="Senha de acesso" required>
+                        <label>Senha de Acesso</label>
+                        <input type="password" name="senha" placeholder="Crie uma senha" required>
                     </div>
                 </div>
 
@@ -114,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <?php if (!$isAdmin): ?>
                     <div style="margin-top: 15px; text-align: center; font-size: 0.9rem;">
-                        Já possui conta profissional? <a href="login_profissional.php">Faça login aqui</a>
+                        Já possui conta profissional? <a href="login_profissional.php" style="color: #0284c7; font-weight: bold;">Faça login aqui</a>
                     </div>
                 <?php endif; ?>
             </form>
@@ -123,8 +130,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <aside class="coluna-direita">
             <div class="card-resumo">
                 <div class="detalhes-resumo">
-                    <strong>Cadastro de Prestadores</strong>
-                    <p>Após o cadastro, o profissional poderá acessar o portal e cadastrar os serviços oferecidos na plataforma.</p>
+                    <strong>Vantagens da Plataforma</strong>
+                    <p>Após o cadastro, você terá acesso ao Portal do Profissional onde poderá:</p>
+                    <ul style="margin-top: 10px; padding-left: 20px; color: #555; font-size: 0.9rem; line-height: 1.6;">
+                        <li>Cadastrar e divulgar todos os seus serviços;</li>
+                        <li>Receber pedidos de orçamentos de clientes;</li>
+                        <li>Acompanhar o status dos seus atendimentos.</li>
+                    </ul>
                 </div>
             </div>
         </aside>

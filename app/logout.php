@@ -1,7 +1,12 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
+session_unset();
+session_destroy();
+
+// Altere esta linha para redirecionar para o index.php
+header("Location: index.php");
+exit;
+
 
 // Identifica para qual tela de login redirecionar antes de apagar a sessão
 $tipo = strtoupper($_SESSION['tipo_usuario'] ?? '');

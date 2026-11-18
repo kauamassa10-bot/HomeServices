@@ -58,12 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="fundo-claro">
 
     <header class="header-simples">
-        <div class="header-container">
-            <h1 class="logo-texto">HomeServices</h1>
-            <a href="login_profissional.php">Sou profissional</a>]
+    <div class="header-container">
+        <h1 class="logo-texto">HomeServices</h1>
+        <nav class="menu-topo">
+            <a href="index.php">Início</a>   
+            <a href="login_profissional.php">Sou profissional</a>
             <a href="login_admin.php">Sou administrador</a>
-        </div>
-    </header>
+
+        </nav>
+    </div>
+</header>
 
     <main class="container-login">
         <div class="card-login">
