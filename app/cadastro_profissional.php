@@ -90,19 +90,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form method="POST" action="" class="form-pedido-leitura">
                 <div class="campo-simples">
-                    <input type="text" name="nome_usuario" placeholder="Nome do profissional ou empresa" required>
+                    <label>Nome Completo ou Empresa</label>
+                    <input type="text" name="nome_usuario" placeholder="Ex: João Silva Encanamentos" required>
                 </div>
 
                 <div class="campo-simples">
-                    <input type="email" name="email" placeholder="E-mail profissional" required>
+                    <label>E-mail Profissional</label>
+                    <input type="email" name="email" placeholder="contato@exemplo.com" required>
                 </div>
 
                 <div class="linha-dupla">
                     <div class="campo-simples">
-                        <input type="text" name="telefone" placeholder="Telefone / WhatsApp" required>
+                        <label>Telefone / WhatsApp</label>
+                        <input type="text" name="telefone" placeholder="(11) 99999-9999" required>
                     </div>
                     <div class="campo-simples">
-                        <input type="password" name="senha" placeholder="Senha de acesso" required>
+                        <label>Senha de Acesso</label>
+                        <input type="password" name="senha" placeholder="Crie uma senha" required>
                     </div>
                 </div>
 

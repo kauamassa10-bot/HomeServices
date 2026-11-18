@@ -15,6 +15,16 @@ if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '
 
 
 
+
+
+// Apenas CLIENTES podem solicitar orçamentos
+if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'CLIENTE') {
+    header("Location: login_cliente.php?erro=acesso_negado");
+    exit;
+}
+
+$servicoDesejado = read($pdo, 'servico', 'id_servico = ?', [$_GET['id'] ?? 0]);
+
 $mensagem = '';
 $id_cliente = (int) $_SESSION['id_usuario'];
 
@@ -52,12 +62,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>Novo Pedido - HomeServices</title>
     <link rel="stylesheet" href="css/orcamento.css">
     <link rel="stylesheet" href="css/global.css">
 </head>
+
 <body class="fundo-claro">
 
     <header class="header-simples">
@@ -80,21 +92,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?= $mensagem ?>
 
             <form method="POST" action="" class="form-pedido-leitura">
-                
+
                 <div class="campo-simples">
                     <input type="text" name="" value="<?= $_GET['nome_servico'] ?>" required>
                 </div>
 
                 <div class="campo-simples">
-                    <textarea name="descricao" placeholder="Descreva o serviço detalhadamente..." required></textarea>
+                    <textarea name="descricao" placeholder="Descreva o serviço desejado detalhadamente..." required></textarea>
                 </div>
 
                 <div class="linha-dupla">
                     <div class="campo-simples">
                         <input type="text" name="endereco" placeholder="Endereço / CEP" required>
-                    </div>
-                    <div class="campo-simples">
-                        <input type="date" name="data_desejada" required>
                     </div>
                 </div>
 
@@ -116,4 +125,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </main>
 
 </body>
+
 </html>

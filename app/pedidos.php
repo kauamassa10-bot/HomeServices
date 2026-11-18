@@ -101,6 +101,7 @@ try {
                         <th>Endereço / CEP</th>
                         <th>Data Desejada</th>
                         <th>Status</th>
+                        <th>Ação</th> <!-- Nova Coluna Adicionada -->
                     </tr>
                 </thead>
                 <tbody>
@@ -112,6 +113,15 @@ try {
                             <td><?= htmlspecialchars($pedido['desc_endereco_atendimento']) ?></td>
                             <td><?= date('d/m/Y', strtotime($pedido['data_solicitacao'])) ?></td>
                             <td><?= htmlspecialchars(ucfirst($pedido['status_solicitacao'])) ?></td>
+                            
+                            <!-- Botão que envia o ID do agendamento pela URL -->
+                            <td>
+                                <?php if (!empty($pedido['id_agendamento'])): ?>
+                                    <a href="acompanhar_pedido.php?id=<?= $pedido['id_agendamento'] ?>" class="btn-solido" style="padding: 6px 12px; font-size: 0.85rem; text-decoration: none; border-radius: 4px;">Acompanhar</a>
+                                <?php else: ?>
+                                    <span style="font-size: 0.85rem; color: #888; font-style: italic;">Aguardando Profissional</span>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
