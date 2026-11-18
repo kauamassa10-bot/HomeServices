@@ -26,15 +26,18 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/solicitacoes.css">
 </head>
+
 <body>
 
     <header class="dashboard-header">
         <div class="dashboard-logo">HomeServices</div>
         <nav class="dashboard-nav">
+            <a href="dashboard_prestador.php">Visão Geral</a>
             <a href="mural_solicitacoes.php" class="active">Solicitações</a>
-            <a href="meus_servicos.php">Meus Agendamentos</a>
-            <a href="#">Meus Serviços</a>
-            <a href="#">Perfil</a>
+            <a href="agendamentos_prestador.php">Meus Agendamentos</a>
+            <a href="meus_servicos_lista.php">Meus Serviços</a>
+            <a href="perfil.php">Perfil</a>
+        </nav>
         </nav>
         <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
             <?= htmlspecialchars($iniciais) ?>
@@ -54,7 +57,7 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
 
         <!-- Grelha de Solicitações -->
         <div class="solicitacoes-grid">
-            
+
             <!-- Pedido 1 -->
             <div class="card-solicitacao">
                 <div class="conteudo-solicitacao">

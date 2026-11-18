@@ -1,0 +1,125 @@
+/* Estilos específicos para a página de Perfil e Avaliações */
+body {
+    background-color: #f7f8fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.perfil-main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.titulo-pagina {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #111;
+}
+
+/* Layout em duas colunas */
+.perfil-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+/* COLUNA ESQUERDA: Card de Perfil */
+.card-perfil {
+    background-color: #f2f6fc;
+    border-radius: 12px;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.avatar-grande {
+    width: 100px;
+    height: 100px;
+    background-color: #719df2;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: 600;
+    margin: 0 auto 40px auto;
+}
+
+.info-grupo {
+    margin-bottom: 20px;
+}
+
+.info-grupo strong {
+    display: block;
+    font-size: 13px;
+    color: #111;
+    margin-bottom: 4px;
+}
+
+.info-grupo p {
+    margin: 0;
+    font-size: 14px;
+    color: #444;
+}
+
+.btn-editar-perfil {
+    background-color: #719df2;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    transition: background-color 0.2s;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.btn-editar-perfil:hover {
+    background-color: #5c85d6;
+}
+
+/* COLUNA DIREITA: Avaliações */
+.avaliacoes-section h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #111;
+}
+
+.lista-avaliacoes {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.card-avaliacao {
+    background-color: #fdfaf0; /* Amarelo bem claro do design */
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.header-avaliacao {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 8px;
+}
+
+.texto-avaliacao {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+    line-height: 1.5;
+}
