@@ -4,61 +4,109 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/init.php';
 
-/** @var PDO $pdo */
-
 if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'PRESTADOR') {
     header("Location: login_profissional.php?erro=acesso_negado");
     exit;
 }
 
 $idPrestador = (int) $_SESSION['id_usuario'];
-$nomeCompleto = $_SESSION['nome_usuario'] ?? 'Profissional';
-$partesNome = explode(' ', trim($nomeCompleto));
-$primeiroNome = $partesNome[0];
-$iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? substr($partesNome[1], 0, 1) : ''));
 
-// 1. Total de serviços concluídos
-$stmtConcluidos = $pdo->prepare("SELECT COUNT(*) FROM agendamento WHERE id_prestador = :id AND status_agendamento = 'CONCLUIDO'");
-$stmtConcluidos->execute([':id' => $idPrestador]);
-$totalConcluidos = (int) $stmtConcluidos->fetchColumn();
+// ---------- Nome e iniciais ----------
+$usuarioPrestador = read($pdo, 'usuario', 'id_usuario = ?', [$idPrestador]);
 
-// 2. Total de propostas enviadas
-$stmtPropostas = $pdo->prepare("SELECT COUNT(*) FROM proposta WHERE id_prestador = :id");
-$stmtPropostas->execute([':id' => $idPrestador]);
-$totalPropostas = (int) $stmtPropostas->fetchColumn();
+$nomeCompleto = 'Profissional';
+if ($usuarioPrestador) {
+    $nomeCompleto = $usuarioPrestador['nome_usuario'];
+}
 
-// 3. Faturamento do mês (agendamentos concluídos no mês atual)
-$stmtFaturamento = $pdo->prepare("
-    SELECT COALESCE(SUM(p.valor_proposta), 0)
-    FROM agendamento a
-    INNER JOIN proposta p ON p.id_proposta = a.id_proposta
-    WHERE a.id_prestador = :id
-      AND a.status_agendamento = 'CONCLUIDO'
-      AND MONTH(a.data_agendamento) = MONTH(CURRENT_DATE())
-      AND YEAR(a.data_agendamento) = YEAR(CURRENT_DATE())
-");
-$stmtFaturamento->execute([':id' => $idPrestador]);
-$faturamentoMes = (float) $stmtFaturamento->fetchColumn();
+$partesDoNome = explode(' ', $nomeCompleto);
+$primeiroNome = $partesDoNome[0];
+$iniciais     = pegarIniciais($nomeCompleto);
 
-// 4. Nota média das avaliações
-$stmtNota = $pdo->prepare("SELECT COALESCE(AVG(numero_nota), 0) FROM avaliacao WHERE id_avaliado = :id");
-$stmtNota->execute([':id' => $idPrestador]);
-$notaMedia = (float) $stmtNota->fetchColumn();
+// ---------- Busca dos dados ----------
+$listaAgendamentos = readAll($pdo, 'agendamento', 'id_prestador = ?', [$idPrestador]);
+$listaPropostas    = readAll($pdo, 'proposta', 'id_prestador = ?', [$idPrestador]);
+$listaAvaliacoes   = readAll($pdo, 'avaliacao', 'id_avaliado = ?', [$idPrestador]);
 
-// 5. Próximos agendamentos (não concluídos e não cancelados)
-$stmtAgendamentos = $pdo->prepare("
-    SELECT a.id_agendamento, a.data_agendamento, a.hora_agendamento, a.status_agendamento,
-           u.nome_usuario AS nome_cliente,
-           s.desc_endereco_atendimento
-    FROM agendamento a
-    INNER JOIN usuario u ON u.id_usuario = a.id_cliente
-    INNER JOIN solicitacao s ON s.id_solicitacao = a.id_solicitacao
-    WHERE a.id_prestador = :id
-      AND a.status_agendamento NOT IN ('CONCLUIDO', 'CANCELADO')
-    ORDER BY a.data_agendamento ASC, a.hora_agendamento ASC
-");
-$stmtAgendamentos->execute([':id' => $idPrestador]);
-$proximosAgendamentos = $stmtAgendamentos->fetchAll(PDO::FETCH_ASSOC);
+// ---------- Total de propostas ----------
+$totalPropostas = count($listaPropostas);
+
+// ---------- Nota média ----------
+$somaDasNotas = 0;
+foreach ($listaAvaliacoes as $avaliacao) {
+    $somaDasNotas = $somaDasNotas + $avaliacao['numero_nota'];
+}
+
+$notaMedia = 0;
+if (count($listaAvaliacoes) > 0) {
+    $notaMedia = $somaDasNotas / count($listaAvaliacoes);
+}
+
+// ---------- Concluídos e faturamento do mês ----------
+$totalConcluidos = 0;
+$faturamentoMes  = 0;
+$mesAtual        = date('Y-m');
+
+foreach ($listaAgendamentos as $agendamento) {
+    if ($agendamento['status_agendamento'] !== 'CONCLUIDO') {
+        continue;
+    }
+
+    $totalConcluidos = $totalConcluidos + 1;
+
+    $mesDoAgendamento = substr($agendamento['data_agendamento'], 0, 7);
+    if ($mesDoAgendamento === $mesAtual) {
+        $propostaDoAgendamento = read($pdo, 'proposta', 'id_proposta = ?', [$agendamento['id_proposta']]);
+
+        if ($propostaDoAgendamento) {
+            $faturamentoMes = $faturamentoMes + $propostaDoAgendamento['valor_proposta'];
+        }
+    }
+}
+
+// ---------- Próximos agendamentos ----------
+$proximosAgendamentos = [];
+
+foreach ($listaAgendamentos as $agendamento) {
+    $status = $agendamento['status_agendamento'];
+
+    if ($status === 'CONCLUIDO' || $status === 'CANCELADO') {
+        continue;
+    }
+
+    $cliente     = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_cliente']]);
+    $solicitacao = read($pdo, 'solicitacao', 'id_solicitacao = ?', [$agendamento['id_solicitacao']]);
+
+    $agendamento['nome_cliente'] = '';
+    if ($cliente) {
+        $agendamento['nome_cliente'] = $cliente['nome_usuario'];
+    }
+
+    $agendamento['desc_endereco_atendimento'] = '';
+    if ($solicitacao) {
+        $agendamento['desc_endereco_atendimento'] = $solicitacao['desc_endereco_atendimento'];
+    }
+
+    $proximosAgendamentos[] = $agendamento;
+}
+
+// Ordena por data e depois por hora
+usort($proximosAgendamentos, function ($a, $b) {
+    return strcmp($a['data_agendamento'] . $a['hora_agendamento'], $b['data_agendamento'] . $b['hora_agendamento']);
+});
+
+    // Mesmas chaves que o HTML já usa
+    $agendamento['nome_cliente'] = '';
+    if ($cliente) {
+        $agendamento['nome_cliente'] = $cliente['nome_usuario'];
+    }
+
+    $agendamento['desc_endereco_atendimento'] = '';
+    if ($solicitacao) {
+        $agendamento['desc_endereco_atendimento'] = $solicitacao['desc_endereco_atendimento'];
+    }
+
+    $proximosAgendamentos[] = $agendamento;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

@@ -81,7 +81,7 @@ $endereco        = $antigos['desc_endereco_atendimento'] ?? '';
                 </div>
 
                 <div class="botoes-rodape">
-                <button type="submit" class="btn-solido" style="width: 100%;">Prosseguir para agendamento</button>
+                <button type="submit" class="btn-solido">Prosseguir para agendamento</button>
                 </div>
             </form>
         </section>
