@@ -1,29 +1,51 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
 
-// Verifica se tem sessão iniciada e se é prestador
+/** @var PDO $pdo */
+
 if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'PRESTADOR') {
     header("Location: login_profissional.php?erro=acesso_negado");
     exit;
 }
 
-// Iniciais para o Avatar (Cabeçalho)
+$idPrestador = (int) $_SESSION['id_usuario'];
 $nomeCompleto = $_SESSION['nome_usuario'] ?? 'Profissional';
-$partesNome = explode(' ', trim($nomeCompleto));
-$primeiroNome = $partesNome[0];
-$iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? substr($partesNome[1], 0, 1) : ''));
+$iniciais = pegarIniciais($nomeCompleto);
+
+// Alternar status Ativo / Inativo ao clicar no badge
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_id'])) {
+    $idServico = (int) $_POST['toggle_id'];
+    $stmtToggle = $pdo->prepare("
+        UPDATE servico
+        SET status_ativo = IF(status_ativo = 1, 0, 1)
+        WHERE id_servico = :id AND id_prestador = :prestador
+    ");
+    $stmtToggle->execute([
+        ':id' => $idServico,
+        ':prestador' => $idPrestador
+    ]);
+    header("Location: meus_servicos_lista.php");
+    exit;
+}
+
+// Busca os serviços reais do prestador logado com o nome da categoria
+$stmt = $pdo->prepare("
+    SELECT s.*, c.nome_categoria
+    FROM servico s
+    INNER JOIN categoria c ON c.id_categoria = s.id_categoria
+    WHERE s.id_prestador = :id
+    ORDER BY s.id_servico DESC
+");
+$stmt->execute([':id' => $idPrestador]);
+$servicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Serviços - HomeServices</title>
-    <!-- Inclui o estilo do cabeçalho global e o específico desta tabela -->
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/lista_servicos.css">
 </head>
@@ -36,7 +58,7 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
             <a href="dashboard_prestador.php">Visão Geral</a>
             <a href="mural_solicitacoes.php">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
-            <a href="meus_servicos_lista.php" class="active">Meus Serviços</a> <!-- Ativo aqui -->
+            <a href="meus_servicos_lista.php" class="active">Meus Serviços</a>
             <a href="perfil.php">Perfil</a>
         </nav>
         <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
@@ -46,17 +68,13 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
 
     <main class="meus-servicos-main">
 
-        <!-- Título e Botão Adicionar -->
         <div class="header-acoes">
             <h2 class="titulo-pagina">Meus Serviços</h2>
-            <!-- Este botão redireciona para a página de formulário de cadastro de serviços -->
             <a href="cadastro_servicos.php" class="btn-novo-servico">+ Cadastrar Novo Serviço</a>
         </div>
 
-        <!-- Tabela de Serviços -->
         <div class="tabela-container">
 
-            <!-- Barra de ferramentas (ícones visuais) -->
             <div class="toolbar-tabela">
                 <span title="Atualizar">↻</span>
                 <span title="Layout">◫</span>
@@ -80,53 +98,38 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Serviço 1 -->
-                    <tr>
-                        <td class="col-id">1</td>
-                        <td>Troca de tomadas</td>
-                        <td>Elétrica</td>
-                        <td>Substituição de tomadas e espelhos</td>
-                        <td>R$ 120,00</td>
-                        <td><span class="badge-status status-ativo">Ativo</span></td>
-                    </tr>
-
-                    <!-- Serviço 2 -->
-                    <tr>
-                        <td class="col-id">2</td>
-                        <td>Reparo de vazamento</td>
-                        <td>Hidráulica</td>
-                        <td>Conserto de canos e sifões</td>
-                        <td>R$ 150,00</td>
-                        <td><span class="badge-status status-ativo">Ativo</span></td>
-                    </tr>
-
-                    <!-- Serviço 3 -->
-                    <tr>
-                        <td class="col-id">3</td>
-                        <td>Pintura de cômodo</td>
-                        <td>Pintura</td>
-                        <td>Pintura interna até 20 m²</td>
-                        <td>R$ 600,00</td>
-                        <td><span class="badge-status status-ativo">Ativo</span></td>
-                    </tr>
-
-                    <!-- Serviço 4 -->
-                    <tr>
-                        <td class="col-id">4</td>
-                        <td>Instalação de chuveiro</td>
-                        <td>Elétrica</td>
-                        <td>Instalação e teste</td>
-                        <td>R$ 90,00</td>
-                        <td><span class="badge-status status-inativo">Inativo</span></td>
-                    </tr>
+                    <?php if (count($servicos) > 0): ?>
+                        <?php foreach ($servicos as $index => $s): ?>
+                            <?php $ativo = ((int) $s['status_ativo'] === 1); ?>
+                            <tr>
+                                <td class="col-id"><?= $index + 1 ?></td>
+                                <td><?= htmlspecialchars($s['nome_servico']) ?></td>
+                                <td><?= htmlspecialchars($s['nome_categoria']) ?></td>
+                                <td><?= htmlspecialchars($s['desc_servico'] ?? '') ?></td>
+                                <td>R$ <?= number_format((float) $s['valor_base'], 2, ',', '.') ?></td>
+                                <td>
+                                    <form method="POST" action="" style="display: inline;">
+                                        <input type="hidden" name="toggle_id" value="<?= (int) $s['id_servico'] ?>">
+                                        <button type="submit" class="badge-status <?= $ativo ? 'status-ativo' : 'status-inativo' ?>" style="border: none; cursor: pointer;" title="Clique para alternar o status">
+                                            <?= $ativo ? 'Ativo' : 'Inativo' ?>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 20px; color: #666;">
+                                Nenhum serviço cadastrado ainda. Clique em <strong>+ Cadastrar Novo Serviço</strong> para começar.
+                            </td>
+                        </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
 
-            <!-- Linha inferior de adição rápida -->
-            <div class="linha-adicionar" onclick="window.location.href='cadastro_servicos.php';"
-                title="Adicionar nova linha">
+            <a href="cadastro_servicos.php" class="linha-adicionar" title="Adicionar nova linha" style="display: block; text-decoration: none;">
                 +
-            </div>
+            </a>
 
         </div>
     </main>
