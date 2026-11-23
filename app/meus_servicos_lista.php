@@ -59,10 +59,9 @@ $servicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <a href="mural_solicitacoes.php">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php" class="active">Meus Serviços</a>
-            <a href="perfil.php">Perfil</a>
         </nav>
         <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
-            <?= htmlspecialchars($iniciais) ?>
+            <a href="perfil.php"><?= htmlspecialchars($iniciais) ?></a>
         </div>
     </header>
 

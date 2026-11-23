@@ -73,10 +73,9 @@ foreach ($solicitacoes as $solicitacao) {
             <a href="mural_solicitacoes.php" class="active">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
-            <a href="perfil.php">Perfil</a>
         </nav>
-        <div class="avatar" title="<?= htmlspecialchars($nomeCompleto, ENT_QUOTES, 'UTF-8') ?>">
-            <?= htmlspecialchars($iniciais, ENT_QUOTES, 'UTF-8') ?>
+        <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
+            <a href="perfil.php"><?= htmlspecialchars($iniciais) ?></a>
         </div>
     </header>
 
