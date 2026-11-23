@@ -187,7 +187,7 @@ usort($proximosAgendamentos, function ($a, $b) {
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <p style="color: #666; padding: 15px 0;">Nenhum agendamento próximo no momento.</p>
+                    <p>Nenhum agendamento próximo no momento.</p>
                 <?php endif; ?>
             </div>
         </div>

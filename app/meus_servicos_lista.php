@@ -12,32 +12,28 @@ $idPrestador = (int) $_SESSION['id_usuario'];
 $nomeCompleto = $_SESSION['nome_usuario'] ?? 'Profissional';
 $iniciais = pegarIniciais($nomeCompleto);
 
-// Alternar status Ativo / Inativo ao clicar no badge
+// Alternar status Ativo / Inativo usando read() e update() do CRUD
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_id'])) {
     $idServico = (int) $_POST['toggle_id'];
-    $stmtToggle = $pdo->prepare("
-        UPDATE servico
-        SET status_ativo = IF(status_ativo = 1, 0, 1)
-        WHERE id_servico = :id AND id_prestador = :prestador
-    ");
-    $stmtToggle->execute([
-        ':id' => $idServico,
-        ':prestador' => $idPrestador
-    ]);
+    $servicoAtual = read($pdo, 'servico', 'id_servico = ? AND id_prestador = ?', [$idServico, $idPrestador]);
+
+    if ($servicoAtual) {
+        $novoStatus = ((int) $servicoAtual['status_ativo'] === 1) ? 0 : 1;
+        update(
+            $pdo,
+            'servico',
+            ['status_ativo' => $novoStatus],
+            'id_servico = ? AND id_prestador = ?',
+            [$idServico, $idPrestador]
+        );
+    }
     header("Location: meus_servicos_lista.php");
     exit;
 }
 
-// Busca os serviços reais do prestador logado com o nome da categoria
-$stmt = $pdo->prepare("
-    SELECT s.*, c.nome_categoria
-    FROM servico s
-    INNER JOIN categoria c ON c.id_categoria = s.id_categoria
-    WHERE s.id_prestador = :id
-    ORDER BY s.id_servico DESC
-");
-$stmt->execute([':id' => $idPrestador]);
-$servicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$servicos = readAll($pdo, 'servico', 'id_prestador = ?', [$idPrestador]);
+$categorias = readAll($pdo, 'categoria');
+$categoriaPorId = array_column($categorias, null, 'id_categoria');
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -99,11 +95,14 @@ $servicos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                     <?php if (count($servicos) > 0): ?>
                         <?php foreach ($servicos as $index => $s): ?>
-                            <?php $ativo = ((int) $s['status_ativo'] === 1); ?>
+                            <?php
+                                $ativo = ((int) $s['status_ativo'] === 1);
+                                $cat = $categoriaPorId[$s['id_categoria']] ?? [];
+                            ?>
                             <tr>
                                 <td class="col-id"><?= $index + 1 ?></td>
                                 <td><?= htmlspecialchars($s['nome_servico']) ?></td>
-                                <td><?= htmlspecialchars($s['nome_categoria']) ?></td>
+                                <td><?= htmlspecialchars($cat['nome_categoria'] ?? '') ?></td>
                                 <td><?= htmlspecialchars($s['desc_servico'] ?? '') ?></td>
                                 <td>R$ <?= number_format((float) $s['valor_base'], 2, ',', '.') ?></td>
                                 <td>
