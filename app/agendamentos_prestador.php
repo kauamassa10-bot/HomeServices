@@ -53,7 +53,7 @@ if ($aba === 'caminho') {
 $sql = "
     SELECT a.*,
            u.nome_usuario AS nome_cliente,
-           u.telefone_usuario AS telefone_cliente,
+           u.telefone AS telefone_cliente,
            s.desc_titulo,
            s.desc_endereco_atendimento,
            p.valor_proposta
@@ -65,6 +65,7 @@ $sql = "
       AND $condicaoStatus
     ORDER BY a.data_agendamento ASC, a.hora_agendamento ASC
 ";
+
 $stmt = $pdo->prepare($sql);
 $stmt->execute([':id' => $idPrestador]);
 $agendamentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -119,13 +120,12 @@ $agendamentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     ?>
                     <div class="agendamento-card <?= $bgCard ?>">
                         <div class="info-pedido">
-                            <h4>Pedido #<?= (int) $ag['id_agendamento'] ?> · <?= htmlspecialchars($ag['desc_titulo']) ?></h4>
-                            <p>Cliente: <?= htmlspecialchars($ag['nome_cliente']) ?> · Tel: <?= htmlspecialchars($ag['telefone_cliente'] ?? 'Não informado') ?></p>
-                            <p><?= htmlspecialchars($ag['desc_endereco_atendimento']) ?></p>
-                            <p>Data/Hora: <?= htmlspecialchars($dataFmt) ?> às <?= htmlspecialchars($horaFmt) ?></p>
-                            <p>Valor acordado: R$ <?= number_format((float) $ag['valor_proposta'], 2, ',', '.') ?></p>
-                        </div>
-
+                         <h4>Pedido #<?= (int) $ag['id_agendamento'] ?> · <?= htmlspecialchars($ag['desc_titulo']) ?></h4>
+                         <p>Cliente: <?= htmlspecialchars($ag['nome_cliente']) ?> · Tel: <?= htmlspecialchars($ag['telefone_cliente'] ?? 'Não informado') ?></p>
+                         <p><?= htmlspecialchars($ag['desc_endereco_atendimento']) ?></p>
+                         <p>Data/Hora: <?= htmlspecialchars($dataFmt) ?> às <?= htmlspecialchars($horaFmt) ?></p>
+                         <p>Valor acordado: R$ <?= number_format((float) $ag['valor_proposta'], 2, ',', '.') ?></p>
+                    </div>
                         <div class="acoes-pedido">
                             <div class="badge-status-top <?= $badgeCor ?>"><?= htmlspecialchars($st) ?></div>
                             <div class="titulo-status">Status do serviço</div>
