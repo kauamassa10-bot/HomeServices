@@ -1,7 +1,4 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
 
 /** @var PDO $pdo */
@@ -13,39 +10,28 @@ if (!isset($_SESSION['id_usuario'])) {
 
 $idUsuario = (int) $_SESSION['id_usuario'];
 
-// Busca dados reais do usuário e da categoria (se houver serviço cadastrado)
-$stmtUser = $pdo->prepare("
-    SELECT u.nome_usuario, u.email, u.telefone,
-           (SELECT c.nome_categoria
-            FROM servico s
-            INNER JOIN categoria c ON c.id_categoria = s.id_categoria
-            WHERE s.id_prestador = u.id_usuario
-            LIMIT 1) AS categoria_principal
-    FROM usuario u
-    WHERE u.id_usuario = :id
-");
-$stmtUser->execute([':id' => $idUsuario]);
-$dadosUsuario = $stmtUser->fetch(PDO::FETCH_ASSOC);
+// Busca dados do usuário com read() do CRUD
+$dadosUsuario = read($pdo, 'usuario', 'id_usuario = ?', [$idUsuario]) ?: [];
+
+// Busca categoria principal a partir do primeiro serviço cadastrado pelo usuário
+$servicosUsuario = readAll($pdo, 'servico', 'id_prestador = ?', [$idUsuario]);
+$categoriaPrincipal = 'Não definida';
+if (count($servicosUsuario) > 0) {
+    $cat = read($pdo, 'categoria', 'id_categoria = ?', [$servicosUsuario[0]['id_categoria']]);
+    if ($cat) {
+        $categoriaPrincipal = $cat['nome_categoria'];
+    }
+}
 
 $nomeCompleto = $dadosUsuario['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? 'Usuário');
-$emailUsuario = $dadosUsuario['email'] ?? 'Não informado';
+$emailUsuario = !empty($dadosUsuario['email']) ? $dadosUsuario['email'] : 'Não informado';
 $telefoneUsuario = !empty($dadosUsuario['telefone']) ? $dadosUsuario['telefone'] : 'Não informado';
-$categoriaPrincipal = !empty($dadosUsuario['categoria_principal']) ? $dadosUsuario['categoria_principal'] : 'Não definida';
+$iniciais = pegarIniciais($nomeCompleto);
 
-$partesNome = explode(' ', trim($nomeCompleto));
-$primeiroNome = $partesNome[0];
-$iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? substr($partesNome[1], 0, 1) : ''));
-
-// Busca avaliações reais recebidas por este usuário
-$stmtAval = $pdo->prepare("
-    SELECT a.numero_nota, a.desc_comentario, a.data_avaliacao, u.nome_usuario AS nome_avaliador
-    FROM avaliacao a
-    INNER JOIN usuario u ON u.id_usuario = a.id_avaliador
-    WHERE a.id_avaliado = :id
-    ORDER BY a.data_avaliacao DESC
-");
-$stmtAval->execute([':id' => $idUsuario]);
-$avaliacoes = $stmtAval->fetchAll(PDO::FETCH_ASSOC);
+// Busca avaliações recebidas usando readAll() do CRUD
+$avaliacoes = readAll($pdo, 'avaliacao', 'id_avaliado = ?', [$idUsuario]);
+$usuarios = readAll($pdo, 'usuario');
+$usuarioPorId = array_column($usuarios, null, 'id_usuario');
 
 $somaNotas = 0;
 foreach ($avaliacoes as $av) {
@@ -119,12 +105,13 @@ $notaMedia = count($avaliacoes) > 0 ? ($somaNotas / count($avaliacoes)) : 0;
                     <?php if (count($avaliacoes) > 0): ?>
                         <?php foreach ($avaliacoes as $av): ?>
                             <?php
+                                $avaliador = $usuarioPorId[$av['id_avaliador']] ?? [];
                                 $nota = (int) $av['numero_nota'];
                                 $estrelas = str_repeat('★', $nota) . str_repeat('☆', max(0, 5 - $nota));
                                 $dataAv = !empty($av['data_avaliacao']) ? date('d/m', strtotime($av['data_avaliacao'])) : '';
                             ?>
                             <div class="card-avaliacao">
-                                <div class="header-avaliacao"><?= $estrelas ?> (<?= $nota ?>/5) · <?= htmlspecialchars($av['nome_avaliador']) ?> · <?= $dataAv ?></div>
+                                <div class="header-avaliacao"><?= $estrelas ?> (<?= $nota ?>/5) · <?= htmlspecialchars($avaliador['nome_usuario'] ?? 'Cliente') ?> · <?= $dataAv ?></div>
                                 <p class="texto-avaliacao"><?= htmlspecialchars($av['desc_comentario'] ?? '') ?></p>
                             </div>
                         <?php endforeach; ?>

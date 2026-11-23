@@ -14,11 +14,11 @@ if (!in_array($tipo_usuario, ['ADMIN', 'PRESTADOR'])) {
 $mensagem = '';
 $isAdmin = ($tipo_usuario === 'ADMIN');
 
-$categorias = $pdo->query("SELECT id_categoria, nome_categoria FROM categoria WHERE status_ativo = 1 ORDER BY nome_categoria ASC")->fetchAll(PDO::FETCH_ASSOC);
+$categorias = readAll($pdo, 'categoria', 'status_ativo = ?', [1]);
 
 $prestadores = [];
 if ($isAdmin) {
-    $prestadores = $pdo->query("SELECT id_usuario, nome_usuario FROM usuario WHERE tipo_usuario = 'PRESTADOR' AND status_ativo = 1 ORDER BY nome_usuario ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $prestadores = readAll($pdo, 'usuario', 'tipo_usuario = ? AND status_ativo = ?', ['PRESTADOR', 1]);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,18 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $desc_servico = trim($_POST['desc_servico']);
     $valor_base = str_replace(',', '.', $_POST['valor_base']);
 
-    $sql = "INSERT INTO servico (id_prestador, id_categoria, nome_servico, desc_servico, valor_base, status_ativo) 
-            VALUES (:id_prestador, :id_categoria, :nome_servico, :desc_servico, :valor_base, 1)";
-
-    $stmt = $pdo->prepare($sql);
-
     try {
-        $stmt->execute([
-            ':id_prestador' => $id_prestador,
-            ':id_categoria' => $id_categoria,
-            ':nome_servico' => $nome_servico,
-            ':desc_servico' => $desc_servico,
-            ':valor_base' => $valor_base
+        create($pdo, 'servico', [
+            'id_prestador' => $id_prestador,
+            'id_categoria' => $id_categoria,
+            'nome_servico' => $nome_servico,
+            'desc_servico' => $desc_servico,
+            'valor_base'   => $valor_base,
+            'status_ativo' => 1,
         ]);
 
         if ($isAdmin) {
@@ -48,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: meus_servicos_lista.php?sucesso=servico_criado");
         }
         exit;
-    } catch (PDOException $e) {
+    } catch (Throwable $e) {
         $mensagem = "<div class='erro'>Erro ao cadastrar serviço: " . htmlspecialchars($e->getMessage()) . "</div>";
     }
 }

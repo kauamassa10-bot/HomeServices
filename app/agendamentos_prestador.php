@@ -1,7 +1,4 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
 
 /** @var PDO $pdo */
@@ -13,23 +10,22 @@ if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '
 
 $idPrestador = (int) $_SESSION['id_usuario'];
 $nomeCompleto = $_SESSION['nome_usuario'] ?? 'Profissional';
-$partesNome = explode(' ', trim($nomeCompleto));
-$primeiroNome = $partesNome[0];
-$iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? substr($partesNome[1], 0, 1) : ''));
+$iniciais = pegarIniciais($nomeCompleto);
 
-// Atualiza status quando o prestador clica em um dos botões
+// Atualiza status usando update() do CRUD
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_agendamento'], $_POST['novo_status'])) {
     $idAgendamento = (int) $_POST['id_agendamento'];
     $novoStatus = strtoupper(trim($_POST['novo_status']));
     $permitidos = ['CONFIRMADO', 'A_CAMINHO', 'EM_EXECUCAO', 'CONCLUIDO', 'CANCELADO'];
 
     if (in_array($novoStatus, $permitidos, true)) {
-        $stmtUpd = $pdo->prepare("UPDATE agendamento SET status_agendamento = :status WHERE id_agendamento = :id AND id_prestador = :prestador");
-        $stmtUpd->execute([
-            ':status' => $novoStatus,
-            ':id' => $idAgendamento,
-            ':prestador' => $idPrestador
-        ]);
+        update(
+            $pdo,
+            'agendamento',
+            ['status_agendamento' => $novoStatus],
+            'id_agendamento = ? AND id_prestador = ?',
+            [$idAgendamento, $idPrestador]
+        );
     }
     $abaAtual = $_GET['aba'] ?? 'abertos';
     header("Location: agendamentos_prestador.php?aba=" . urlencode($abaAtual));
@@ -38,37 +34,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_agendamento'], $_P
 
 $aba = $_GET['aba'] ?? 'abertos';
 
-// Filtro SQL por aba
-$condicaoStatus = "a.status_agendamento IN ('AGENDADO', 'PENDENTE', 'CONFIRMADO')";
-if ($aba === 'caminho') {
-    $condicaoStatus = "a.status_agendamento = 'A_CAMINHO'";
-} elseif ($aba === 'execucao') {
-    $condicaoStatus = "a.status_agendamento = 'EM_EXECUCAO'";
-} elseif ($aba === 'concluidos') {
-    $condicaoStatus = "a.status_agendamento = 'CONCLUIDO'";
-} elseif ($aba === 'cancelados') {
-    $condicaoStatus = "a.status_agendamento = 'CANCELADO'";
+$todosAgendamentos = readAll($pdo, 'agendamento', 'id_prestador = ?', [$idPrestador]);
+$usuarios = readAll($pdo, 'usuario');
+$usuarioPorId = array_column($usuarios, null, 'id_usuario');
+$solicitacoes = readAll($pdo, 'solicitacao');
+$solicitacaoPorId = array_column($solicitacoes, null, 'id_solicitacao');
+$propostas = readAll($pdo, 'proposta', 'id_prestador = ?', [$idPrestador]);
+$propostaPorId = array_column($propostas, null, 'id_proposta');
+
+$agendamentos = [];
+foreach ($todosAgendamentos as $ag) {
+    $st = strtoupper($ag['status_agendamento'] ?? '');
+    if ($aba === 'abertos' && in_array($st, ['AGENDADO', 'PENDENTE', 'CONFIRMADO'], true)) {
+        $agendamentos[] = $ag;
+    } elseif ($aba === 'caminho' && $st === 'A_CAMINHO') {
+        $agendamentos[] = $ag;
+    } elseif ($aba === 'execucao' && $st === 'EM_EXECUCAO') {
+        $agendamentos[] = $ag;
+    } elseif ($aba === 'concluidos' && $st === 'CONCLUIDO') {
+        $agendamentos[] = $ag;
+    } elseif ($aba === 'cancelados' && $st === 'CANCELADO') {
+        $agendamentos[] = $ag;
+    }
 }
 
-$sql = "
-    SELECT a.*,
-           u.nome_usuario AS nome_cliente,
-           u.telefone AS telefone_cliente,
-           s.desc_titulo,
-           s.desc_endereco_atendimento,
-           p.valor_proposta
-    FROM agendamento a
-    INNER JOIN usuario u ON u.id_usuario = a.id_cliente
-    INNER JOIN solicitacao s ON s.id_solicitacao = a.id_solicitacao
-    INNER JOIN proposta p ON p.id_proposta = a.id_proposta
-    WHERE a.id_prestador = :id
-      AND $condicaoStatus
-    ORDER BY a.data_agendamento ASC, a.hora_agendamento ASC
-";
-
-$stmt = $pdo->prepare($sql);
-$stmt->execute([':id' => $idPrestador]);
-$agendamentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+usort($agendamentos, static function (array $a, array $b): int {
+    return strcmp(($a['data_agendamento'] ?? '') . ($a['hora_agendamento'] ?? ''), ($b['data_agendamento'] ?? '') . ($b['hora_agendamento'] ?? ''));
+});
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -111,6 +103,9 @@ $agendamentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php if (count($agendamentos) > 0): ?>
                 <?php foreach ($agendamentos as $ag): ?>
                     <?php
+                        $cliente = $usuarioPorId[$ag['id_cliente']] ?? [];
+                        $solicitacao = $solicitacaoPorId[$ag['id_solicitacao']] ?? [];
+                        $proposta = $propostaPorId[$ag['id_proposta']] ?? [];
                         $st = strtoupper($ag['status_agendamento']);
                         $bgCard = ($st === 'EM_EXECUCAO' || $st === 'A_CAMINHO') ? 'bg-execucao' : 'bg-pendente';
                         $badgeCor = ($st === 'EM_EXECUCAO' || $st === 'A_CAMINHO') ? 'badge-azul' : 'badge-laranja';
@@ -119,12 +114,12 @@ $agendamentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     ?>
                     <div class="agendamento-card <?= $bgCard ?>">
                         <div class="info-pedido">
-                         <h4>Pedido #<?= (int) $ag['id_agendamento'] ?> · <?= htmlspecialchars($ag['desc_titulo']) ?></h4>
-                         <p>Cliente: <?= htmlspecialchars($ag['nome_cliente']) ?> · Tel: <?= htmlspecialchars($ag['telefone_cliente'] ?? 'Não informado') ?></p>
-                         <p><?= htmlspecialchars($ag['desc_endereco_atendimento']) ?></p>
-                         <p>Data/Hora: <?= htmlspecialchars($dataFmt) ?> às <?= htmlspecialchars($horaFmt) ?></p>
-                         <p>Valor acordado: R$ <?= number_format((float) $ag['valor_proposta'], 2, ',', '.') ?></p>
-                    </div>
+                            <h4>Pedido #<?= (int) $ag['id_agendamento'] ?> · <?= htmlspecialchars($solicitacao['desc_titulo'] ?? '') ?></h4>
+                            <p>Cliente: <?= htmlspecialchars($cliente['nome_usuario'] ?? 'Cliente') ?> · Tel: <?= htmlspecialchars($cliente['telefone'] ?? 'Não informado') ?></p>
+                            <p><?= htmlspecialchars($solicitacao['desc_endereco_atendimento'] ?? '') ?></p>
+                            <p>Data/Hora: <?= htmlspecialchars($dataFmt) ?> às <?= htmlspecialchars($horaFmt) ?></p>
+                            <p>Valor acordado: R$ <?= number_format((float) ($proposta['valor_proposta'] ?? 0), 2, ',', '.') ?></p>
+                        </div>
                         <div class="acoes-pedido">
                             <div class="badge-status-top <?= $badgeCor ?>"><?= htmlspecialchars($st) ?></div>
                             <div class="titulo-status">Status do serviço</div>
