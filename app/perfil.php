@@ -15,7 +15,7 @@ $idUsuario = (int) $_SESSION['id_usuario'];
 
 // Busca dados reais do usuário e da categoria (se houver serviço cadastrado)
 $stmtUser = $pdo->prepare("
-    SELECT u.nome_usuario, u.email_usuario, u.telefone_usuario,
+    SELECT u.nome_usuario, u.email, u.telefone,
            (SELECT c.nome_categoria
             FROM servico s
             INNER JOIN categoria c ON c.id_categoria = s.id_categoria
@@ -28,8 +28,8 @@ $stmtUser->execute([':id' => $idUsuario]);
 $dadosUsuario = $stmtUser->fetch(PDO::FETCH_ASSOC);
 
 $nomeCompleto = $dadosUsuario['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? 'Usuário');
-$emailUsuario = $dadosUsuario['email_usuario'] ?? 'Não informado';
-$telefoneUsuario = !empty($dadosUsuario['telefone_usuario']) ? $dadosUsuario['telefone_usuario'] : 'Não informado';
+$emailUsuario = $dadosUsuario['email'] ?? 'Não informado';
+$telefoneUsuario = !empty($dadosUsuario['telefone']) ? $dadosUsuario['telefone'] : 'Não informado';
 $categoriaPrincipal = !empty($dadosUsuario['categoria_principal']) ? $dadosUsuario['categoria_principal'] : 'Não definida';
 
 $partesNome = explode(' ', trim($nomeCompleto));
