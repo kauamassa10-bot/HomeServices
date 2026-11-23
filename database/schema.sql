@@ -88,3 +88,12 @@ create table  if not exists avaliacao(
     foreign key (id_avaliador ) references usuario(id_usuario),
     foreign key (id_avaliado) references usuario(id_usuario)
 );
+
+USE HomeServices;
+
+
+ALTER TABLE solicitacao MODIFY id_solicitacao BIGINT NOT NULL AUTO_INCREMENT;
+ALTER TABLE proposta MODIFY id_proposta BIGINT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE solicitacao ADD COLUMN id_prestador BIGINT NULL AFTER id_cliente;
+ALTER TABLE solicitacao ADD CONSTRAINT fk_solicitacao_prestador FOREIGN KEY (id_prestador) REFERENCES usuario(id_usuario);
