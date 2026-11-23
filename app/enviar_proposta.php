@@ -1,20 +1,76 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
 
-// Verifica se está logado e se é prestador
 if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'PRESTADOR') {
-    header("Location: login_profissional.php?erro=acesso_negado");
+    header('Location: login_profissional.php?erro=acesso_negado');
     exit;
 }
 
-// Extrair o nome e as iniciais para o cabeçalho
-$nomeCompleto = $_SESSION['nome_usuario'] ?? 'Profissional';
-$partesNome = explode(' ', trim($nomeCompleto));
-$primeiroNome = $partesNome[0];
-$iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? substr($partesNome[1], 0, 1) : ''));
+$idPrestador = (int) $_SESSION['id_usuario'];
+$nomeCompleto = $_SESSION['nome_usuario'] ?? '';
+$iniciais = pegarIniciais($nomeCompleto);
+
+$idSolicitacao = (int) ($_POST['id_solicitacao'] ?? $_GET['id_solicitacao'] ?? 0);
+$solicitacao = $idSolicitacao > 0
+    ? read($pdo, 'solicitacao', 'id_solicitacao = ? AND id_prestador = ?', [$idSolicitacao, $idPrestador])
+    : false;
+
+$mensagem = '';
+$valorInformado = $_POST['valor_proposta'] ?? '';
+$descricaoInformada = $_POST['descricao_proposta'] ?? '';
+$podeEnviar = $solicitacao && strtoupper((string) $solicitacao['status_solicitacao']) === 'ABERTA';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!$solicitacao) {
+        $mensagem = 'Solicitação não encontrada para este profissional.';
+    } elseif (!$podeEnviar) {
+        $mensagem = 'Esta solicitação já recebeu uma proposta.';
+    } else {
+        $valorBruto = trim(str_replace(['R$', ' '], '', $valorInformado));
+        if (str_contains($valorBruto, ',')) {
+            $valorBruto = str_replace('.', '', $valorBruto);
+            $valorBruto = str_replace(',', '.', $valorBruto);
+        }
+        $valor = (float) $valorBruto;
+        $descricao = trim($descricaoInformada);
+        $jaExiste = read($pdo, 'proposta', 'id_solicitacao = ? AND id_prestador = ?', [$idSolicitacao, $idPrestador]);
+
+        if ($valor <= 0 || $descricao === '') {
+            $mensagem = 'Informe um valor maior que zero e a descrição da proposta.';
+        } elseif ($jaExiste) {
+            $mensagem = 'Você já enviou uma proposta para esta solicitação.';
+            $podeEnviar = false;
+        } else {
+            try {
+                $pdo->beginTransaction();
+                create($pdo, 'proposta', [
+                    'id_solicitacao' => $idSolicitacao,
+                    'id_prestador' => $idPrestador,
+                    'valor_proposta' => number_format($valor, 2, '.', ''),
+                    'desc_proposta' => $descricao,
+                    'status_proposta' => 'ENVIADA',
+                    'data_proposta' => date('Y-m-d'),
+                ]);
+                update(
+                    $pdo,
+                    'solicitacao',
+                    ['status_solicitacao' => 'EM_ORCAMENTO'],
+                    'id_solicitacao = ? AND id_prestador = ?',
+                    [$idSolicitacao, $idPrestador]
+                );
+                $pdo->commit();
+
+                header('Location: mural_solicitacoes.php');
+                exit;
+            } catch (Throwable $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+                $mensagem = 'Não foi possível enviar a proposta. Tente novamente.';
+            }
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -22,7 +78,6 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enviar Proposta - HomeServices</title>
-    <!-- Inclui o estilo do cabeçalho global do dashboard e o específico desta página -->
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/proposta.css">
 </head>
@@ -31,13 +86,14 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
     <header class="dashboard-header">
         <div class="dashboard-logo">HomeServices</div>
         <nav class="dashboard-nav">
-            <a href="mural_solicitacoes.php">Solicitações</a>
-            <a href="agendamentos_prestador.php" class="active">Meus Agendamentos</a>
+            <a href="dashboard_prestador.php">Visão Geral</a>
+            <a href="mural_solicitacoes.php" class="active">Solicitações</a>
+            <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
             <a href="perfil.php">Perfil</a>
         </nav>
-        <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
-            <?= htmlspecialchars($iniciais) ?>
+        <div class="avatar" title="<?= htmlspecialchars($nomeCompleto, ENT_QUOTES, 'UTF-8') ?>">
+            <?= htmlspecialchars($iniciais, ENT_QUOTES, 'UTF-8') ?>
         </div>
     </header>
 
@@ -45,31 +101,52 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
         <div class="card-form-proposta">
             <h2>Enviar Proposta</h2>
 
-            <!-- Resumo do Pedido -->
-            <div class="resumo-solicitacao">
-                <strong>Troca de tomadas da cozinha</strong>
-                <p>Tomadas queimando, preciso trocar 4 unidades.</p>
-                <p>Endereço: Rua Verde, 45, Vila Mariana, São Paulo</p>
-            </div>
-
-            <!-- Formulário -->
-            <form action="#" method="POST">
-                
-                <div class="form-group">
-                    <label for="valor_proposta">Valor da Proposta (R$)</label>
-                    <input type="text" id="valor_proposta" name="valor_proposta" class="form-control" placeholder="R$ 0,00" required>
+            <?php if (!$solicitacao): ?>
+                <div class="resumo-solicitacao">
+                    <strong>Solicitação não encontrada</strong>
+                    <p>Abra uma solicitação aberta pelo mural.</p>
                 </div>
-
-                <div class="form-group">
-                    <label for="descricao_proposta">Descrição da Proposta / O que está incluso</label>
-                    <textarea id="descricao_proposta" name="descricao_proposta" class="form-control" placeholder="Ex: materiais, garantia, tempo estimado" required></textarea>
-                </div>
-
                 <div class="botoes-acao">
-                    <a href="mural_solicitacoes.php" class="btn-cancelar">Cancelar</a>
-                    <button type="submit" class="btn-enviar-proposta">Enviar Proposta ao Cliente</button>
+                    <a href="mural_solicitacoes.php" class="btn-cancelar">Voltar ao mural</a>
                 </div>
-            </form>
+            <?php else: ?>
+                <div class="resumo-solicitacao">
+                    <strong><?= htmlspecialchars($solicitacao['desc_titulo'], ENT_QUOTES, 'UTF-8') ?></strong>
+                    <p><?= htmlspecialchars($solicitacao['desc_solicitacao'], ENT_QUOTES, 'UTF-8') ?></p>
+                    <p>Endereço: <?= htmlspecialchars($solicitacao['desc_endereco_atendimento'], ENT_QUOTES, 'UTF-8') ?></p>
+                </div>
+
+                <?php if ($mensagem !== ''): ?>
+                    <div class="resumo-solicitacao">
+                        <p><?= htmlspecialchars($mensagem, ENT_QUOTES, 'UTF-8') ?></p>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($podeEnviar): ?>
+                    <form action="" method="POST">
+                        <input type="hidden" name="id_solicitacao" value="<?= (int) $solicitacao['id_solicitacao'] ?>">
+
+                        <div class="form-group">
+                            <label for="valor_proposta">Valor da Proposta (R$)</label>
+                            <input type="text" id="valor_proposta" name="valor_proposta" class="form-control" placeholder="R$ 0,00" value="<?= htmlspecialchars($valorInformado, ENT_QUOTES, 'UTF-8') ?>" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="descricao_proposta">Descrição da Proposta / O que está incluso</label>
+                            <textarea id="descricao_proposta" name="descricao_proposta" class="form-control" placeholder="Ex: materiais, garantia, tempo estimado" required><?= htmlspecialchars($descricaoInformada, ENT_QUOTES, 'UTF-8') ?></textarea>
+                        </div>
+
+                        <div class="botoes-acao">
+                            <a href="mural_solicitacoes.php" class="btn-cancelar">Cancelar</a>
+                            <button type="submit" class="btn-enviar-proposta">Enviar Proposta ao Cliente</button>
+                        </div>
+                    </form>
+                <?php else: ?>
+                    <div class="botoes-acao">
+                        <a href="mural_solicitacoes.php" class="btn-cancelar">Voltar ao mural</a>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
         </div>
     </main>
 
