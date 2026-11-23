@@ -73,10 +73,9 @@ $notaMedia = count($avaliacoes) > 0 ? ($somaNotas / count($avaliacoes)) : 0;
             <a href="mural_solicitacoes.php">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
-            <a href="perfil.php" class="active">Perfil</a>
         </nav>
         <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
-            <?= htmlspecialchars($iniciais) ?>
+            <a href="perfil.php"><?= htmlspecialchars($iniciais) ?></a>
         </div>
     </header>
 
