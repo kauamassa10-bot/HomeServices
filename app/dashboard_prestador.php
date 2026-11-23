@@ -1,7 +1,4 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
 
 if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'PRESTADOR') {
@@ -161,6 +158,8 @@ usort($proximosAgendamentos, function ($a, $b) {
                 <?php if (count($proximosAgendamentos) > 0): ?>
                     <?php foreach ($proximosAgendamentos as $ag): ?>
                         <?php
+                            $cliente = $usuarioPorId[$ag['id_cliente']] ?? [];
+                            $solicitacao = $solicitacaoPorId[$ag['id_solicitacao']] ?? [];
                             $dataFormatada = date('d/m', strtotime($ag['data_agendamento']));
                             $horaFormatada = substr($ag['hora_agendamento'], 0, 5);
                             $status = strtoupper($ag['status_agendamento']);
@@ -178,8 +177,8 @@ usort($proximosAgendamentos, function ($a, $b) {
                         <div class="agendamento-item">
                             <div class="agendamento-info">
                                 <strong><?= htmlspecialchars($dataFormatada) ?> · <?= htmlspecialchars($horaFormatada) ?></strong>
-                                <span>Cliente: <?= htmlspecialchars($ag['nome_cliente']) ?></span>
-                                <span><?= htmlspecialchars($ag['desc_endereco_atendimento']) ?></span>
+                                <span>Cliente: <?= htmlspecialchars($cliente['nome_usuario'] ?? 'Cliente') ?></span>
+                                <span><?= htmlspecialchars($solicitacao['desc_endereco_atendimento'] ?? '') ?></span>
                             </div>
                             <div class="agendamento-acoes">
                                 <span class="badge <?= $classeBadge ?>"><?= $textoBadge ?></span>
