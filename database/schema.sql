@@ -97,3 +97,7 @@ ALTER TABLE proposta MODIFY id_proposta BIGINT NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE solicitacao ADD COLUMN id_prestador BIGINT NULL AFTER id_cliente;
 ALTER TABLE solicitacao ADD CONSTRAINT fk_solicitacao_prestador FOREIGN KEY (id_prestador) REFERENCES usuario(id_usuario);
+
+ALTER TABLE servico MODIFY id_servico BIGINT NOT NULL AUTO_INCREMENT;
+ALTER TABLE avaliacao MODIFY id_avaliacao BIGINT NOT NULL AUTO_INCREMENT;
+
