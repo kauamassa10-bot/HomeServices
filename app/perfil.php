@@ -4,22 +4,54 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/init.php';
 
-// Verifica se está logado
+/** @var PDO $pdo */
+
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login_profissional.php?erro=acesso_negado");
     exit;
 }
 
-// Dados do utilizador (a puxar da sessão ou base de dados no futuro)
-$nomeCompleto = $_SESSION['nome_usuario'] ?? 'João da Silva';
-$emailUsuario = $_SESSION['email_usuario'] ?? 'joao@email.com';
-$telefoneUsuario = '(11) 96666-0000'; // Exemplo
-$categoriaPrincipal = 'Elétrica'; // Exemplo
+$idUsuario = (int) $_SESSION['id_usuario'];
 
-// Iniciais para o Avatar
+// Busca dados reais do usuário e da categoria (se houver serviço cadastrado)
+$stmtUser = $pdo->prepare("
+    SELECT u.nome_usuario, u.email_usuario, u.telefone_usuario,
+           (SELECT c.nome_categoria
+            FROM servico s
+            INNER JOIN categoria c ON c.id_categoria = s.id_categoria
+            WHERE s.id_prestador = u.id_usuario
+            LIMIT 1) AS categoria_principal
+    FROM usuario u
+    WHERE u.id_usuario = :id
+");
+$stmtUser->execute([':id' => $idUsuario]);
+$dadosUsuario = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+$nomeCompleto = $dadosUsuario['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? 'Usuário');
+$emailUsuario = $dadosUsuario['email_usuario'] ?? 'Não informado';
+$telefoneUsuario = !empty($dadosUsuario['telefone_usuario']) ? $dadosUsuario['telefone_usuario'] : 'Não informado';
+$categoriaPrincipal = !empty($dadosUsuario['categoria_principal']) ? $dadosUsuario['categoria_principal'] : 'Não definida';
+
 $partesNome = explode(' ', trim($nomeCompleto));
 $primeiroNome = $partesNome[0];
 $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? substr($partesNome[1], 0, 1) : ''));
+
+// Busca avaliações reais recebidas por este usuário
+$stmtAval = $pdo->prepare("
+    SELECT a.numero_nota, a.desc_comentario, a.data_avaliacao, u.nome_usuario AS nome_avaliador
+    FROM avaliacao a
+    INNER JOIN usuario u ON u.id_usuario = a.id_avaliador
+    WHERE a.id_avaliado = :id
+    ORDER BY a.data_avaliacao DESC
+");
+$stmtAval->execute([':id' => $idUsuario]);
+$avaliacoes = $stmtAval->fetchAll(PDO::FETCH_ASSOC);
+
+$somaNotas = 0;
+foreach ($avaliacoes as $av) {
+    $somaNotas += (int) $av['numero_nota'];
+}
+$notaMedia = count($avaliacoes) > 0 ? ($somaNotas / count($avaliacoes)) : 0;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -53,7 +85,6 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
 
         <div class="perfil-container">
 
-            <!-- Coluna Esquerda: Dados do Perfil -->
             <aside class="card-perfil">
                 <div class="avatar-grande">
                     <?= htmlspecialchars($iniciais) ?>
@@ -82,27 +113,25 @@ $iniciais = strtoupper(substr($primeiroNome, 0, 1) . (isset($partesNome[1]) ? su
                 <a href="#" class="btn-editar-perfil">Editar Perfil</a>
             </aside>
 
-            <!-- Coluna Direita: Avaliações -->
             <section class="avaliacoes-section">
-                <h3>Avaliações recebidas · Nota média 4,8</h3>
+                <h3>Avaliações recebidas · Nota média <?= number_format($notaMedia, 1, ',', '.') ?></h3>
 
                 <div class="lista-avaliacoes">
-
-                    <div class="card-avaliacao">
-                        <div class="header-avaliacao">★★★★★ (5/5) · Maria Souza · 05/11</div>
-                        <p class="texto-avaliacao">Profissional pontual e muito cuidadoso. Recomendo.</p>
-                    </div>
-
-                    <div class="card-avaliacao">
-                        <div class="header-avaliacao">★★★★☆ (4/5) · Carlos Lima · 28/10</div>
-                        <p class="texto-avaliacao">Bom serviço, terminou um pouco depois do combinado.</p>
-                    </div>
-
-                    <div class="card-avaliacao">
-                        <div class="header-avaliacao">★★★★★ (5/5) · Ana Paula · 20/10</div>
-                        <p class="texto-avaliacao">Resolveu o problema rápido e explicou tudo.</p>
-                    </div>
-
+                    <?php if (count($avaliacoes) > 0): ?>
+                        <?php foreach ($avaliacoes as $av): ?>
+                            <?php
+                                $nota = (int) $av['numero_nota'];
+                                $estrelas = str_repeat('★', $nota) . str_repeat('☆', max(0, 5 - $nota));
+                                $dataAv = !empty($av['data_avaliacao']) ? date('d/m', strtotime($av['data_avaliacao'])) : '';
+                            ?>
+                            <div class="card-avaliacao">
+                                <div class="header-avaliacao"><?= $estrelas ?> (<?= $nota ?>/5) · <?= htmlspecialchars($av['nome_avaliador']) ?> · <?= $dataAv ?></div>
+                                <p class="texto-avaliacao"><?= htmlspecialchars($av['desc_comentario'] ?? '') ?></p>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p style="color: #666; padding: 15px 0;">Nenhuma avaliação recebida ainda.</p>
+                    <?php endif; ?>
                 </div>
             </section>
 
