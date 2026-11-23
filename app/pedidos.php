@@ -116,13 +116,13 @@ try {
                             <td><strong><?= htmlspecialchars($pedido['desc_titulo']) ?></strong></td>
                             <td><?= htmlspecialchars($pedido['desc_solicitacao']) ?></td>
                             <td><?= htmlspecialchars($pedido['desc_endereco_atendimento']) ?></td>
-                            <td><?= date('d/m/Y', strtotime($pedido['data_solicitacao'])) ?></td>
+                            <td><?= !empty($pedido['data_solicitacao']) ? date('d/m/Y', strtotime($pedido['data_solicitacao'])) : '—' ?></td>
                             <td><?= htmlspecialchars(ucfirst($pedido['status_solicitacao'])) ?></td>
                             
                             <!-- Botão que envia o ID do agendamento pela URL -->
                             <td>
                                 <?php if (!empty($pedido['id_agendamento'])): ?>
-                                    <a href="acompanhar_pedido.php?id=<?= $pedido['id_agendamento'] ?>" class="btn-solido" style="padding: 6px 12px; font-size: 0.85rem; text-decoration: none; border-radius: 4px;">Acompanhar</a>
+                                    <button><a href="acompanhar_pedido.php?id=<?= $pedido['id_agendamento'] ?>" class="btn-solido">Acompanhar</a></button>
                                 <?php else: ?>
                                     <span style="font-size: 0.85rem; color: #888; font-style: italic;">Aguardando Profissional</span>
                                 <?php endif; ?>

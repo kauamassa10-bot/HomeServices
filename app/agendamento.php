@@ -6,12 +6,34 @@ if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '
     exit;
 }
 
-$idCliente = (int) $_SESSION['id_usuario'];
+$idCliente  = (int) $_SESSION['id_usuario'];
 $idProposta = (int) ($_POST['id_proposta'] ?? $_GET['id_proposta'] ?? 0);
-$proposta = $idProposta > 0 ? read($pdo, 'proposta', 'id_proposta = ?', [$idProposta]) : false;
+
+// Sem id na URL: usa a proposta pendente mais recente do cliente
+if ($idProposta === 0) {
+    $minhasSolicitacoes = readAll($pdo, 'solicitacao', 'id_cliente = ?', [$idCliente]);
+
+    if ($minhasSolicitacoes !== []) {
+        $ids = array_column($minhasSolicitacoes, 'id_solicitacao');
+        $marcadores = implode(', ', array_fill(0, count($ids), '?'));
+        $pendentes = readAll(
+            $pdo,
+            'proposta',
+            "id_solicitacao IN ({$marcadores}) AND status_proposta = ?",
+            [...$ids, 'ENVIADA']
+        );
+
+        if ($pendentes !== []) {
+            usort($pendentes, static fn (array $a, array $b): int => (int) $b['id_proposta'] <=> (int) $a['id_proposta']);
+            $idProposta = (int) $pendentes[0]['id_proposta'];
+        }
+    }
+}
+
+$proposta    = $idProposta > 0 ? read($pdo, 'proposta', 'id_proposta = ?', [$idProposta]) : false;
 $solicitacao = $proposta ? read($pdo, 'solicitacao', 'id_solicitacao = ?', [$proposta['id_solicitacao']]) : false;
-$prestador = $proposta ? read($pdo, 'usuario', 'id_usuario = ?', [$proposta['id_prestador']]) : false;
-$cliente = read($pdo, 'usuario', 'id_usuario = ?', [$idCliente]);
+$prestador   = $proposta ? read($pdo, 'usuario', 'id_usuario = ?', [$proposta['id_prestador']]) : false;
+$cliente     = read($pdo, 'usuario', 'id_usuario = ?', [$idCliente]);
 
 $propostaDoCliente = $proposta
     && $solicitacao
@@ -24,60 +46,54 @@ $propostaDoCliente = $proposta
     );
 
 if (!$propostaDoCliente) {
-    header('Location: buscar.php');
+    header('Location: pedidos.php');
     exit;
 }
 
 $iniciaisAvatar = pegarIniciais($cliente['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? ''));
-$mensagem = '';
+$mensagem   = '';
 $jaAgendado = read($pdo, 'agendamento', 'id_proposta = ?', [$idProposta]);
 $podeAgendar = strtoupper((string) $proposta['status_proposta']) === 'ENVIADA' && !$jaAgendado;
 
-$dataForm = trim((string) ($_POST['data_agendamento'] ?? $solicitacao['data_solicitacao']));
-$horaForm = trim((string) ($_POST['hora_agendamento'] ?? ''));
-$observacoesForm = $_POST['observacoes'] ?? '';
+$dataForm        = trim((string) ($_POST['data_agendamento'] ?? ($solicitacao['data_solicitacao'] ?? '')));
+$horaForm        = trim((string) ($_POST['hora_agendamento'] ?? ''));
+$observacoesForm = (string) ($_POST['observacoes'] ?? '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $podeAgendar) {
-    $dataValida = DateTime::createFromFormat('Y-m-d', (string) $dataForm);
-    $horaValida = DateTime::createFromFormat('H:i', substr((string) $horaForm, 0, 5));
+    $dataValida = DateTime::createFromFormat('Y-m-d', $dataForm);
+    $horaValida = DateTime::createFromFormat('H:i', substr($horaForm, 0, 5));
 
     if (!$dataValida || $dataValida->format('Y-m-d') !== $dataForm || !$horaValida) {
         $mensagem = 'Escolha a data e o horário do atendimento.';
+    } elseif ($dataForm < date('Y-m-d')) {
+        $mensagem = 'A data do atendimento não pode estar no passado.';
     } else {
         try {
-            $pdo->beginTransaction();
             $idAgendamento = create($pdo, 'agendamento', [
-                'id_solicitacao' => $solicitacao['id_solicitacao'],
-                'id_proposta' => $proposta['id_proposta'],
-                'id_cliente' => $idCliente,
-                'id_prestador' => $proposta['id_prestador'],
-                'data_agendamento' => $dataValida->format('Y-m-d'),
-                'hora_agendamento' => $horaValida->format('H:i'),
-                'observacoes' => trim($observacoesForm),
+                'id_solicitacao'     => $solicitacao['id_solicitacao'],
+                'id_proposta'        => $proposta['id_proposta'],
+                'id_cliente'         => $idCliente,
+                'id_prestador'       => $proposta['id_prestador'],
+                'data_agendamento'   => $dataValida->format('Y-m-d'),
+                'hora_agendamento'   => $horaValida->format('H:i'),
+                'observacoes'        => trim($observacoesForm),
                 'status_agendamento' => 'AGENDADO',
-                'data_criacao' => date('Y-m-d'),
+                'data_criacao'       => date('Y-m-d'),
             ]);
-            update(
-                $pdo,
-                'proposta',
-                ['status_proposta' => 'ACEITA'],
-                'id_proposta = ?',
-                [$proposta['id_proposta']]
-            );
-            $pdo->commit();
+
+            update($pdo, 'proposta', ['status_proposta' => 'ACEITA'], 'id_proposta = ?', [$proposta['id_proposta']]);
+            update($pdo, 'solicitacao', ['status_solicitacao' => 'AGENDADA'], 'id_solicitacao = ?', [$solicitacao['id_solicitacao']]);
 
             header('Location: acompanhar_pedido.php?id=' . urlencode((string) $idAgendamento));
             exit;
         } catch (Throwable $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            error_log('Erro ao agendar: ' . $e->getMessage());
             $mensagem = 'Não foi possível confirmar o agendamento. Tente novamente.';
         }
     }
 }
 
-$dataDesejada = $solicitacao['data_solicitacao']
+$dataDesejada = !empty($solicitacao['data_solicitacao'])
     ? date('d/m/Y', strtotime($solicitacao['data_solicitacao']))
     : '';
 ?>
@@ -118,7 +134,7 @@ $dataDesejada = $solicitacao['data_solicitacao']
             <p class="titulo">Este serviço já foi agendado.</p>
             <a href="acompanhar_pedido.php?id=<?= (int) $jaAgendado['id_agendamento'] ?>" class="botao">Acompanhar pedido</a>
         <?php elseif (!$podeAgendar): ?>
-            <p class="titulo">Esta proposta não está disponível para agendamento. Status: <?= htmlspecialchars($proposta['status_proposta'], ENT_QUOTES, 'UTF-8') ?></p>
+            <p class="titulo">Esta proposta não está disponível para agendamento. Status: <?= htmlspecialchars((string) $proposta['status_proposta'], ENT_QUOTES, 'UTF-8') ?></p>
             <a href="buscar.php" class="botao">Voltar para a busca</a>
         <?php else: ?>
             <form action="" method="POST">
@@ -127,10 +143,10 @@ $dataDesejada = $solicitacao['data_solicitacao']
                 <div class="bloco bloco-agendamento">
                     <div class="caixa selecao-tempo">
                         <h3>1. Escolha a Data</h3>
-                        <input type="date" name="data_agendamento" class="campo-texto" required value="<?= htmlspecialchars((string) $dataForm, ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="date" name="data_agendamento" class="campo-texto" required min="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($dataForm, ENT_QUOTES, 'UTF-8') ?>">
 
                         <h3 class="mt-40">2. Escolha o Horário</h3>
-                        <input type="time" name="hora_agendamento" class="campo-texto" required value="<?= htmlspecialchars(substr((string) $horaForm, 0, 5), ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="time" name="hora_agendamento" class="campo-texto" required value="<?= htmlspecialchars(substr($horaForm, 0, 5), ENT_QUOTES, 'UTF-8') ?>">
 
                         <h3 class="mt-40">3. Observações</h3>
                         <textarea name="observacoes" class="campo-texto" placeholder="Instruções para o profissional..."><?= htmlspecialchars($observacoesForm, ENT_QUOTES, 'UTF-8') ?></textarea>
@@ -149,12 +165,14 @@ $dataDesejada = $solicitacao['data_solicitacao']
                             </div>
                             <div class="item-resumo">
                                 <span>Endereço</span>
-                                <strong><?= htmlspecialchars($solicitacao['desc_endereco_atendimento'], ENT_QUOTES, 'UTF-8') ?></strong>
+                                <strong><?= htmlspecialchars((string) $solicitacao['desc_endereco_atendimento'], ENT_QUOTES, 'UTF-8') ?></strong>
                             </div>
-                            <div class="item-resumo">
-                                <span>Data desejada</span>
-                                <strong class="destaque-verde"><?= htmlspecialchars($dataDesejada, ENT_QUOTES, 'UTF-8') ?></strong>
-                            </div>
+                            <?php if ($dataDesejada !== ''): ?>
+                                <div class="item-resumo">
+                                    <span>Data desejada</span>
+                                    <strong class="destaque-verde"><?= htmlspecialchars($dataDesejada, ENT_QUOTES, 'UTF-8') ?></strong>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="divisor-resumo"></div>
