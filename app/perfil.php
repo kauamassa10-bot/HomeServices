@@ -95,7 +95,8 @@ $notaMedia = count($avaliacoes) > 0 ? ($somaNotas / count($avaliacoes)) : 0;
                     <p><?= htmlspecialchars($categoriaPrincipal) ?></p>
                 </div>
 
-                <a href="#" class="btn-editar-perfil">Editar Perfil</a>
+                <button class="btn-editar" onclick="window.location.href='editar_perfil.php'">Editar Perfil</button>
+                <button class="btn-logout" onclick="window.location.href='logout.php'">Sair</button>
             </aside>
 
             <section class="avaliacoes-section">

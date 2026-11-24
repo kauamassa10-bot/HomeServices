@@ -91,19 +91,6 @@ foreach ($listaAgendamentos as $agendamento) {
 usort($proximosAgendamentos, function ($a, $b) {
     return strcmp($a['data_agendamento'] . $a['hora_agendamento'], $b['data_agendamento'] . $b['hora_agendamento']);
 });
-
-    // Mesmas chaves que o HTML já usa
-    $agendamento['nome_cliente'] = '';
-    if ($cliente) {
-        $agendamento['nome_cliente'] = $cliente['nome_usuario'];
-    }
-
-    $agendamento['desc_endereco_atendimento'] = '';
-    if ($solicitacao) {
-        $agendamento['desc_endereco_atendimento'] = $solicitacao['desc_endereco_atendimento'];
-    }
-
-    $proximosAgendamentos[] = $agendamento;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -158,8 +145,6 @@ usort($proximosAgendamentos, function ($a, $b) {
                 <?php if (count($proximosAgendamentos) > 0): ?>
                     <?php foreach ($proximosAgendamentos as $ag): ?>
                         <?php
-                            $cliente = $usuarioPorId[$ag['id_cliente']] ?? [];
-                            $solicitacao = $solicitacaoPorId[$ag['id_solicitacao']] ?? [];
                             $dataFormatada = date('d/m', strtotime($ag['data_agendamento']));
                             $horaFormatada = substr($ag['hora_agendamento'], 0, 5);
                             $status = strtoupper($ag['status_agendamento']);
@@ -177,8 +162,8 @@ usort($proximosAgendamentos, function ($a, $b) {
                         <div class="agendamento-item">
                             <div class="agendamento-info">
                                 <strong><?= htmlspecialchars($dataFormatada) ?> · <?= htmlspecialchars($horaFormatada) ?></strong>
-                                <span>Cliente: <?= htmlspecialchars($cliente['nome_usuario'] ?? 'Cliente') ?></span>
-                                <span><?= htmlspecialchars($solicitacao['desc_endereco_atendimento'] ?? '') ?></span>
+                                <span>Cliente: <?= htmlspecialchars($ag['nome_cliente'] ?? 'Cliente') ?></span>
+                                <span><?= htmlspecialchars($ag['desc_endereco_atendimento'] ?? '') ?></span>
                             </div>
                             <div class="agendamento-acoes">
                                 <span class="badge <?= $classeBadge ?>"><?= $textoBadge ?></span>
@@ -187,7 +172,7 @@ usort($proximosAgendamentos, function ($a, $b) {
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <p>Nenhum agendamento próximo no momento.</p>
+                    <p style="color: #666; padding: 15px 0;">Nenhum agendamento próximo no momento.</p>
                 <?php endif; ?>
             </div>
         </div>
