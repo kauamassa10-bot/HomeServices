@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS HomeServices;
+
 CREATE DATABASE HomeServices;
 
 USE HomeServices;
@@ -89,3 +89,6 @@ CREATE TABLE IF NOT EXISTS avaliacao (
     FOREIGN KEY (id_avaliador) REFERENCES usuario(id_usuario),
     FOREIGN KEY (id_avaliado) REFERENCES usuario(id_usuario)
 );
+
+UPDATE servico SET id_servico = 503 WHERE id_servico = 0;
+ALTER TABLE servico MODIFY id_servico BIGINT NOT NULL AUTO_INCREMENT;
