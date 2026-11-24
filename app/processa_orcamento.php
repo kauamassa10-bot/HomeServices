@@ -65,5 +65,4 @@ try {
     exit;
 }
 
-header('Location: agendamento.php?id_proposta=' . urlencode((string) $idProposta));
-exit;
+header('Location: buscar.php');
