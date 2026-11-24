@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --laranja: #ec7a46;
+    --laranja-escuro: #d66532;
+    --turquesa: #33ad98;
+    --turquesa-escuro: #227a6b;
+    --turquesa-claro: #e6f5f2;
+    --cinza: #575757;
+    --azure: #225b75;
+    --fundo: #f3f7f9;
+    --borda: #e2e8ea;
+    --borda-forte: #d1d9dc;
+    --raio-card: 16px;
+    --raio-controle: 10px;
+    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
+}
+
+body {
+    background-color: var(--fundo);
+    font-family: 'Inter', 'Clear Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--cinza);
+}
+
+.proposta-main {
+    max-width: 860px;
+    margin: 40px auto 64px;
+    padding: 0 24px;
+}
+
+.card-form-proposta {
+    background-color: #ffffff;
+    border: 1px solid var(--borda);
+    border-top: 4px solid var(--azure);
+    border-radius: var(--raio-card);
+    padding: 40px;
+    box-shadow: var(--sombra-card);
+}
+
+.card-form-proposta h2 {
+    margin: 0 0 24px 0;
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--azure);
+    padding-left: 14px;
+    border-left: 4px solid var(--turquesa);
+}
+
+.resumo-solicitacao {
+    background-color: var(--turquesa-claro);
+    border: 1px solid rgba(51, 173, 152, 0.3);
+    border-left: 4px solid var(--turquesa);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+}
+
+.resumo-solicitacao strong {
+    display: block;
+    font-size: 1.05rem;
+    color: var(--azure);
+    margin-bottom: 6px;
+}
+
+.resumo-solicitacao p {
+    margin: 0 0 4px 0;
+    font-size: 0.92rem;
+    color: var(--cinza);
+    line-height: 1.5;
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.92rem;
+    margin-bottom: 8px;
+    color: var(--azure);
+}
+
+.form-control {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid var(--borda-forte);
+    border-radius: var(--raio-controle);
+    background-color: var(--fundo);
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--cinza);
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    background-color: #ffffff;
+    border-color: var(--turquesa);
+    box-shadow: 0 0 0 3px rgba(51, 173, 152, 0.2);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 130px;
+}
+
+.botoes-acao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.btn-cancelar {
+    background-color: #ffffff;
+    color: var(--cinza);
+    border: 1px solid var(--borda-forte);
+    padding: 13px 26px;
+    border-radius: var(--raio-controle);
+    font-size: 0.94rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-cancelar:hover {
+    background-color: var(--turquesa-claro);
+    border-color: var(--turquesa);
+    color: var(--azure);
+}
+
+.btn-enviar-proposta {
+    background-color: var(--laranja);
+    color: #ffffff;
+    border: none;
+    padding: 13px 28px;
+    border-radius: var(--raio-controle);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(236, 122, 70, 0.35);
+    transition: all 0.2s ease;
+}
+
+.btn-enviar-proposta:hover {
+    background-color: var(--laranja-escuro);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(236, 122, 70, 0.42);
+}
+

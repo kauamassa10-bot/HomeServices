@@ -1,17 +1,11 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
-require_once __DIR__ . '/banco/database.php';
 
 /** @var PDO $pdo */
 
-// Verifica qual é o tipo de usuário logado
 $tipo_usuario = strtoupper($_SESSION['tipo_usuario'] ?? '');
 $id_usuario_logado = (int) ($_SESSION['id_usuario'] ?? 0);
 
-// Restringe o acesso apenas para ADMIN ou PRESTADOR
 if (!in_array($tipo_usuario, ['ADMIN', 'PRESTADOR'])) {
     header("Location: login_cliente.php?erro=acesso_negado");
     exit;
@@ -20,46 +14,38 @@ if (!in_array($tipo_usuario, ['ADMIN', 'PRESTADOR'])) {
 $mensagem = '';
 $isAdmin = ($tipo_usuario === 'ADMIN');
 
-// Carrega categorias para o select (ambos precisam)
-$categorias =$pdo->query("SELECT id_categoria, nome_categoria FROM categoria WHERE status_ativo = 1 ORDER BY nome_categoria ASC")->fetchAll(PDO::FETCH_ASSOC);
+$categorias = readAll($pdo, 'categoria', 'status_ativo = ?', [1]);
 
-// Carrega prestadores SOMENTE se for ADMIN
 $prestadores = [];
 if ($isAdmin) {
-    $prestadores =$pdo->query("SELECT id_usuario, nome_usuario FROM usuario WHERE tipo_usuario = 'PRESTADOR' AND status_ativo = 1 ORDER BY nome_usuario ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $prestadores = readAll($pdo, 'usuario', 'tipo_usuario = ? AND status_ativo = ?', ['PRESTADOR', 1]);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Se for ADMIN, pega o id_prestador do formulário; se for PRESTADOR, usa o próprio ID da sessão
-    $id_prestador =$isAdmin ? (int) $_POST['id_prestador'] :$id_usuario_logado;
-    
-    $id_categoria = (int)$_POST['id_categoria'];
+    $id_prestador = $isAdmin ? (int) $_POST['id_prestador'] : $id_usuario_logado;
+    $id_categoria = (int) $_POST['id_categoria'];
     $nome_servico = trim($_POST['nome_servico']);
     $desc_servico = trim($_POST['desc_servico']);
-    $valor_base = str_replace(',', '.',$_POST['valor_base']);
-
-    $sql = "INSERT INTO servico (id_prestador, id_categoria, nome_servico, desc_servico, valor_base, status_ativo) 
-            VALUES (:id_prestador, :id_categoria, :nome_servico, :desc_servico, :valor_base, 1)";
-
-    $stmt = $pdo->prepare($sql);
+    $valor_base = str_replace(',', '.', $_POST['valor_base']);
 
     try {
-        $stmt->execute([
-            ':id_prestador' => $id_prestador,
-            ':id_categoria' => $id_categoria,
-            ':nome_servico' => $nome_servico,
-            ':desc_servico' => $desc_servico,
-            ':valor_base' => $valor_base
+        create($pdo, 'servico', [
+            'id_prestador' => $id_prestador,
+            'id_categoria' => $id_categoria,
+            'nome_servico' => $nome_servico,
+            'desc_servico' => $desc_servico,
+            'valor_base'   => $valor_base,
+            'status_ativo' => 1,
         ]);
 
-        // Redirecionamento baseado no perfil
         if ($isAdmin) {
             header("Location: registros.php?sucesso=servico");
         } else {
-            header("Location: pedidos.php?sucesso=servico_criado");
+            header("Location: meus_servicos_lista.php?sucesso=servico_criado");
         }
         exit;
-    } catch (PDOException $e) {$mensagem = "<div class='erro'>Erro ao cadastrar serviço: " . htmlspecialchars($e->getMessage()) . "</div>";
+    } catch (Throwable $e) {
+        $mensagem = "<div class='erro'>Erro ao cadastrar serviço: " . htmlspecialchars($e->getMessage()) . "</div>";
     }
 }
 ?>
@@ -85,8 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a href="cadastro_profissional.php">Novo Profissional</a>
                     <a href="cadastro_servicos.php">Novo Serviço</a>
                 <?php else: ?>
-                    <a href="pedidos.php">Meus Serviços e Pedidos</a>
-                    <a href="cadastro_servicos.php">Adicionar Serviço</a>
+                    <a href="meus_servicos_lista.php">Meus Serviços</a>
+                    <a href="dashboard_prestador.php">Dashboard</a>
                 <?php endif; ?>
                 <a href="logout.php">Sair</a>
             </nav>
@@ -106,11 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" action="" class="form-pedido-leitura">
                 
                 <?php if ($isAdmin): ?>
-                    <!-- Campo de selecionar profissional aparece apenas para o ADMIN -->
                     <div class="campo-simples">
                         <select name="id_prestador" class="campo-select" required>
                             <option value="">Selecione o Profissional...</option>
-                            <?php foreach ($prestadores as$p): ?>
+                            <?php foreach ($prestadores as $p): ?>
                                 <option value="<?= $p['id_usuario'] ?>"><?= htmlspecialchars($p['nome_usuario']) ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -120,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="campo-simples">
                     <select name="id_categoria" class="campo-select" required>
                         <option value="">Selecione a Categoria...</option>
-                        <?php foreach ($categorias as$c): ?>
+                        <?php foreach ($categorias as $c): ?>
                             <option value="<?= $c['id_categoria'] ?>"><?= htmlspecialchars($c['nome_categoria']) ?></option>
                         <?php endforeach; ?>
                     </select>

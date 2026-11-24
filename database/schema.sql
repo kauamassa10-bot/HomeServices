@@ -1,90 +1,94 @@
-create database HomeServices;
 
-use HomeServices;
+CREATE DATABASE HomeServices;
 
-create table  if not exists usuario(
-	id_usuario bigint primary key auto_increment,
-    nome_usuario varchar(150),
-    email varchar(100),
-    senha varchar(250),
-    telefone varchar(20),
-    tipo_usuario varchar(20),
-    status_ativo boolean,
-    data_cadastro timestamp
-    );
-    
-    create table  if not exists categoria(
-	id_categoria bigint primary key auto_increment,
-    nome_categoria varchar(100),
-    desc_categoria varchar(255) null,
-    status_ativo boolean
-    );
-    
-    create table  if not exists servico(
-    id_servico bigint not null primary key,
-    id_prestador bigint not null,
-    id_categoria bigint not null,
-    nome_servico varchar(150) not null,
-    desc_servico text,
-    valor_base decimal(10,2),
-    status_ativo boolean not null,
-    foreign key (id_prestador) references usuario(id_usuario),
-    foreign key (id_categoria) references categoria(id_categoria)
+USE HomeServices;
+
+CREATE TABLE IF NOT EXISTS usuario (
+    id_usuario BIGINT PRIMARY KEY AUTO_INCREMENT,
+    nome_usuario VARCHAR(150),
+    email VARCHAR(100),
+    senha VARCHAR(250),
+    telefone VARCHAR(20),
+    tipo_usuario VARCHAR(20),
+    status_ativo BOOLEAN,
+    data_cadastro TIMESTAMP
 );
 
-    create table  if not exists solicitacao(
-    id_solicitacao bigint not null primary key,
-    id_cliente bigint not null,
-    id_categoria bigint not null,
-    desc_titulo varchar(150) not null,
-    desc_solicitacao text,
-	desc_endereco_atendimento varchar(255),
-    status_solicitacao varchar(20),
-    data_solicitacao date,
-    foreign key (id_cliente) references usuario(id_usuario),
-    foreign key (id_categoria) references categoria(id_categoria)
+CREATE TABLE IF NOT EXISTS categoria (
+    id_categoria BIGINT PRIMARY KEY AUTO_INCREMENT,
+    nome_categoria VARCHAR(100),
+    desc_categoria VARCHAR(255) NULL,
+    status_ativo BOOLEAN
 );
 
-
-
-    create table  if not exists proposta(
-    id_proposta bigint not null primary key,
-    id_solicitacao bigint not null,
-    id_prestador bigint not null,
-    valor_proposta decimal(10,2) not null,
-    desc_proposta text,
-    status_proposta varchar(20),
-    data_proposta date,
-    foreign key (id_solicitacao) references solicitacao(id_solicitacao),
-    foreign key (id_prestador) references usuario(id_usuario)
+CREATE TABLE IF NOT EXISTS servico (
+    id_servico BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_prestador BIGINT NOT NULL,
+    id_categoria BIGINT NOT NULL,
+    nome_servico VARCHAR(150) NOT NULL,
+    desc_servico TEXT,
+    valor_base DECIMAL(10,2),
+    status_ativo BOOLEAN NOT NULL,
+    FOREIGN KEY (id_prestador) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria)
 );
 
-create table if not exists agendamento(
-    id_agendamento bigint not null primary key auto_increment,
-    id_solicitacao bigint not null,
-    id_proposta bigint not null,
-    id_cliente bigint not null,
-    id_prestador bigint not null,
-    data_agendamento date,
-    hora_agendamento varchar(5),
-    observacoes text,
-    status_agendamento varchar(20),
-    data_criacao date,
-    foreign key (id_solicitacao) references solicitacao(id_solicitacao),
-    foreign key (id_proposta) references proposta(id_proposta),
-    foreign key (id_cliente) references usuario(id_usuario),
-    foreign key (id_prestador) references usuario(id_usuario)
+CREATE TABLE IF NOT EXISTS solicitacao (
+    id_solicitacao BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_cliente BIGINT NOT NULL,
+    id_prestador BIGINT NULL,
+    id_categoria BIGINT NOT NULL,
+    desc_titulo VARCHAR(150) NOT NULL,
+    desc_solicitacao TEXT,
+    desc_endereco_atendimento VARCHAR(255),
+    status_solicitacao VARCHAR(20),
+    data_solicitacao DATE,
+    FOREIGN KEY (id_cliente) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_prestador) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria)
 );
 
-create table  if not exists avaliacao(
-    id_avaliacao bigint not null primary key,
-    id_agendamento bigint not null,
-    id_avaliador bigint not null,
-    id_avaliado bigint not null,
-    numero_nota integer not null,
-    desc_comentario text,
-    data_avaliacao date,
-    foreign key (id_agendamento) references agendamento(id_agendamento),
-    foreign key (id_avaliador ) references usuario(id_usuario),
-    foreign key (id_avaliado) references usuario(id_usuario)
+CREATE TABLE IF NOT EXISTS proposta (
+    id_proposta BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_solicitacao BIGINT NOT NULL,
+    id_prestador BIGINT NOT NULL,
+    valor_proposta DECIMAL(10,2) NOT NULL,
+    desc_proposta TEXT,
+    status_proposta VARCHAR(20),
+    data_proposta DATE,
+    FOREIGN KEY (id_solicitacao) REFERENCES solicitacao(id_solicitacao),
+    FOREIGN KEY (id_prestador) REFERENCES usuario(id_usuario)
 );
+
+CREATE TABLE IF NOT EXISTS agendamento (
+    id_agendamento BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_solicitacao BIGINT NOT NULL,
+    id_proposta BIGINT NOT NULL,
+    id_cliente BIGINT NOT NULL,
+    id_prestador BIGINT NOT NULL,
+    data_agendamento DATE,
+    hora_agendamento VARCHAR(5),
+    observacoes TEXT,
+    status_agendamento VARCHAR(20),
+    data_criacao DATE,
+    FOREIGN KEY (id_solicitacao) REFERENCES solicitacao(id_solicitacao),
+    FOREIGN KEY (id_proposta) REFERENCES proposta(id_proposta),
+    FOREIGN KEY (id_cliente) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_prestador) REFERENCES usuario(id_usuario)
+);
+
+CREATE TABLE IF NOT EXISTS avaliacao (
+    id_avaliacao BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id_agendamento BIGINT NOT NULL,
+    id_avaliador BIGINT NOT NULL,
+    id_avaliado BIGINT NOT NULL,
+    numero_nota INTEGER NOT NULL,
+    desc_comentario TEXT,
+    data_avaliacao DATE,
+    FOREIGN KEY (id_agendamento) REFERENCES agendamento(id_agendamento),
+    FOREIGN KEY (id_avaliador) REFERENCES usuario(id_usuario),
+    FOREIGN KEY (id_avaliado) REFERENCES usuario(id_usuario)
+);
+
+UPDATE servico SET id_servico = 503 WHERE id_servico = 0;
+ALTER TABLE servico MODIFY id_servico BIGINT NOT NULL AUTO_INCREMENT;

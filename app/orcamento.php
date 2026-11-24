@@ -1,36 +1,40 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
 
-
-
-// Apenas CLIENTES podem solicitar orçamentos
 if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'CLIENTE') {
-    header("Location: login_cliente.php?erro=acesso_negado");
+    header('Location: login_cliente.php?erro=acesso_negado');
     exit;
 }
 
-$servicoDesejado = read($pdo, 'servico', 'id_servico = ?', [$_GET['id'] ?? 0]);
+// Aceita ?id_servico= (novo) e ?id= (link atual do buscar.php)
+$idServico = (int) ($_GET['id_servico'] ?? $_GET['id'] ?? 0);
 
-$mensagem = '';
-$id_cliente = (int) $_SESSION['id_usuario'];
+$servico   = $idServico > 0 ? read($pdo, 'servico', 'id_servico = ? AND status_ativo = 1', [$idServico]) : false;
+$prestador = $servico ? read($pdo, 'usuario', 'id_usuario = ?', [$servico['id_prestador']]) : false;
+$categoria = $servico ? read($pdo, 'categoria', 'id_categoria = ?', [$servico['id_categoria']]) : false;
 
-$id_servico = (int) ($_GET['id'] ?? 0);
-if ($id_servico <= 0) {
-    $mensagem = "<div class='erro'>Serviço inválido. Por favor, tente novamente.</div>";
-} else {
-    if (!$id_servico) {
-        $mensagem = "<div class='erro'>Serviço não encontrado. Por favor, tente novamente.</div>";
-    }
+$prestadorValido = $prestador && strtoupper((string) $prestador['tipo_usuario']) === 'PRESTADOR';
+
+if (!$servico || !$prestadorValido || !$categoria) {
+    header('Location: buscar.php');
+    exit;
 }
+
+// Mensagem de erro e dados digitados, enviados pelo processar_orcamento.php
+$mensagem = $_SESSION['orcamento_erro'] ?? '';
+$antigos  = $_SESSION['orcamento_old'] ?? [];
+unset($_SESSION['orcamento_erro'], $_SESSION['orcamento_old']);
+
+$descricao       = $antigos['desc_solicitacao'] ?? '';
+$endereco        = $antigos['desc_endereco_atendimento'] ?? '';
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Novo Pedido - HomeServices</title>
     <link rel="stylesheet" href="css/orcamento.css">
     <link rel="stylesheet" href="css/global.css">
@@ -55,27 +59,29 @@ if ($id_servico <= 0) {
             <h2>Solicitar Orçamento</h2>
             <p class="subtitulo">Preencha os detalhes do que você precisa</p>
 
-            <?= $mensagem ?>
+            <?php if ($mensagem !== ''): ?>
+                <p class="subtitulo"><?= htmlspecialchars($mensagem, ENT_QUOTES, 'UTF-8') ?></p>
+            <?php endif; ?>
 
-            <form method="POST" action="" class="form-pedido-leitura">
+            <form method="POST" action="processa_orcamento.php" class="form-pedido-leitura">
+                <input type="hidden" name="id_servico" value="<?= (int) $servico['id_servico'] ?>">
 
                 <div class="campo-simples">
-                    <label for="servDesejado">Nome do Serviço:</label>
-                    <input type="text" name="servDesejado" value="<?= htmlspecialchars($servicoDesejado['nome_servico'] ?? '') ?>" required readonly>
+                    <input type="text" value="<?= htmlspecialchars($servico['nome_servico'], ENT_QUOTES, 'UTF-8') ?>" readonly>
                 </div>
 
                 <div class="campo-simples">
-                    <textarea name="descricao" placeholder="Descreva o serviço desejado detalhadamente..." required></textarea>
+                    <textarea name="desc_solicitacao" placeholder="Descreva o serviço desejado detalhadamente..." required><?= htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8') ?></textarea>
                 </div>
 
                 <div class="linha-dupla">
                     <div class="campo-simples">
-                        <input type="text" name="endereco" placeholder="Endereço / CEP" required>
+                        <input type="text" name="desc_endereco_atendimento" placeholder="Endereço / CEP" value="<?= htmlspecialchars($endereco, ENT_QUOTES, 'UTF-8') ?>" required>
                     </div>
                 </div>
 
                 <div class="botoes-rodape">
-                    <button type="submit" class="btn-solido"><a href="agendamento.php">Prosseguir para agendamento</a></button>
+                <button type="submit" class="btn-solido">Prosseguir para agendamento</button>
                 </div>
             </form>
         </section>
@@ -83,9 +89,12 @@ if ($id_servico <= 0) {
         <aside class="coluna-direita">
             <div class="card-resumo">
                 <div class="detalhes-resumo">
-                    <strong>Informações</strong>
-                    <p>O seu pedido será enviado para profissionais da sua região.</p>
-                    <p>Orçamento gratuito e sem compromisso.</p>
+                    <strong><?= htmlspecialchars($prestador['nome_usuario'], ENT_QUOTES, 'UTF-8') ?></strong>
+                    <p><?= htmlspecialchars($servico['nome_servico'], ENT_QUOTES, 'UTF-8') ?></p>
+                    <p><?= htmlspecialchars($categoria['nome_categoria'], ENT_QUOTES, 'UTF-8') ?></p>
+                    <p><?= htmlspecialchars($servico['desc_servico'], ENT_QUOTES, 'UTF-8') ?></p>
+                    <p>A partir de R$ <?= number_format((float) $servico['valor_base'], 2, ',', '.') ?></p>
+                    <p><?= htmlspecialchars($prestador['telefone'], ENT_QUOTES, 'UTF-8') ?></p>
                 </div>
             </div>
         </aside>

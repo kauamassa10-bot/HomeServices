@@ -1,127 +1,304 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --laranja: #ec7a46;
+    --laranja-escuro: #d66532;
+    --turquesa: #33ad98;
+    --turquesa-escuro: #227a6b;
+    --turquesa-claro: #e6f5f2;
+    --cinza: #575757;
+    --azure: #225b75;
+    --azure-escuro: #17425a;
+    --fundo: #f3f7f9;
+    --borda: #e2e8ea;
+    --borda-forte: #d1d9dc;
+    --raio-card: 16px;
+    --raio-controle: 10px;
+    --sombra-card: 0 8px 28px rgba(34, 91, 117, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* ========== Base da página ========== */
+.fundo-claro {
+    background-color: var(--fundo);
+    background-image:
+        radial-gradient(circle at 12% 18%, rgba(51, 173, 152, 0.12), transparent 36%),
+        radial-gradient(circle at 88% 82%, rgba(34, 91, 117, 0.1), transparent 40%);
+    min-height: 100vh;
+    font-family: 'Inter', 'Clear Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--cinza);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ========== Cabeçalho ========== */
+.header-simples {
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--borda);
+    box-shadow: 0 2px 12px rgba(34, 91, 117, 0.05);
+    padding: 14px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo-texto {
+    margin: 0;
+    margin-right: auto;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--azure);
+    letter-spacing: -0.6px;
+}
+
+.menu-topo {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.menu-topo a,
+.header-container > a {
+    position: relative;
+    color: var(--cinza);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 4px 0;
+    transition: color 0.2s ease;
+}
+
+.menu-topo a::after,
+.header-container > a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background-color: var(--turquesa);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+}
+
+.menu-topo a:hover,
+.header-container > a:hover {
+    color: var(--azure);
+}
+
+.menu-topo a:hover::after,
+.header-container > a:hover::after {
+    transform: scaleX(1);
+}
+
+/* ========== Cartão de login (admin e cliente) ========== */
 .container-login {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 90px);
-    padding: 20px;
+    padding: 56px 20px;
 }
 
 .card-login {
-    background: #ffffff;
+    position: relative;
+    overflow: hidden;
     width: 100%;
-    max-width: 420px;
-    padding: 36px 32px;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    max-width: 440px;
+    background-color: #ffffff;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-card);
+    padding: 40px 36px;
+    box-shadow: var(--sombra-card);
+}
+
+/* Faixa decorativa superior */
+.card-login::before,
+.layout-duas-colunas .coluna-esquerda::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--azure), var(--turquesa));
 }
 
 .topo-login {
     text-align: center;
-    margin-bottom: 26px;
-}
-
-.tag-admin {
-    display: inline-block;
-    background-color: #eff6ff;
-    color: #1d4ed8;
-    border: 1px solid #bfdbfe;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 4px 12px;
-    border-radius: 999px;
-    margin-bottom: 12px;
+    margin-bottom: 28px;
 }
 
 .topo-login h2 {
-    margin: 0 0 8px 0;
-    color: #111827;
-    font-size: 1.5rem;
+    margin: 12px 0 8px 0;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--azure);
 }
 
 .topo-login p {
     margin: 0;
-    color: #6b7280;
-    font-size: 0.9rem;
-    line-height: 1.4;
+    font-size: 0.92rem;
+    color: var(--cinza);
+    line-height: 1.5;
 }
 
-.grupo-campo {
-    margin-bottom: 18px;
+.tag-admin {
+    display: inline-block;
+    background-color: var(--turquesa-claro);
+    color: var(--turquesa-escuro);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
 }
 
-.grupo-campo label {
+/* ========== Formulário ========== */
+.form-login {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.grupo-campo label,
+.campo-simples label {
     display: block;
+    margin-bottom: 6px;
     font-size: 0.88rem;
     font-weight: 600;
-    color: #374151;
-    margin-bottom: 6px;
+    color: var(--azure);
 }
 
-.grupo-campo input {
+.grupo-campo input,
+.campo-simples input {
     width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
+    padding: 13px 16px;
+    border: 1px solid var(--borda-forte);
+    border-radius: var(--raio-controle);
+    font-family: inherit;
     font-size: 0.95rem;
-    box-sizing: border-box;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    color: var(--cinza);
+    background-color: #ffffff;
+    transition: all 0.2s ease;
 }
 
-.grupo-campo input:focus {
+.grupo-campo input:focus,
+.campo-simples input:focus {
+    border-color: var(--turquesa);
     outline: none;
-    border-color: #3b5998;
-    box-shadow: 0 0 0 3px rgba(59, 89, 152, 0.15);
+    box-shadow: 0 0 0 4px rgba(51, 173, 152, 0.18);
+}
+
+/* ========== Botão (Ação Principal em Laranja) ========== */
+.btn-solido {
+    background-color: var(--laranja);
+    color: #ffffff;
+    border: none;
+    padding: 14px 20px;
+    border-radius: var(--raio-controle);
+    font-family: inherit;
+    font-size: 0.98rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(236, 122, 70, 0.32);
+    transition: all 0.2s ease;
+}
+
+.btn-solido:hover {
+    background-color: var(--laranja-escuro);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(236, 122, 70, 0.42);
+}
+
+.btn-solido:active {
+    transform: translateY(0);
 }
 
 .btn-entrar {
     width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
     margin-top: 6px;
 }
 
+/* ========== Mensagens ========== */
 .alerta-erro {
     background-color: #fef2f2;
-    color: #991b1b;
     border: 1px solid #fecaca;
-    border-left: 4px solid #ef4444;
+    color: #b91c1c;
     padding: 12px 14px;
-    border-radius: 6px;
+    border-radius: var(--raio-controle);
+    margin-bottom: 18px;
     font-size: 0.88rem;
-    margin-bottom: 20px;
-}
-
-
-.header-simples .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-
-.header-simples .menu-topo,
-.header-simples a:not(.logo-texto) {
-    display: flex;
-    gap: 30px; 
-    align-items: center;
-    text-decoration: none;
-    color: #444; 
-    font-size: 15px;
     font-weight: 500;
+    text-align: center;
 }
 
-.header-simples a:not(.logo-texto):hover {
-    color: #2b5cbf;
+.alerta-sucesso {
+    background-color: var(--turquesa-claro);
+    border: 1px solid rgba(51, 173, 152, 0.4);
+    color: var(--turquesa-escuro);
+    padding: 12px 14px;
+    border-radius: var(--raio-controle);
+    margin-bottom: 18px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-align: center;
 }
 
+/* ========== Links ========== */
+.card-login a,
+.coluna-esquerda a {
+    color: var(--turquesa-escuro);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
 
-.header-simples > div > a:not(.logo-texto) {
-    margin-left: 20px;
+.card-login a:hover,
+.coluna-esquerda a:hover {
+    color: var(--azure);
+    text-decoration: underline;
+}
+
+/* ========== Login do profissional ========== */
+.layout-duas-colunas .coluna-esquerda {
+    position: relative;
+    overflow: hidden;
+    background-color: #ffffff;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-card);
+    padding: 36px;
+    box-shadow: var(--sombra-card);
+}
+
+.layout-duas-colunas .coluna-esquerda h2 {
+    margin-top: 0;
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--azure);
+}
+
+.layout-duas-colunas .subtitulo {
+    color: var(--cinza);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin-bottom: 24px;
 }

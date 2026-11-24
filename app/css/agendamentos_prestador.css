@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --laranja: #ec7a46;
+    --laranja-escuro: #d66532;
+    --turquesa: #33ad98;
+    --turquesa-escuro: #227a6b;
+    --turquesa-claro: #e6f5f2;
+    --cinza: #575757;
+    --azure: #225b75;
+    --azure-escuro: #17425a;
+    --fundo: #f3f7f9;
+    --borda: #e2e8ea;
+    --borda-forte: #d1d9dc;
+    --raio-card: 16px;
+    --raio-controle: 10px;
+    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
+    --sombra-hover: 0 12px 30px rgba(34, 91, 117, 0.16);
+}
+
+body {
+    background-color: var(--fundo);
+    font-family: 'Inter', 'Clear Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--cinza);
+}
+
+.agendamentos-main {
+    max-width: 1200px;
+    margin: 32px auto 56px;
+    padding: 0 24px;
+}
+
+.titulo-pagina {
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+    margin-bottom: 24px;
+    color: var(--azure);
+    padding-left: 14px;
+    border-left: 4px solid var(--turquesa);
+}
+
+/* Abas estilo chips */
+.tabs-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    background-color: #ffffff;
+    color: var(--cinza);
+    border: 1px solid var(--borda-forte);
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    background-color: var(--turquesa-claro);
+    border-color: var(--turquesa);
+    color: var(--turquesa-escuro);
+    transform: translateY(-1px);
+}
+
+.tab-btn.active {
+    background-color: var(--azure);
+    border-color: var(--azure);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(34, 91, 117, 0.25);
+}
+
+/* Lista de Cartões */
+.agendamentos-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.agendamento-card {
+    background-color: #ffffff;
+    border: 1px solid var(--borda);
+    border-left: 5px solid var(--azure);
+    border-radius: var(--raio-card);
+    padding: 26px 28px;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    box-shadow: var(--sombra-card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.agendamento-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-hover);
+}
+
+.bg-pendente {
+    border-left-color: var(--laranja);
+}
+
+.bg-execucao {
+    border-left-color: var(--turquesa);
+}
+
+.info-pedido {
+    max-width: 58%;
+}
+
+.info-pedido h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--azure);
+}
+
+.info-pedido p {
+    margin: 0 0 6px 0;
+    font-size: 0.92rem;
+    color: var(--cinza);
+}
+
+.acoes-pedido {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.badge-status-top {
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.badge-laranja {
+    background-color: rgba(236, 122, 70, 0.16);
+    color: #c25525;
+}
+
+.badge-azul {
+    background-color: rgba(34, 91, 117, 0.14);
+    color: var(--azure);
+}
+
+.titulo-status {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 10px;
+    color: var(--azure);
+}
+
+.botoes-status {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-passo {
+    padding: 9px 16px;
+    border-radius: var(--raio-controle);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-passo.inativo {
+    background-color: #ffffff;
+    color: var(--cinza);
+    border-color: var(--borda-forte);
+}
+
+.btn-passo.inativo:hover {
+    background-color: var(--turquesa-claro);
+    border-color: var(--turquesa);
+    color: var(--azure);
+}
+
+.btn-passo.laranja-ativo {
+    background-color: var(--laranja);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(236, 122, 70, 0.3);
+}
+
+.btn-passo.verde-concluido {
+    background-color: var(--turquesa);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(51, 173, 152, 0.3);
+}
+
+.btn-passo.azul-ativo {
+    background-color: var(--azure);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(34, 91, 117, 0.25);
+}
+

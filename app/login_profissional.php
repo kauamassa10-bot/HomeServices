@@ -4,24 +4,22 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/init.php';
 
-
 /** @var PDO $pdo */
 
-// Se já estiver logado como prestador, pula o login e vai para o painel dele
 if (isset($_SESSION['id_usuario']) && strtoupper($_SESSION['tipo_usuario'] ?? '') === 'PRESTADOR') {
     header("Location: dashboard_prestador.php");
     exit;
 }
 
-$mensagem = '';
+$erro = '';
+$sucesso = '';
 
-// Mensagem de sucesso vinda do cadastro
 if (isset($_GET['sucesso']) && $_GET['sucesso'] === 'cadastro') {
-    $mensagem = "<div class='alerta-sucesso' style='color: green; margin-bottom: 15px; text-align: center; font-weight: bold;'>Cadastro realizado com sucesso! Faça seu login abaixo.</div>";
+    $sucesso = "Cadastro realizado com sucesso! Faça seu login abaixo.";
 }
-// Mensagem de erro de acesso
+
 if (isset($_GET['erro']) && $_GET['erro'] === 'acesso_negado') {
-    $mensagem = "<div class='alerta-erro' style='color: red; margin-bottom: 15px; text-align: center;'>Faça login para acessar esta página.</div>";
+    $erro = "Faça login para acessar esta página.";
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -29,23 +27,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senha = trim($_POST['senha'] ?? '');
 
     if (!empty($email) && !empty($senha)) {
-        // Busca o usuário no banco garantindo que ele é um prestador
         $sql = "SELECT * FROM usuario WHERE email = :email AND tipo_usuario = 'PRESTADOR' AND status_ativo = 1 LIMIT 1";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':email' => $email]);
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Verifica a senha (comparação direta baseada no seu script de cadastro)
         if ($usuario && $usuario['senha'] === $senha) {
             $_SESSION['id_usuario'] = $usuario['id_usuario'];
             $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'];
             $_SESSION['nome_usuario'] = $usuario['nome_usuario'];
             
-            // Login bem-sucedido, manda para a tela de gerenciar serviços
             header("Location: dashboard_prestador.php");
             exit;
         } else {
-            $mensagem = "<div class='alerta-erro' style='color: red; margin-bottom: 15px; text-align: center;'>E-mail ou senha incorretos, ou usuário inativo.</div>";
+            $erro = "E-mail ou senha incorretos, ou usuário inativo.";
         }
     }
 }
@@ -57,49 +52,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Profissional - HomeServices</title>
     <link rel="stylesheet" href="css/orcamento.css">
-    <link rel="stylesheet" href="css/cadastros.css">
+    <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/global.css">
 </head>
 <body class="fundo-claro">
 
     <header class="header-simples">
-    <div class="header-container">
-        <h1 class="logo-texto">HomeServices</h1>
-        <nav class="menu-topo">
-            <a href="index.php">Início</a>   
-            <a href="login_profissional.php">Sou profissional</a>
-            <a href="login_admin.php">Sou administrador</a>
-        </nav>
-    </div>
-</header>
+        <div class="header-container">
+            <h1 class="logo-texto">HomeServices</h1>
+            <nav class="menu-topo">
+                <a href="index.php">Início</a>
+                <a href="login_cliente.php">Sou Cliente</a>
+            </nav>
+        </div>
+    </header>
 
-    <main class="layout-duas-colunas" style="justify-content: center; margin-top: 50px;">
-        <section class="coluna-esquerda" style="max-width: 500px; margin: 0 auto;">
-            <h2 style="text-align: center;">Portal do Profissional</h2>
-            <p class="subtitulo" style="text-align: center;">Acesse sua conta para gerenciar seus serviços e pedidos</p>
+    <main class="container-login">
+        <div class="card-login">
+            <div class="topo-login">
+                <span class="tag-admin">Portal do Profissional</span>
+                <h2>Acesse sua conta</h2>
+                <p>Gerencie seus serviços, orçamentos e clientes</p>
+            </div>
 
-            <?= $mensagem ?>
+            <?php if (!empty($sucesso)): ?>
+                <div class="alerta-sucesso"><?= htmlspecialchars($sucesso) ?></div>
+            <?php endif; ?>
 
-            <form method="POST" action="" class="form-pedido-leitura">
-                <div class="campo-simples">
-                    <label>E-mail</label>
-                    <input type="email" name="email" placeholder="Seu e-mail cadastrado" required>
+            <?php if (!empty($erro)): ?>
+                <div class="alerta-erro"><?= htmlspecialchars($erro) ?></div>
+            <?php endif; ?>
+
+            <form method="POST" action="" class="form-login" autocomplete="off">
+                <div class="grupo-campo">
+                    <label for="email">E-mail Cadastrado</label>
+                    <input type="email" id="email" name="email" placeholder="seu@email.com" required>
                 </div>
 
-                <div class="campo-simples">
-                    <label>Senha</label>
-                    <input type="password" name="senha" placeholder="Sua senha" required>
+                <div class="grupo-campo">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" placeholder="••••••••" required>
                 </div>
 
-                <div class="botoes-rodape" style="margin-top: 20px;">
-                    <button type="submit" class="btn-solido" style="width: 100%;">Entrar como Profissional</button>
-                </div>
-
-                <div style="margin-top: 20px; text-align: center; font-size: 0.9rem;">
-                    Ainda não é cadastrado? <a href="cadastro_profissional.php" style="color: #0284c7; font-weight: bold;">Crie sua conta aqui</a>
-                </div>
+                <button type="submit" class="btn-solido">Entrar no Painel</button>
             </form>
-        </section>
+
+            <div style="margin-top: 24px; text-align: center; font-size: 0.9rem; color: #64748b;">
+                Ainda não é cadastrado? <a href="cadastro_profissional.php">Crie sua conta aqui</a>
+            </div>
+        </div>
     </main>
 
 </body>

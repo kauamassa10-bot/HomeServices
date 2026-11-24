@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Administrador - HomeServices</title>
     <link rel="stylesheet" href="css/orcamento.css">
     <link rel="stylesheet" href="css/login.css">
@@ -51,8 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1 class="logo-texto">HomeServices</h1>
             <nav class="menu-topo">
                 <a href="index.php">Início</a>
-                <a href="login_cliente.php">Login do cliente</a>
-                <a href="login_profissional.php">Login do profissional</a>
+                <a href="login_cliente.php">Login do Cliente</a>
+                <a href="login_profissional.php">Login do Profissional</a>
             </nav>
         </div>
     </header>
@@ -62,14 +63,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="topo-login">
                 <span class="tag-admin">Área Restrita</span>
                 <h2>Acesso Administrativo</h2>
-                <p>Entre com suas credenciais de administrador para gerenciar o sistema</p>
+                <p>Entre com suas credenciais para gerenciar o sistema</p>
             </div>
 
             <?php if (!empty($erro)): ?>
                 <div class="alerta-erro"><?= htmlspecialchars($erro) ?></div>
             <?php endif; ?>
 
-            <form method="POST" action="" class="form-login">
+            <form method="POST" action="" class="form-login" autocomplete="off">
                 <div class="grupo-campo">
                     <label for="email">E-mail do Administrador</label>
                     <input type="email" id="email" name="email" placeholder="admin@homeservices.com" required>
@@ -80,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="password" id="senha" name="senha" placeholder="••••••••" required>
                 </div>
 
-                <button type="submit" class="btn-solido btn-entrar">Entrar no Painel</button>
+                <button type="submit" class="btn-solido">Entrar no Painel</button>
             </form>
         </div>
     </main>

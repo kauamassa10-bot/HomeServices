@@ -4,10 +4,15 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/init.php';
 
-$clientes = readAll($pdo, "usuario");
+if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'CLIENTE') {
+    header("Location: login_cliente.php?erro=acesso_negado");
+    exit;
+}
+
+$usuarios = readAll($pdo, "usuario");
 $categorias = readAll($pdo, "categoria");
 
-$iniciaisUsuarios = pegarIniciais($clientes[0]["nome_usuario"]);
+$iniciaisUsuarios = pegarIniciais($_SESSION['nome_usuario'] ?? '');
 
 
 ?>
@@ -29,15 +34,14 @@ $iniciaisUsuarios = pegarIniciais($clientes[0]["nome_usuario"]);
             <p>HomeServices</p>
         </div>
         <nav class="links">
-
-            <a href="">Início</a>
-            <a href="">Serviços</a>
-            <a href="">Contato</a>
-
+            <a href="buscar.php">Buscar Serviços</a>
+            <a href="pedidos.php">Meus Pedidos</a>
+            <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
+            <a href="logout.php">Sair</a>
+            <div class="foto">
+                <?= $iniciaisUsuarios; ?>
+            </div>
         </nav>
-        <div class="foto">
-            <a href="perfil.php"><?= $iniciaisUsuarios; ?></a>
-        </div>
     </header>
 
     <main>
@@ -140,7 +144,7 @@ $iniciaisUsuarios = pegarIniciais($clientes[0]["nome_usuario"]);
             }
 
             // fazendo o "JOIN"
-            $idUsuario = array_column($clientes, null, 'id_usuario');
+            $idUsuario = array_column($usuarios, null, 'id_usuario');
             $idCategorias = array_column($categorias, null, 'id_categoria');
 
             
@@ -167,6 +171,8 @@ $iniciaisUsuarios = pegarIniciais($clientes[0]["nome_usuario"]);
 
                 $servicos[] = [
                     'id_servico' => $servico['id_servico'],
+                    'id_prestador' => $servico['id_prestador'],
+                    'id_categoria' => $servico['id_categoria'],
                     'nome_servico' => $servico['nome_servico'],
                     'desc_servico' => $servico['desc_servico'],
                     'valor_base' => $servico['valor_base'],
@@ -176,40 +182,88 @@ $iniciaisUsuarios = pegarIniciais($clientes[0]["nome_usuario"]);
                     'nota_media' => $notaMedia,
                 ];
             }
+
+            // Proposta mais recente de cada prestador/categoria para o cliente logado.
+            // Se existir uma ENVIADA, ela tem prioridade para o botão Agendar aparecer.
+            $propostasPorChave = [];
+            $idClienteLogado = (int) $_SESSION['id_usuario'];
+            $solicitacoesCliente = readAll($pdo, 'solicitacao', 'id_cliente = ?', [$idClienteLogado]);
+
+            if ($solicitacoesCliente !== []) {
+                $idsSolicitacao = array_column($solicitacoesCliente, 'id_solicitacao');
+                $marcadoresSolicitacao = implode(', ', array_fill(0, count($idsSolicitacao), '?'));
+                $propostasRecebidas = readAll(
+                    $pdo,
+                    'proposta',
+                    "id_solicitacao IN ({$marcadoresSolicitacao})",
+                    $idsSolicitacao
+                );
+                $solicitacaoPorId = array_column($solicitacoesCliente, null, 'id_solicitacao');
+
+                foreach ($propostasRecebidas as $propostaItem) {
+                    $solicitacaoItem = $solicitacaoPorId[$propostaItem['id_solicitacao']] ?? null;
+                    if ($solicitacaoItem === null) {
+                        continue;
+                    }
+
+                    $chave = $propostaItem['id_prestador'] . '-' . $solicitacaoItem['id_categoria'];
+                    $atual = $propostasPorChave[$chave] ?? null;
+                    $novaEnviada = strtoupper((string) $propostaItem['status_proposta']) === 'ENVIADA';
+                    $atualEnviada = $atual !== null && strtoupper((string) $atual['status_proposta']) === 'ENVIADA';
+                    $maisNova = $atual === null || (int) $propostaItem['id_proposta'] > (int) $atual['id_proposta'];
+
+                    if ($atual === null || ($novaEnviada && !$atualEnviada) || ($novaEnviada === $atualEnviada && $maisNova)) {
+                        $propostasPorChave[$chave] = $propostaItem;
+                    }
+                }
+            }
             ?>
 
             <div class="servicos">
 
-                <?php
-                // Aqui é onde os serviços serão exibidos
-                if (!empty($servicos)) {
-                    foreach ($servicos as $servico) {
-                        // Calculando as estrelas e arredondando a nota para um número inteiro de 0 a 5
+                <?php if (!empty($servicos)): ?>
+                    <?php foreach ($servicos as $servico): ?>
+                        <?php
                         $notaArredondada = (int) round((float) $servico['nota_media']);
                         $estrelas = str_repeat('★', $notaArredondada) . str_repeat('☆', 5 - $notaArredondada);
-
-                        echo '<div class="card-servico">';
-
-                        echo '  <div class="card-foto">Foto</div>';
-
-                        echo '  <div class="card-info">';
-                        echo '    <h3>' . htmlspecialchars($servico['nome_servico'], ENT_QUOTES, 'UTF-8') . ' <span class="txt-primario">&middot; ' . htmlspecialchars($servico['nome_categoria'], ENT_QUOTES, 'UTF-8') . '</span></h3>';
-                        echo '    <p class="txt-secundario">' . htmlspecialchars($servico['nome_prestador'], ENT_QUOTES, 'UTF-8') . '</p>';
-                        echo '    <p class="txt-secundario">' . '<span class="estrelas-nota">' . $estrelas . '</span> ' . number_format((float) $servico['nota_media'], 1, ',', '.') . ' (' . $servico['total_avaliacoes'] . ' avaliações)</p>';
-                        echo '    <p class="txt-secundario">A partir de R$ ' . number_format((float) $servico['valor_base'], 2, ',', '.') . '</p>';
-                        echo '    <span class="badge-verificada">Verificado(a)</span>';
-                        echo '  </div>';
-
-                        echo '  <div class="card-acao">';
-                        echo '    <a href="orcamento.php?id=' . $servico['id_servico'] . '" class="btn-orcamento">Pedir orçamento</a>';
-                        echo '  </div>';
-
-                        echo '</div>';
-                    }
-                } else {
-                    echo '<p>Nenhum serviço encontrado.</p>';
-                }
-                ?>
+                        $chaveProposta = $servico['id_prestador'] . '-' . $servico['id_categoria'];
+                        $propostaCard = $propostasPorChave[$chaveProposta] ?? null;
+                        $propostaEnviada = $propostaCard !== null && strtoupper((string) $propostaCard['status_proposta']) === 'ENVIADA';
+                        ?>
+                        <div class="card-servico">
+                            <div class="card-foto">Foto</div>
+                            <div class="card-info">
+                                <h3>
+                                    <?= htmlspecialchars($servico['nome_servico'], ENT_QUOTES, 'UTF-8') ?>
+                                    <span class="txt-primario">&middot; <?= htmlspecialchars($servico['nome_categoria'], ENT_QUOTES, 'UTF-8') ?></span>
+                                </h3>
+                                <p class="txt-secundario"><?= htmlspecialchars($servico['nome_prestador'], ENT_QUOTES, 'UTF-8') ?></p>
+                                <p class="txt-secundario">
+                                    <span class="estrelas-nota"><?= $estrelas ?></span>
+                                    <?= number_format((float) $servico['nota_media'], 1, ',', '.') ?>
+                                    (<?= (int) $servico['total_avaliacoes'] ?> avaliações)
+                                </p>
+                                <?php if ($propostaCard): ?>
+                                    <p class="txt-secundario">
+                                        Proposta: R$ <?= number_format((float) $propostaCard['valor_proposta'], 2, ',', '.') ?>
+                                        · <?= htmlspecialchars($propostaCard['status_proposta'], ENT_QUOTES, 'UTF-8') ?>
+                                    </p>
+                                <?php else: ?>
+                                    <p class="txt-secundario">A partir de R$ <?= number_format((float) $servico['valor_base'], 2, ',', '.') ?></p>
+                                <?php endif; ?>
+                                <span class="badge-verificada">Verificado(a)</span>
+                                <?php if ($propostaEnviada): ?>
+                                    <a href="agendamento.php?id_proposta=<?= (int) $propostaCard['id_proposta'] ?>" class="btn-orcamento">Agendar</a>
+                                <?php endif; ?>
+                            </div>
+                            <div class="card-acao">
+                                <a href="orcamento.php?id_prestador=<?= (int) $servico['id_prestador'] ?>&id_servico=<?= (int) $servico['id_servico'] ?>" class="btn-orcamento">Pedir Orçamento</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>Nenhum serviço encontrado.</p>
+                <?php endif; ?>
             </div>
         </section>
     </main>

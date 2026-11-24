@@ -1,165 +1,194 @@
 <?php
-require_once __DIR__ . "/init.php";
+require_once __DIR__ . '/init.php';
 
-$id_agendamento = $_GET['id'] ?? null;
-
-if ($id_agendamento) {
-    $agendamento = read($pdo, 'agendamento', 'id_agendamento = ?', [$id_agendamento]);
-} else {
-    $agendamento = read($pdo, 'agendamento', '1=1 ORDER BY id_agendamento DESC LIMIT 1');
-}
-
-if (!$agendamento) {
-    echo "Nenhum agendamento encontrado no banco de dados.";
+if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'CLIENTE') {
+    header('Location: login_cliente.php?erro=acesso_negado');
     exit;
 }
 
-$solicitacao = read($pdo, 'solicitacao', 'id_solicitacao = ?', [$agendamento['id_solicitacao']]);
-$prestador   = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_prestador']]);
-$cliente     = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_cliente']]);
-$proposta    = read($pdo, 'proposta', 'id_proposta = ?', [$agendamento['id_proposta']]);
-$iniciaisAvatar = pegarIniciais($cliente['nome_usuario']);
+$idCliente  = (int) $_SESSION['id_usuario'];
+$idProposta = (int) ($_POST['id_proposta'] ?? $_GET['id_proposta'] ?? 0);
+
+// Sem id na URL: usa a proposta pendente mais recente do cliente
+if ($idProposta === 0) {
+    $minhasSolicitacoes = readAll($pdo, 'solicitacao', 'id_cliente = ?', [$idCliente]);
+
+    if ($minhasSolicitacoes !== []) {
+        $ids = array_column($minhasSolicitacoes, 'id_solicitacao');
+        $marcadores = implode(', ', array_fill(0, count($ids), '?'));
+        $pendentes = readAll(
+            $pdo,
+            'proposta',
+            "id_solicitacao IN ({$marcadores}) AND status_proposta = ?",
+            [...$ids, 'ENVIADA']
+        );
+
+        if ($pendentes !== []) {
+            usort($pendentes, static fn (array $a, array $b): int => (int) $b['id_proposta'] <=> (int) $a['id_proposta']);
+            $idProposta = (int) $pendentes[0]['id_proposta'];
+        }
+    }
+}
+
+$proposta    = $idProposta > 0 ? read($pdo, 'proposta', 'id_proposta = ?', [$idProposta]) : false;
+$solicitacao = $proposta ? read($pdo, 'solicitacao', 'id_solicitacao = ?', [$proposta['id_solicitacao']]) : false;
+$prestador   = $proposta ? read($pdo, 'usuario', 'id_usuario = ?', [$proposta['id_prestador']]) : false;
+$cliente     = read($pdo, 'usuario', 'id_usuario = ?', [$idCliente]);
+
+$propostaDoCliente = $proposta
+    && $solicitacao
+    && $prestador
+    && (int) $solicitacao['id_cliente'] === $idCliente
+    && (int) $proposta['id_solicitacao'] === (int) $solicitacao['id_solicitacao']
+    && (
+        empty($solicitacao['id_prestador'])
+        || (int) $solicitacao['id_prestador'] === (int) $proposta['id_prestador']
+    );
+
+if (!$propostaDoCliente) {
+    header('Location: pedidos.php');
+    exit;
+}
+
+$iniciaisAvatar = pegarIniciais($cliente['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? ''));
+$mensagem   = '';
+$jaAgendado = read($pdo, 'agendamento', 'id_proposta = ?', [$idProposta]);
+$podeAgendar = strtoupper((string) $proposta['status_proposta']) === 'ENVIADA' && !$jaAgendado;
+
+$dataForm        = trim((string) ($_POST['data_agendamento'] ?? ($solicitacao['data_solicitacao'] ?? '')));
+$horaForm        = trim((string) ($_POST['hora_agendamento'] ?? ''));
+$observacoesForm = (string) ($_POST['observacoes'] ?? '');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $podeAgendar) {
+    $dataValida = DateTime::createFromFormat('Y-m-d', $dataForm);
+    $horaValida = DateTime::createFromFormat('H:i', substr($horaForm, 0, 5));
+
+    if (!$dataValida || $dataValida->format('Y-m-d') !== $dataForm || !$horaValida) {
+        $mensagem = 'Escolha a data e o horário do atendimento.';
+    } elseif ($dataForm < date('Y-m-d')) {
+        $mensagem = 'A data do atendimento não pode estar no passado.';
+    } else {
+        try {
+            $idAgendamento = create($pdo, 'agendamento', [
+                'id_solicitacao'     => $solicitacao['id_solicitacao'],
+                'id_proposta'        => $proposta['id_proposta'],
+                'id_cliente'         => $idCliente,
+                'id_prestador'       => $proposta['id_prestador'],
+                'data_agendamento'   => $dataValida->format('Y-m-d'),
+                'hora_agendamento'   => $horaValida->format('H:i'),
+                'observacoes'        => trim($observacoesForm),
+                'status_agendamento' => 'AGENDADO',
+                'data_criacao'       => date('Y-m-d'),
+            ]);
+
+            update($pdo, 'proposta', ['status_proposta' => 'ACEITA'], 'id_proposta = ?', [$proposta['id_proposta']]);
+            update($pdo, 'solicitacao', ['status_solicitacao' => 'AGENDADA'], 'id_solicitacao = ?', [$solicitacao['id_solicitacao']]);
+
+            header('Location: acompanhar_pedido.php?id=' . urlencode((string) $idAgendamento));
+            exit;
+        } catch (Throwable $e) {
+            error_log('Erro ao agendar: ' . $e->getMessage());
+            $mensagem = 'Não foi possível confirmar o agendamento. Tente novamente.';
+        }
+    }
+}
+
+$dataDesejada = !empty($solicitacao['data_solicitacao'])
+    ? date('d/m/Y', strtotime($solicitacao['data_solicitacao']))
+    : '';
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendamento - HomeServices</title>
     <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/agendamento.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
+
 <body>
     <header class="cabecalho">
-        <a href="buscar.html" class="logo">HomeServices</a>
+        <div class="logo">HomeServices</div>
         <nav class="links">
-            <a href="buscar.html">Categorias</a>
-            <a href="pedidos.html">Meus pedidos</a>
-            <a href="#">Ajuda</a>
-            <a href="perfil.html" class="foto"><?= $iniciaisAvatar ?></a>
+            <a href="buscar.php">Buscar Serviços</a>
+            <a href="pedidos.php">Meus Pedidos</a>
+            <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
+            <a href="logout.php">Sair</a>
+            <div class="foto"><?= htmlspecialchars($iniciaisAvatar, ENT_QUOTES, 'UTF-8') ?></div>
         </nav>
     </header>
-    
+
     <main class="conteudo">
         <div class="titulo">
             <h1>Agende o serviço</h1>
-            <p>Escolha a melhor data e horário para receber o <?= htmlspecialchars($prestador['nome_usuario']) ?>.</p>
+            <p>Escolha a melhor data e horário para receber o <?= htmlspecialchars($prestador['nome_usuario'], ENT_QUOTES, 'UTF-8') ?>.</p>
         </div>
 
-        <form action="salvar_agendamento.php" method="POST" id="formAgendamento">
-            <input type="hidden" name="id_agendamento" value="<?= $agendamento['id_agendamento'] ?>">
-            <input type="hidden" name="data_escolhida" id="input_data">
-            <input type="hidden" name="hora_escolhida" id="input_hora">
+        <?php if ($mensagem !== ''): ?>
+            <p class="titulo"><?= htmlspecialchars($mensagem, ENT_QUOTES, 'UTF-8') ?></p>
+        <?php endif; ?>
 
-            <div class="bloco bloco-agendamento">
-                <div class="caixa selecao-tempo">
-                    <h3>1. Escolha a Data</h3>
-                    <input type="text" id="calendario-inline" style="display: none;">
-                    
-                    <h3 class="mt-40">2. Escolha o Horário</h3>
-                    <div class="grade-horarios" id="container-horarios">
-                        <p style="color: #718096; font-size: 14px;">Selecione uma data primeiro.</p>
+        <?php if ($jaAgendado): ?>
+            <p class="titulo">Este serviço já foi agendado.</p>
+            <a href="acompanhar_pedido.php?id=<?= (int) $jaAgendado['id_agendamento'] ?>" class="botao">Acompanhar pedido</a>
+        <?php elseif (!$podeAgendar): ?>
+            <p class="titulo">Esta proposta não está disponível para agendamento. Status: <?= htmlspecialchars((string) $proposta['status_proposta'], ENT_QUOTES, 'UTF-8') ?></p>
+            <a href="buscar.php" class="botao">Voltar para a busca</a>
+        <?php else: ?>
+            <form action="" method="POST">
+                <input type="hidden" name="id_proposta" value="<?= (int) $proposta['id_proposta'] ?>">
+
+                <div class="bloco bloco-agendamento">
+                    <div class="caixa selecao-tempo">
+                        <h3>1. Escolha a Data</h3>
+                        <input type="date" name="data_agendamento" class="campo-texto" required min="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($dataForm, ENT_QUOTES, 'UTF-8') ?>">
+
+                        <h3 class="mt-40">2. Escolha o Horário</h3>
+                        <input type="time" name="hora_agendamento" class="campo-texto" required value="<?= htmlspecialchars(substr($horaForm, 0, 5), ENT_QUOTES, 'UTF-8') ?>">
+
+                        <h3 class="mt-40">3. Observações</h3>
+                        <textarea name="observacoes" class="campo-texto" placeholder="Instruções para o profissional..."><?= htmlspecialchars($observacoesForm, ENT_QUOTES, 'UTF-8') ?></textarea>
                     </div>
 
-                    <h3 class="mt-40">3. Observações</h3>
-                    <textarea name="observacoes" class="campo-texto" placeholder="Instruções para o profissional..."></textarea>
+                    <div class="caixa resumo-agendamento">
+                        <h3>Resumo do Serviço</h3>
+                        <div class="detalhes-resumo">
+                            <div class="item-resumo">
+                                <span>Serviço</span>
+                                <strong><?= htmlspecialchars($solicitacao['desc_titulo'], ENT_QUOTES, 'UTF-8') ?></strong>
+                            </div>
+                            <div class="item-resumo">
+                                <span>Profissional</span>
+                                <strong><?= htmlspecialchars($prestador['nome_usuario'], ENT_QUOTES, 'UTF-8') ?></strong>
+                            </div>
+                            <div class="item-resumo">
+                                <span>Endereço</span>
+                                <strong><?= htmlspecialchars((string) $solicitacao['desc_endereco_atendimento'], ENT_QUOTES, 'UTF-8') ?></strong>
+                            </div>
+                            <?php if ($dataDesejada !== ''): ?>
+                                <div class="item-resumo">
+                                    <span>Data desejada</span>
+                                    <strong class="destaque-verde"><?= htmlspecialchars($dataDesejada, ENT_QUOTES, 'UTF-8') ?></strong>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="divisor-resumo"></div>
+
+                        <div class="valor-total">
+                            <span>Total Estimado</span>
+                            <strong>R$ <?= number_format((float) $proposta['valor_proposta'], 2, ',', '.') ?></strong>
+                        </div>
+
+                        <button type="submit" class="botao">Confirmar agendamento</button>
+                    </div>
                 </div>
-
-                <div class="caixa resumo-agendamento">
-                    <h3>Resumo do Serviço</h3>
-                    <div class="detalhes-resumo">
-                        <div class="item-resumo">
-                            <span>Serviço</span>
-                            <strong><?= htmlspecialchars($solicitacao['desc_titulo'] ?? 'Serviço Padrão') ?></strong>
-                        </div>
-                        <div class="item-resumo">
-                            <span>Profissional</span>
-                            <strong><?= htmlspecialchars($prestador['nome_usuario']) ?></strong>
-                        </div>
-                        <div class="item-resumo">
-                            <span>Data e Hora</span>
-                            <strong class="destaque-verde" id="resumo_data_hora">Selecione ao lado</strong>
-                        </div>
-                    </div>
-
-                    <div class="divisor-resumo"></div>
-
-                    <div class="valor-total">
-                        <span>Total Estimado</span>
-                        <strong>R$ <?= number_format((float)($proposta['valor_proposta'] ?? 0), 2, ',', '.') ?></strong>
-                    </div>
-
-                    <button type="submit" class="botao">Confirmar Agendamento</button>
-                </div>
-            </div>
-        </form>
+            </form>
+        <?php endif; ?>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
-    <script>
-        const inputData = document.getElementById('input_data');
-        const inputHora = document.getElementById('input_hora');
-        const containerHorarios = document.getElementById('container-horarios');
-        const textoResumo = document.getElementById('resumo_data_hora');
-        const idPrestador = <?= $prestador['id_usuario'] ?>;
-
-        flatpickr("#calendario-inline", {
-            inline: true,
-            locale: "pt",
-            minDate: "today",
-            onChange: function(selectedDates, dateStr) {
-                inputData.value = dateStr;
-                inputHora.value = '';
-                buscarHorarios(dateStr);
-            }
-        });
-
-        async function buscarHorarios(dataEscolhida) {
-            containerHorarios.innerHTML = '<p style="color: #718096; font-size: 14px;">A carregar horários...</p>';
-            
-            try {
-                const resposta = await fetch(`buscar_horarios.php?data=${dataEscolhida}&prestador=${idPrestador}`);
-                const dados = await resposta.json();
-                
-                containerHorarios.innerHTML = '';
-
-                if(dados.horarios.length === 0) {
-                    containerHorarios.innerHTML = '<p style="color: #718096; font-size: 14px;">Nenhum horário disponível.</p>';
-                    return;
-                }
-
-                dados.horarios.forEach(horario => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = horario.ocupado ? 'horario-slot ocupado' : 'horario-slot';
-                    btn.innerText = horario.hora;
-                    
-                    if(!horario.ocupado) {
-                        btn.addEventListener('click', function() {
-                            document.querySelectorAll('.horario-slot').forEach(b => b.classList.remove('ativo'));
-                            this.classList.add('ativo');
-                            inputHora.value = this.innerText;
-                            atualizarResumo();
-                        });
-                    }
-                    containerHorarios.appendChild(btn);
-                });
-                atualizarResumo();
-            } catch (erro) {
-                containerHorarios.innerHTML = '<p style="color: #e53e3e; font-size: 14px;">Erro ao carregar horários.</p>';
-            }
-        }
-
-        function atualizarResumo() {
-            if (inputData.value && inputHora.value) {
-                const dataParts = inputData.value.split('-');
-                textoResumo.innerText = `${dataParts[2]}/${dataParts[1]}/${dataParts[0]} às ${inputHora.value}`;
-            } else {
-                textoResumo.innerText = "Selecione ao lado";
-            }
-        }
-    </script>
 </body>
+
 </html>
