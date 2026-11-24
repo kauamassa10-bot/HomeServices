@@ -183,37 +183,42 @@ $iniciaisUsuarios = pegarIniciais($_SESSION['nome_usuario'] ?? '');
                 ];
             }
 
-            // Proposta mais recente de cada prestador/categoria para o cliente logado.
-            // Se existir uma ENVIADA, ela tem prioridade para o botão Agendar aparecer.
+            //Preparando variáveis para armazenar as propostas mais recentes por prestador e categoria
             $propostasPorChave = [];
             $idClienteLogado = (int) $_SESSION['id_usuario'];
+
+            //Buscando todas as solicitações do cliente logado
             $solicitacoesCliente = readAll($pdo, 'solicitacao', 'id_cliente = ?', [$idClienteLogado]);
 
+
+                //Verifica se há solicitações do cliente para buscar as propostas relacionadas
             if ($solicitacoesCliente !== []) {
-                $idsSolicitacao = array_column($solicitacoesCliente, 'id_solicitacao');
-                $marcadoresSolicitacao = implode(', ', array_fill(0, count($idsSolicitacao), '?'));
+
+                //Buscando todas as propostas relacionadas às solicitações do cliente
+                $idsSolicitacao = array_column($solicitacoesCliente, 'id_solicitacao'); //extrai os IDs das solicitações do cliente
+                $marcadoresSolicitacao = implode(', ', array_fill(0, count($idsSolicitacao), '?')); // gerando (?, ?, ...) para a cláusula IN
                 $propostasRecebidas = readAll(
                     $pdo,
                     'proposta',
-                    "id_solicitacao IN ({$marcadoresSolicitacao})",
+                    "id_solicitacao IN ({$marcadoresSolicitacao})", //IDs vão como parâmetros, então continua seguro.
                     $idsSolicitacao
-                );
-                $solicitacaoPorId = array_column($solicitacoesCliente, null, 'id_solicitacao');
+                ); // Busca todas as propostas relacionadas às solicitações do cliente
+                $solicitacaoPorId = array_column($solicitacoesCliente, null, 'id_solicitacao'); // criando um array associativo para acessar as solicitações pelo ID
 
-                foreach ($propostasRecebidas as $propostaItem) {
-                    $solicitacaoItem = $solicitacaoPorId[$propostaItem['id_solicitacao']] ?? null;
+                foreach ($propostasRecebidas as $propostaItem) { // Percorre cada proposta
+                    $solicitacaoItem = $solicitacaoPorId[$propostaItem['id_solicitacao']] ?? null; // Busca a solicitação correspondente à proposta atual
                     if ($solicitacaoItem === null) {
-                        continue;
+                        continue; // Para cada proposta, descobre a solicitação dela. Se não achar, pula.
                     }
 
-                    $chave = $propostaItem['id_prestador'] . '-' . $solicitacaoItem['id_categoria'];
-                    $atual = $propostasPorChave[$chave] ?? null;
-                    $novaEnviada = strtoupper((string) $propostaItem['status_proposta']) === 'ENVIADA';
-                    $atualEnviada = $atual !== null && strtoupper((string) $atual['status_proposta']) === 'ENVIADA';
-                    $maisNova = $atual === null || (int) $propostaItem['id_proposta'] > (int) $atual['id_proposta'];
+                    $chave = $propostaItem['id_prestador'] . '-' . $solicitacaoItem['id_categoria']; // A proposta traz o prestador, mas a categoria só existe na solicitação.
+                    $atual = $propostasPorChave[$chave] ?? null; // Verifica se já existe uma proposta armazenada para essa combinação de prestador e categoria
+                    $novaEnviada = strtoupper((string) $propostaItem['status_proposta']) === 'ENVIADA'; // Verifica se a proposta atual está com status "ENVIADA"
+                    $atualEnviada = $atual !== null && strtoupper((string) $atual['status_proposta']) === 'ENVIADA'; // Verifica se a proposta armazenada anteriormente está com status "ENVIADA"
+                    $maisNova = $atual === null || (int) $propostaItem['id_proposta'] > (int) $atual['id_proposta']; // Verifica se a proposta atual é mais recente do que a armazenada anteriormente 
 
                     if ($atual === null || ($novaEnviada && !$atualEnviada) || ($novaEnviada === $atualEnviada && $maisNova)) {
-                        $propostasPorChave[$chave] = $propostaItem;
+                        $propostasPorChave[$chave] = $propostaItem; // Armazena a proposta atual como a mais recente para essa combinação de prestador e categoria, se ela for mais nova ou se for a primeira encontrada.
                     }
                 }
             }
@@ -227,8 +232,8 @@ $iniciaisUsuarios = pegarIniciais($_SESSION['nome_usuario'] ?? '');
                         $notaArredondada = (int) round((float) $servico['nota_media']);
                         $estrelas = str_repeat('★', $notaArredondada) . str_repeat('☆', 5 - $notaArredondada);
                         $chaveProposta = $servico['id_prestador'] . '-' . $servico['id_categoria'];
-                        $propostaCard = $propostasPorChave[$chaveProposta] ?? null;
-                        $propostaEnviada = $propostaCard !== null && strtoupper((string) $propostaCard['status_proposta']) === 'ENVIADA';
+                        $propostaCard = $propostasPorChave[$chaveProposta] ?? null; // Obtém a proposta mais recente para o prestador e categoria do serviço atual
+                        $propostaEnviada = $propostaCard !== null && strtoupper((string) $propostaCard['status_proposta']) === 'ENVIADA'; // Verifica se a proposta mais recente está com status "ENVIADA"
                         ?>
                         <div class="card-servico">
                             <div class="card-foto">Foto</div>
@@ -251,7 +256,6 @@ $iniciaisUsuarios = pegarIniciais($_SESSION['nome_usuario'] ?? '');
                                 <?php else: ?>
                                     <p class="txt-secundario">A partir de R$ <?= number_format((float) $servico['valor_base'], 2, ',', '.') ?></p>
                                 <?php endif; ?>
-                                <span class="badge-verificada">Verificado(a)</span>
                                 <?php if ($propostaEnviada): ?>
                                     <a href="agendamento.php?id_proposta=<?= (int) $propostaCard['id_proposta'] ?>" class="btn-orcamento">Agendar</a>
                                 <?php endif; ?>
