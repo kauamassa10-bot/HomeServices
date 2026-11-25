@@ -403,3 +403,16 @@ button[type="reset"].btn-filtros:hover {
 .btn-orcamento:active {
     transform: translateY(0);
 }
+
+/* Categoria selecionada (efeito azul / verde-turquesa) */
+.categoria-ativa {
+    background:
+        radial-gradient(circle at 92% 12%, rgba(51, 173, 152, 0.55), transparent 50%),
+        linear-gradient(135deg, var(--azure) 0%, var(--azure-escuro) 100%) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(34, 91, 117, 0.28);
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}

@@ -96,7 +96,6 @@ $notaMedia = count($avaliacoes) > 0 ? ($somaNotas / count($avaliacoes)) : 0;
                     <p><?= htmlspecialchars($categoriaPrincipal) ?></p>
                 </div>
 
-                <button class="btn-editar" onclick="window.location.href='editar_perfil.php'">Editar Perfil</button>
                 <button class="btn-logout" onclick="window.location.href='logout.php'">Sair</button>
             </aside>
 
@@ -119,7 +118,7 @@ $notaMedia = count($avaliacoes) > 0 ? ($somaNotas / count($avaliacoes)) : 0;
                             </div>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <p style="color: #666; padding: 15px 0;">Nenhuma avaliação recebida ainda.</p>
+                        <p>Nenhuma avaliação recebida ainda.</p>
                     <?php endif; ?>
                 </div>
             </section>

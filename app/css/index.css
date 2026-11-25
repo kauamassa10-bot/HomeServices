@@ -162,3 +162,35 @@ main {
     background-color: rgba(236, 122, 70, 0.16);
 }
 
+.header-simples {
+    top: 0;
+    background:
+        radial-gradient(circle at 92% 12%, rgba(51, 173, 152, 0.45), transparent 44%),
+        radial-gradient(circle at 8% 108%, rgba(236, 122, 70, 0.22), transparent 40%),
+        linear-gradient(135deg, rgba(34, 91, 117, 0.88) 0%, rgba(23, 66, 90, 0.92) 100%);
+    box-shadow: 0 4px 16px rgba(34, 91, 117, 0.22);
+}
+
+.header-simples .header-container {
+    max-width: 100%;
+    margin: 0;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.header-simples .logo-texto,
+.header-simples .logo-texto a,
+.header-simples .logo-texto a:link,
+.header-simples .logo-texto a:visited,
+.header-simples .logo-texto a:active {
+    margin: 0;
+    text-align: left;
+    color: var(--turquesa);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.header-simples .logo-texto a:hover {
+    color: var(--turquesa-claro);
+}

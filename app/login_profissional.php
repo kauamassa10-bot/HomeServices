@@ -59,11 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <header class="header-simples">
         <div class="header-container">
-            <h1 class="logo-texto">HomeServices</h1>
-            <nav class="menu-topo">
-                <a href="index.php">Início</a>
-                <a href="login_cliente.php">Sou Cliente</a>
-            </nav>
+         <h1 class="logo-texto"><a href="index.php">HomeServices</a></h1>
         </div>
     </header>
 

@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="detalhes-resumo">
                     <strong>Vantagens da Plataforma</strong>
                     <p>Após o cadastro, você terá acesso ao Portal do Profissional onde poderá:</p>
-                    <ul style="margin-top: 10px; padding-left: 20px; color: #555; font-size: 0.9rem; line-height: 1.6;">
+                    <ul style="margin-top: 10px; padding-left: 20px; color: #ffffff; font-size: 0.9rem; line-height: 1.6;">
                         <li>Cadastrar e divulgar todos os seus serviços;</li>
                         <li>Receber pedidos de orçamentos de clientes;</li>
                         <li>Acompanhar o status dos seus atendimentos.</li>

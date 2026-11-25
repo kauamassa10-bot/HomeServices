@@ -43,7 +43,7 @@ if (isset($_SESSION['id_usuario'])) {
 
     <header class="header-simples">
         <div class="header-container">
-            <h1 class="logo-texto">HomeServices</h1>
+            <h1 class="logo-texto"><a href="index.php">HomeServices</a></h1>
             <!-- O menu superior foi removido daqui para deixar o cabeçalho mais limpo -->
         </div>
     </header>

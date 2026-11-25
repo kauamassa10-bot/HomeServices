@@ -2,12 +2,60 @@
 require_once __DIR__ . '/auth_admin.php'; // Protege a página: só ADMIN acessa
 require_once __DIR__ . '/init.php';
 
-
 $cliente = read($pdo, "usuario");
 $iniciaisUsuario = pegarIniciais($cliente['nome_usuario']);
 
 $mensagem = '';
 $erro = '';
+
+/**
+ * Remove recursivamente todos os registros vinculados a um usuário
+ * em tabelas filhas antes de excluir o próprio usuário.
+ */
+function excluirDependenciasUsuario(PDO $pdo, string $tabela, string $colunaPk, int $id, array &$visitados = []): void
+{
+    $chave = "{$tabela}:{$colunaPk}:{$id}";
+    if (isset($visitados[$chave])) {
+        return;
+    }
+    $visitados[$chave] = true;
+
+    $stmtFks = $pdo->prepare("
+        SELECT TABLE_NAME, COLUMN_NAME
+        FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND REFERENCED_TABLE_NAME = :tabela
+          AND REFERENCED_COLUMN_NAME = :coluna
+    ");
+    $stmtFks->execute([':tabela' => $tabela, ':coluna' => $colunaPk]);
+
+    foreach ($stmtFks->fetchAll(PDO::FETCH_ASSOC) as $fk) {
+        $tabFilha = $fk['TABLE_NAME'];
+        $colFilha = $fk['COLUMN_NAME'];
+
+        $stmtPk = $pdo->prepare("
+            SELECT COLUMN_NAME
+            FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME = :tabela
+              AND CONSTRAINT_NAME = 'PRIMARY'
+            LIMIT 1
+        ");
+        $stmtPk->execute([':tabela' => $tabFilha]);
+        $pkFilha = $stmtPk->fetchColumn();
+
+        if ($pkFilha) {
+            $stmtIds = $pdo->prepare("SELECT `{$pkFilha}` FROM `{$tabFilha}` WHERE `{$colFilha}` = :id");
+            $stmtIds->execute([':id' => $id]);
+            foreach ($stmtIds->fetchAll(PDO::FETCH_COLUMN) as $idFilho) {
+                excluirDependenciasUsuario($pdo, $tabFilha, $pkFilha, (int) $idFilho, $visitados);
+            }
+        }
+
+        $stmtDel = $pdo->prepare("DELETE FROM `{$tabFilha}` WHERE `{$colFilha}` = :id");
+        $stmtDel->execute([':id' => $id]);
+    }
+}
 
 // --- FUNÇÕES EXCLUSIVAS DO ADMINISTRADOR ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,7 +71,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mensagem = "Nova categoria '{$nome_cat}' criada com sucesso!";
         }
 
-        // 2. Ativar ou Desativar (Bloquear) Usuário
+        // 2. Ativar ou Desativar Categoria
+        if ($acao === 'alternar_status_categoria') {
+            $id_cat = (int) $_POST['id_categoria'];
+            $novo_status = (int) $_POST['novo_status'];
+            $stmt = $pdo->prepare("UPDATE categoria SET status_ativo = :status WHERE id_categoria = :id");
+            $stmt->execute([':status' => $novo_status, ':id' => $id_cat]);
+            $mensagem = "Status da categoria #{$id_cat} atualizado!";
+        }
+
+        // 3. Excluir Categoria
+        if ($acao === 'excluir_categoria') {
+            $id_cat = (int) $_POST['id_categoria'];
+            $stmt = $pdo->prepare("DELETE FROM categoria WHERE id_categoria = :id");
+            $stmt->execute([':id' => $id_cat]);
+            $mensagem = "Categoria #{$id_cat} excluída com sucesso.";
+        }
+
+        // 4. Ativar ou Desativar (Bloquear) Usuário
         if ($acao === 'alternar_status') {
             $id_alvo = (int) $_POST['id_usuario'];
             $novo_status = (int) $_POST['novo_status'];
@@ -32,15 +97,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mensagem = "Status do usuário #{$id_alvo} atualizado!";
         }
 
-        // 3. Excluir Usuário
+        // 5. Excluir Usuário e todos os seus vínculos
         if ($acao === 'excluir_usuario') {
             $id_alvo = (int) $_POST['id_usuario'];
-            $stmt = $pdo->prepare("DELETE FROM usuario WHERE id_usuario = :id AND tipo_usuario != 'ADMIN'");
-            $stmt->execute([':id' => $id_alvo]);
-            $mensagem = "Usuário #{$id_alvo} removido do sistema.";
+
+            $stmtCheck = $pdo->prepare("SELECT tipo_usuario FROM usuario WHERE id_usuario = :id");
+            $stmtCheck->execute([':id' => $id_alvo]);
+            $tipoAlvo = strtoupper((string) $stmtCheck->fetchColumn());
+
+            if ($tipoAlvo !== '' && $tipoAlvo !== 'ADMIN') {
+                $pdo->beginTransaction();
+                try {
+                    excluirDependenciasUsuario($pdo, 'usuario', 'id_usuario', $id_alvo);
+
+                    $stmt = $pdo->prepare("DELETE FROM usuario WHERE id_usuario = :id AND tipo_usuario != 'ADMIN'");
+                    $stmt->execute([':id' => $id_alvo]);
+
+                    $pdo->commit();
+                    $mensagem = "Usuário #{$id_alvo} e seus registros vinculados foram removidos do sistema.";
+                } catch (PDOException $e) {
+                    if ($pdo->inTransaction()) {
+                        $pdo->rollBack();
+                    }
+                    throw $e;
+                }
+            }
         }
 
-        // 4. Excluir Serviço
+        // 6. Excluir Serviço
         if ($acao === 'excluir_servico') {
             $id_serv = (int) $_POST['id_servico'];
             $stmt = $pdo->prepare("DELETE FROM servico WHERE id_servico = :id");
@@ -78,11 +162,7 @@ $servicos = $pdo->query($sqlServicos)->fetchAll(PDO::FETCH_ASSOC);
 
     <header class="header-simples">
         <div class="header-container">
-            <h1 class="logo-texto">HomeServices</h1>
-            <nav class="menu-topo">
-                <a href="cadastro_servicos.php">Novo Serviço</a>
-                <a href="registros.php">Painel Admin</a>
-            </nav>
+            <h1 class="logo-texto"><a href="index.php">HomeServices</a></h1>
             <div class='foto'>
                 <?= $iniciaisUsuario ?>
             </div>
@@ -119,7 +199,58 @@ $servicos = $pdo->query($sqlServicos)->fetchAll(PDO::FETCH_ASSOC);
             </form>
         </section>
 
-        <!-- TABELA 1: CLIENTES -->
+        <!-- TABELA 1: CATEGORIAS -->
+        <section class="secao-tabela">
+            <h3>Categorias Cadastradas (<?= count($categorias) ?>)</h3>
+            <table class="tabela-dados">
+                <thead>
+                    <tr>
+                        <th>#ID</th>
+                        <th>Categoria</th>
+                        <th>Descrição</th>
+                        <th>Status</th>
+                        <th>Ações Admin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($categorias)): ?>
+                        <tr><td colspan="5" class="vazio-linha">Nenhuma categoria cadastrada.</td></tr>
+                    <?php else: ?>
+                        <?php foreach ($categorias as $cat): ?>
+                            <tr>
+                                <td><?= $cat['id_categoria'] ?></td>
+                                <td><strong><?= htmlspecialchars($cat['nome_categoria']) ?></strong></td>
+                                <td><?= htmlspecialchars($cat['desc_categoria'] ?? '-') ?></td>
+                                <td>
+                                    <?php if ($cat['status_ativo']): ?>
+                                        <span class="badge-ativo">Ativa</span>
+                                    <?php else: ?>
+                                        <span class="badge-inativo">Inativa</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="acoes-cell">
+                                    <form method="POST" class="form-inline-acao">
+                                        <input type="hidden" name="acao" value="alternar_status_categoria">
+                                        <input type="hidden" name="id_categoria" value="<?= $cat['id_categoria'] ?>">
+                                        <input type="hidden" name="novo_status" value="<?= $cat['status_ativo'] ? 0 : 1 ?>">
+                                        <button type="submit" class="btn-acao <?= $cat['status_ativo'] ? 'btn-bloquear' : 'btn-ativar' ?>">
+                                            <?= $cat['status_ativo'] ? 'Desativar' : 'Ativar' ?>
+                                        </button>
+                                    </form>
+                                    <form method="POST" class="form-inline-acao" onsubmit="return confirm('Deseja remover esta categoria?');">
+                                        <input type="hidden" name="acao" value="excluir_categoria">
+                                        <input type="hidden" name="id_categoria" value="<?= $cat['id_categoria'] ?>">
+                                        <button type="submit" class="btn-acao btn-excluir">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- TABELA 2: CLIENTES -->
         <section class="secao-tabela">
             <h3>Clientes Cadastrados (<?= count($clientes) ?>)</h3>
             <table class="tabela-dados">
@@ -159,7 +290,7 @@ $servicos = $pdo->query($sqlServicos)->fetchAll(PDO::FETCH_ASSOC);
                                             <?= $cli['status_ativo'] ? 'Bloquear' : 'Ativar' ?>
                                         </button>
                                     </form>
-                                    <form method="POST" class="form-inline-acao" onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
+                                    <form method="POST" class="form-inline-acao" onsubmit="return confirm('Tem certeza que deseja excluir este cliente e todos os seus registros?');">
                                         <input type="hidden" name="acao" value="excluir_usuario">
                                         <input type="hidden" name="id_usuario" value="<?= $cli['id_usuario'] ?>">
                                         <button type="submit" class="btn-acao btn-excluir">Excluir</button>
@@ -172,7 +303,7 @@ $servicos = $pdo->query($sqlServicos)->fetchAll(PDO::FETCH_ASSOC);
             </table>
         </section>
 
-        <!-- TABELA 2: PROFISSIONAIS -->
+        <!-- TABELA 3: PROFISSIONAIS -->
         <section class="secao-tabela">
             <h3>Profissionais Cadastrados (<?= count($profissionais) ?>)</h3>
             <table class="tabela-dados">
@@ -212,7 +343,7 @@ $servicos = $pdo->query($sqlServicos)->fetchAll(PDO::FETCH_ASSOC);
                                             <?= $prof['status_ativo'] ? 'Bloquear' : 'Ativar' ?>
                                         </button>
                                     </form>
-                                    <form method="POST" class="form-inline-acao" onsubmit="return confirm('Tem certeza que deseja excluir este profissional?');">
+                                    <form method="POST" class="form-inline-acao" onsubmit="return confirm('Tem certeza que deseja excluir este profissional e todos os seus registros?');">
                                         <input type="hidden" name="acao" value="excluir_usuario">
                                         <input type="hidden" name="id_usuario" value="<?= $prof['id_usuario'] ?>">
                                         <button type="submit" class="btn-acao btn-excluir">Excluir</button>
@@ -225,7 +356,7 @@ $servicos = $pdo->query($sqlServicos)->fetchAll(PDO::FETCH_ASSOC);
             </table>
         </section>
 
-        <!-- TABELA 3: SERVIÇOS -->
+        <!-- TABELA 4: SERVIÇOS -->
         <section class="secao-tabela">
             <h3>Serviços Cadastrados (<?= count($servicos) ?>)</h3>
             <table class="tabela-dados">
