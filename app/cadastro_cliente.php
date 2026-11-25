@@ -45,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/global.css">
 </head>
+
 <body class="fundo-claro">
     <header class="header-simples">
         <div class="header-container">
@@ -112,6 +114,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
             </form>
         </section>
+
+        <aside class="coluna-direita">
+            <div class="card-resumo">
+                <div class="detalhes-resumo">
+                    <strong>Vantagens da Plataforma</strong>
+                    <p>Após o cadastro, você terá acesso ao Portal do Profissional onde poderá:</p>
+                    <ul style="margin-top: 10px; padding-left: 20px; color: #ffffff; font-size: 0.9rem; line-height: 1.6;">
+                        <li>Cadastrar e divulgar todos os seus serviços;</li>
+                        <li>Receber pedidos de orçamentos de clientes;</li>
+                        <li>Acompanhar o status dos seus atendimentos.</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
     </main>
 </body>
+
 </html>
