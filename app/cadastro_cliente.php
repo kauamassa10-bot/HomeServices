@@ -1,50 +1,44 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
-require_once __DIR__ . '/banco/database.php';
-
-/** @var PDO $pdo */
 
 $mensagem = '';
 $isAdmin = (strtoupper($_SESSION['tipo_usuario'] ?? '') === 'ADMIN');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome     = trim($_POST['nome_usuario'] ?? '');
+    $nome     = trim($_POST['nome_usuario'] ?? $_POST['nome'] ?? '');
     $email    = trim($_POST['email'] ?? '');
     $telefone = trim($_POST['telefone'] ?? '');
     $senha    = trim($_POST['senha'] ?? '');
 
-    // Verifica se o e-mail já está cadastrado para evitar contas duplicadas
-    $check = $pdo->prepare("SELECT id_usuario FROM usuario WHERE email = :email LIMIT 1");
-    $check->execute([':email' => $email]);
-
-    if ($check->fetch()) {
-        $mensagem = "<div class='erro'>Este e-mail já está cadastrado. Tente fazer login ou use outro e-mail.</div>";
+    if ($nome === '' || $email === '' || $senha === '') {
+        $mensagem = 'Preencha todos os campos obrigatórios.';
     } else {
-        $sql = "INSERT INTO usuario (nome_usuario, email, senha, telefone, tipo_usuario, status_ativo, data_cadastro) 
-                VALUES (:nome, :email, :senha, :telefone, 'CLIENTE', 1, NOW())";
+        // Verifica se o e-mail já está cadastrado usando read() do CRUD
+        $jaExiste = read($pdo, 'usuario', 'email = ?', [$email]);
 
-        $stmt = $pdo->prepare($sql);
+        if ($jaExiste) {
+            $mensagem = 'Este e-mail já está cadastrado. Tente fazer login ou use outro e-mail.';
+        } else {
+            try {
+                create($pdo, 'usuario', [
+                    'nome_usuario'  => $nome,
+                    'email'         => $email,
+                    'senha'         => $senha,
+                    'telefone'      => $telefone,
+                    'tipo_usuario'  => 'CLIENTE',
+                    'status_ativo'  => 1,
+                    'data_cadastro' => date('Y-m-d'),
+                ]);
 
-        try {
-            $stmt->execute([
-                ':nome'     => $nome,
-                ':email'    => $email,
-                ':senha'    => $senha,
-                ':telefone' => $telefone
-            ]);
-
-            // Se for ADMIN cadastrando, volta para o painel; se for visitante, vai para o login do cliente
-            if ($isAdmin) {
-                header("Location: registros.php?sucesso=cliente");
-            } else {
-                header("Location: login_cliente.php?sucesso=cadastro");
+                if ($isAdmin) {
+                    header("Location: registros.php?sucesso=cliente");
+                } else {
+                    header("Location: login_cliente.php?sucesso=cadastro");
+                }
+                exit;
+            } catch (Throwable $e) {
+                $mensagem = 'Erro ao cadastrar cliente. Tente novamente.';
             }
-            exit;
-        } catch (PDOException $e) {
-            $mensagem = "<div class='erro'>Erro ao cadastrar cliente: " . htmlspecialchars($e->getMessage()) . "</div>";
         }
     }
 }
@@ -80,14 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h2><?= $isAdmin ? 'Cadastrar Cliente' : 'Criar Conta de Cliente' ?></h2>
             <p class="subtitulo">Preencha os dados para registrar um novo cliente</p>
 
-            <?php if (!empty($erro)): ?>
-                <div class="alerta-erro"><?= htmlspecialchars($erro) ?></div>
+            <?php if ($mensagem !== ''): ?>
+                <div class="alerta-erro"><?= htmlspecialchars($mensagem) ?></div>
             <?php endif; ?>
 
             <form method="POST" action="" class="form-login" autocomplete="off">
                 <div class="grupo-campo">
-                    <label for="nome">Nome Completo</label>
-                    <input type="text" id="nome" name="nome" placeholder="O seu nome" required>
+                    <label for="nome_usuario">Nome Completo</label>
+                    <input type="text" id="nome_usuario" name="nome_usuario" placeholder="O seu nome" required>
                 </div>
 
                 <div class="grupo-campo">
@@ -96,27 +90,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="grupo-campo">
+                    <label for="telefone">Telefone</label>
+                    <input type="tel" id="telefone" name="telefone" placeholder="(11) 99999-9999" required>
+                </div>
+
+                <div class="grupo-campo">
                     <label for="senha">Senha</label>
                     <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required minlength="6">
                 </div>
 
                 <div class="botoes-rodape">
-                    <button type="submit" class="btn-solido" style="width: 100%;">
+                    <button type="submit" class="btn-solido btn-largura-total">
                         <?= $isAdmin ? 'Salvar Cliente' : 'Concluir Cadastro' ?>
                     </button>
                 </div>
 
                 <?php if (!$isAdmin): ?>
-                    <div style="margin-top: 15px; text-align: center; font-size: 0.9rem;">
+                    <p class="subtitulo">
                         Já possui uma conta? <a href="login_cliente.php">Faça login aqui</a>
-                    </div>
+                    </p>
                 <?php endif; ?>
             </form>
-
-            <div style="margin-top: 15px; text-align: center; font-size: 0.9rem;">
-                Já tem uma conta? <a href="login_cliente.php" style="color: #2b5cbf; font-weight: bold;">Faça login aqui</a>
-            </div>
-        </div>
+        </section>
     </main>
 </body>
 </html>
