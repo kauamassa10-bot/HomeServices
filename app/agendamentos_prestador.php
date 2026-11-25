@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__ . '/init.php';
 
-/** @var PDO $pdo */
-
 if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'PRESTADOR') {
     header("Location: login_profissional.php?erro=acesso_negado");
     exit;
@@ -12,7 +10,6 @@ $idPrestador = (int) $_SESSION['id_usuario'];
 $nomeCompleto = $_SESSION['nome_usuario'] ?? 'Profissional';
 $iniciais = pegarIniciais($nomeCompleto);
 
-// Atualiza status usando update() do CRUD
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_agendamento'], $_POST['novo_status'])) {
     $idAgendamento = (int) $_POST['id_agendamento'];
     $novoStatus = strtoupper(trim($_POST['novo_status']));
@@ -33,14 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_agendamento'], $_P
 }
 
 $aba = $_GET['aba'] ?? 'abertos';
-
 $todosAgendamentos = readAll($pdo, 'agendamento', 'id_prestador = ?', [$idPrestador]);
-$usuarios = readAll($pdo, 'usuario');
-$usuarioPorId = array_column($usuarios, null, 'id_usuario');
-$solicitacoes = readAll($pdo, 'solicitacao');
-$solicitacaoPorId = array_column($solicitacoes, null, 'id_solicitacao');
-$propostas = readAll($pdo, 'proposta', 'id_prestador = ?', [$idPrestador]);
-$propostaPorId = array_column($propostas, null, 'id_proposta');
 
 $agendamentos = [];
 foreach ($todosAgendamentos as $ag) {
@@ -69,6 +59,7 @@ usort($agendamentos, static function (array $a, array $b): int {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Agendamentos - HomeServices</title>
+    <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/agendamentos_prestador.css">
 </head>
@@ -82,9 +73,10 @@ usort($agendamentos, static function (array $a, array $b): int {
             <a href="mural_solicitacoes.php">Solicitações</a>
             <a href="agendamentos_prestador.php" class="active">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
+            <a href="perfil.php">Perfil</a>
         </nav>
         <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
-            <a href="perfil.php"><?= htmlspecialchars($iniciais) ?></a>
+            <a href="perfil.php" class="sem-sublinhado"><?= htmlspecialchars($iniciais) ?></a>
         </div>
     </header>
 
@@ -92,20 +84,24 @@ usort($agendamentos, static function (array $a, array $b): int {
         <h2 class="titulo-pagina">Meus Agendamentos</h2>
 
         <div class="tabs-container">
-            <a href="?aba=abertos" class="tab-btn <?= $aba === 'abertos' ? 'active' : '' ?>" style="text-decoration: none;">Em Aberto</a>
-            <a href="?aba=caminho" class="tab-btn <?= $aba === 'caminho' ? 'active' : '' ?>" style="text-decoration: none;">A Caminho</a>
-            <a href="?aba=execucao" class="tab-btn <?= $aba === 'execucao' ? 'active' : '' ?>" style="text-decoration: none;">Em Execução</a>
-            <a href="?aba=concluidos" class="tab-btn <?= $aba === 'concluidos' ? 'active' : '' ?>" style="text-decoration: none;">Concluídos</a>
-            <a href="?aba=cancelados" class="tab-btn <?= $aba === 'cancelados' ? 'active' : '' ?>" style="text-decoration: none;">Cancelados</a>
+            <a href="?aba=abertos" class="tab-btn sem-sublinhado <?= $aba === 'abertos' ? 'active' : '' ?>">Em Aberto</a>
+            <a href="?aba=caminho" class="tab-btn sem-sublinhado <?= $aba === 'caminho' ? 'active' : '' ?>">A Caminho</a>
+            <a href="?aba=execucao" class="tab-btn sem-sublinhado <?= $aba === 'execucao' ? 'active' : '' ?>">Em Execução</a>
+            <a href="?aba=concluidos" class="tab-btn sem-sublinhado <?= $aba === 'concluidos' ? 'active' : '' ?>">Concluídos</a>
+            <a href="?aba=cancelados" class="tab-btn sem-sublinhado <?= $aba === 'cancelados' ? 'active' : '' ?>">Cancelados</a>
         </div>
 
         <div class="agendamentos-grid">
             <?php if (count($agendamentos) > 0): ?>
                 <?php foreach ($agendamentos as $ag): ?>
                     <?php
-                        $cliente = $usuarioPorId[$ag['id_cliente']] ?? [];
-                        $solicitacao = $solicitacaoPorId[$ag['id_solicitacao']] ?? [];
-                        $proposta = $propostaPorId[$ag['id_proposta']] ?? [];
+                        $cliente = read($pdo, 'usuario', 'id_usuario = ?', [$ag['id_cliente']]) ?: [];
+                        $solicitacao = read($pdo, 'solicitacao', 'id_solicitacao = ?', [$ag['id_solicitacao']]) ?: [];
+                        $proposta = read($pdo, 'proposta', 'id_proposta = ?', [$ag['id_proposta']]) ?: [];
+
+                        $nomeCliente = !empty($cliente['nome_usuario']) ? $cliente['nome_usuario'] : 'Cliente #' . (int) $ag['id_cliente'];
+                        $telCliente = !empty($cliente['telefone']) ? $cliente['telefone'] : 'Não informado';
+
                         $st = strtoupper($ag['status_agendamento']);
                         $bgCard = ($st === 'EM_EXECUCAO' || $st === 'A_CAMINHO') ? 'bg-execucao' : 'bg-pendente';
                         $badgeCor = ($st === 'EM_EXECUCAO' || $st === 'A_CAMINHO') ? 'badge-azul' : 'badge-laranja';
@@ -115,10 +111,15 @@ usort($agendamentos, static function (array $a, array $b): int {
                     <div class="agendamento-card <?= $bgCard ?>">
                         <div class="info-pedido">
                             <h4>Pedido #<?= (int) $ag['id_agendamento'] ?> · <?= htmlspecialchars($solicitacao['desc_titulo'] ?? '') ?></h4>
-                            <p>Cliente: <?= htmlspecialchars($cliente['nome_usuario'] ?? 'Cliente') ?> · Tel: <?= htmlspecialchars($cliente['telefone'] ?? 'Não informado') ?></p>
+                            <p>Cliente: <?= htmlspecialchars($nomeCliente) ?> · Tel: <?= htmlspecialchars($telCliente) ?></p>
                             <p><?= htmlspecialchars($solicitacao['desc_endereco_atendimento'] ?? '') ?></p>
                             <p>Data/Hora: <?= htmlspecialchars($dataFmt) ?> às <?= htmlspecialchars($horaFmt) ?></p>
                             <p>Valor acordado: R$ <?= number_format((float) ($proposta['valor_proposta'] ?? 0), 2, ',', '.') ?></p>
+                            <?php if (!empty($ag['observacoes'])): ?>
+                                <p class="recado-cliente">
+                                    <strong>Recado do cliente:</strong> <?= nl2br(htmlspecialchars($ag['observacoes'])) ?>
+                                </p>
+                            <?php endif; ?>
                         </div>
                         <div class="acoes-pedido">
                             <div class="badge-status-top <?= $badgeCor ?>"><?= htmlspecialchars($st) ?></div>
@@ -134,7 +135,7 @@ usort($agendamentos, static function (array $a, array $b): int {
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <p style="color: #666; padding: 20px;">Nenhum agendamento encontrado nesta aba.</p>
+                <p class="mensagem-vazia">Nenhum agendamento encontrado nesta aba.</p>
             <?php endif; ?>
         </div>
     </main>
