@@ -49,7 +49,7 @@ if (isset($_SESSION['id_usuario'])) {
     </header>
 
    <main>
-        <img src="imagens/homeservices_simbolo_casa.png" alt="Símbolo HomeServices" class="logo-casa-topo">
+        <img src="imagens/Code_Generated_Image (1).png" alt="Símbolo HomeServices" class="logo-casa-topo">
 
         <section class="hero">
             <h2>Encontre o profissional certo ou ofereça os seus serviços.</h2>
@@ -61,7 +61,7 @@ if (isset($_SESSION['id_usuario'])) {
             </div>
         </section>
 
-        <img src="imagens/homeservices_wordmark.png" alt="HomeServices" class="logo-wordmark-base">
+        <img src="imagens/homeservices.png" alt="HomeServices" class="logo-wordmark-base">
     </main>
 
     <!-- O link de Administração foi movido para o rodapé -->
