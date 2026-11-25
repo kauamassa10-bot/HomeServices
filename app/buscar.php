@@ -12,9 +12,9 @@ if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '
 $usuarios = readAll($pdo, "usuario");
 $categorias = readAll($pdo, "categoria");
 
-$iniciaisUsuarios = pegarIniciais($_SESSION['nome_usuario'] ?? '');
-
-
+// $iniciaisUsuarios = pegarIniciais($_SESSION['nome_usuario'] ?? '');
+$nomeCompleto = $dadosUsuario['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? 'Usuário');
+$iniciais = pegarIniciais($nomeCompleto);
 ?>
 
 <!DOCTYPE html>
@@ -38,9 +38,8 @@ $iniciaisUsuarios = pegarIniciais($_SESSION['nome_usuario'] ?? '');
             <a href="pedidos.php">Meus Pedidos</a>
             <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
             <a href="logout.php">Sair</a>
-            <div class="foto">
-                <?= $iniciaisUsuarios; ?>
-            </div>
+            <a href="perfil_cliente.php" class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
+
         </nav>
     </header>
 
