@@ -235,7 +235,6 @@ $iniciais = pegarIniciais($nomeCompleto);
                         $propostaEnviada = $propostaCard !== null && strtoupper((string) $propostaCard['status_proposta']) === 'ENVIADA'; // Verifica se a proposta mais recente está com status "ENVIADA"
                         ?>
                         <div class="card-servico">
-                            <div class="card-foto">Foto</div>
                             <div class="card-info">
                                 <h3>
                                     <?= htmlspecialchars($servico['nome_servico'], ENT_QUOTES, 'UTF-8') ?>
