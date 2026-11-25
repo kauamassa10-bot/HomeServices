@@ -28,7 +28,11 @@ $cliente     = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_cliente
 $proposta    = read($pdo, 'proposta', 'id_proposta = ?', [$agendamento['id_proposta']]);
 
 $iniciaisAvatar = pegarIniciais($cliente['nome_usuario']);
-$dataHora = date('d/m/Y \à\s H:i', strtotime($agendamento['data_agendamento']));
+$dataFormatada = date('d/m/Y', strtotime($agendamento['data_agendamento']));
+$horaFormatada = substr($agendamento['hora_agendamento'] ?? '00:00', 0, 5);
+$dataHora = $dataFormatada . ' às ' . $horaFormatada;
+
+
 
 $statusMap = [
     'SOLICITADO'  => 1,
@@ -97,13 +101,20 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
 
         <div class="bloco">
             <div class="caixa historico">
-                <h3>Detalhes do Pedido</h3>
-                <div class="itemhistorico"><strong>Serviço:</strong> <?= htmlspecialchars($solicitacao['desc_titulo']) ?></div>
-                <div class="itemhistorico"><strong>Descrição:</strong> <?= htmlspecialchars($solicitacao['desc_solicitacao']) ?></div>
-                <div class="itemhistorico"><strong>Endereço:</strong> <?= htmlspecialchars($solicitacao['desc_endereco_atendimento']) ?></div>
-                <div class="itemhistorico"><strong>Valor Aceito:</strong> R$ <?= number_format((float)$proposta['valor_proposta'], 2, ',', '.') ?></div>
-                <div class="itemhistorico"><strong>Prestador:</strong> <?= htmlspecialchars($prestador['nome_usuario']) ?> (<?= htmlspecialchars($prestador['telefone']) ?>)</div>
-            </div>
+    <h3>Detalhes do Pedido</h3>
+    <div class="itemhistorico"><strong>Serviço:</strong> <?= htmlspecialchars($solicitacao['desc_titulo']) ?></div>
+    <div class="itemhistorico"><strong>Descrição:</strong> <?= htmlspecialchars($solicitacao['desc_solicitacao']) ?></div>
+    <div class="itemhistorico"><strong>Endereço:</strong> <?= htmlspecialchars($solicitacao['desc_endereco_atendimento']) ?></div>
+    <div class="itemhistorico"><strong>Valor Aceito:</strong> R$ <?= number_format((float)$proposta['valor_proposta'], 2, ',', '.') ?></div>
+    <div class="itemhistorico"><strong>Prestador:</strong> <?= htmlspecialchars($prestador['nome_usuario']) ?> (<?= htmlspecialchars($prestador['telefone']) ?>)</div>
+    <?php if (!empty($agendamento['observacoes'])): ?>
+        <div class="itemhistorico">
+            <strong>Mensagens / Observações:</strong><br>
+            <?= nl2br(htmlspecialchars($agendamento['observacoes'])) ?>
+        </div>
+    <?php endif; ?>
+</div>
+
 
             <div class="caixa acoes">
                 <h3>Status do Serviço</h3>
