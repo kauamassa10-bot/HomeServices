@@ -36,13 +36,11 @@ $agendamentos = readAll($pdo, 'agendamento', 'id_cliente = ?', [$idCliente]);
         <nav class="dashboard-nav">
             <a href="buscar.php">Buscar Serviços</a>
             <a href="pedidos.php">Meus Pedidos</a>
-            <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
-            <a href="perfil_cliente.php" class="active">Perfil</a>
-            <a href="logout.php">Sair</a>
-        </nav>
-        <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
+            <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
             <?= htmlspecialchars($iniciais) ?>
         </div>
+        </nav>
+        
     </header>
 
     <main class="perfil-main">
