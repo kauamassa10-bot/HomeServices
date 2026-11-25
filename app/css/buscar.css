@@ -1,45 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* ==========================================================
-   HOMESERVICES - IDENTIDADE VISUAL
-   Laranja #ec7a46 (só para ações) | Turquesa #33ad98 (detalhes)
-   Cinza #575757 (textos)          | Azure #225b75 (marca)
-   Branco #fbfbfb
-   ========================================================== */
-:root {
-    --laranja: #ec7a46;
-    --laranja-escuro: #d66532;
-    --turquesa: #33ad98;
-    --turquesa-escuro: #227a6b;
-    --turquesa-claro: #e6f5f2;
-    --cinza: #575757;
-    --azure: #225b75;
-    --azure-escuro: #17425a;
-    --azure-hover: #194559;
-    --branco: #fbfbfb;
-    --fundo: #f3f7f9;
-    --borda: #e2e8ea;
-    --borda-forte: #d1d9dc;
-
-    --raio-card: 16px;
-    --raio-controle: 10px;
-    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
-    --sombra-hover: 0 12px 30px rgba(34, 91, 117, 0.16);
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Inter', 'Clear Sans', sans-serif;
-    background-color: var(--fundo);
-    color: var(--cinza);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-}
 
 /* Foco visível para navegação por teclado */
 a:focus-visible,
@@ -50,103 +10,20 @@ input:focus-visible {
 }
 
 /* ==========================================================
-   CABEÇALHO
+   LAYOUT
    ========================================================== */
-.cabecalho {
-    background-color: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--borda);
-    box-shadow: 0 2px 12px rgba(34, 91, 117, 0.05);
-    padding: 14px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.cabecalho .logo p {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--azure);
-    letter-spacing: -0.6px;
-}
-
-.cabecalho .links {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-}
-
-.cabecalho .links a {
-    position: relative;
-    text-decoration: none;
-    color: var(--cinza);
-    font-weight: 500;
-    font-size: 0.95rem;
-    padding: 4px 0;
-    transition: color 0.2s ease;
-}
-
-/* Sublinhado turquesa que cresce no hover */
-.cabecalho .links a::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    width: 100%;
-    height: 2px;
-    background-color: var(--turquesa);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.25s ease;
-}
-
-.cabecalho .links a:hover {
-    color: var(--azure);
-}
-
-.cabecalho .links a:hover::after {
-    transform: scaleX(1);
-}
-
-.cabecalho .foto {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--azure), var(--turquesa));
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-transform: uppercase;
-    user-select: none;
-    box-shadow: 0 2px 8px rgba(34, 91, 117, 0.25);
-}
-
-/* ==========================================================
-   LAYOUT PRINCIPAL
-   ========================================================== */
+   
 main {
-    max-width: 1200px;
-    margin: 32px auto 56px;
-    padding: 0 24px;
     display: grid;
     grid-template-columns: 270px 1fr;
     grid-template-areas:
         "busca busca"
         "categorias categorias"
         "sidebar conteudo";
-    gap: 24px;
-    align-items: start;
 }
 
 /* ==========================================================
-   BUSCA (HERO)
+   BUSCA 
    ========================================================== */
 .busca {
     grid-area: busca;
@@ -387,7 +264,7 @@ button[type="reset"].btn-filtros:hover {
     gap: 18px;
 }
 
-.servicos > p {
+.servicos>p {
     background-color: #ffffff;
     padding: 40px 32px;
     border-radius: var(--raio-card);

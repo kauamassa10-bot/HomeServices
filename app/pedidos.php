@@ -72,7 +72,6 @@ try {
 <head>
     <meta charset="UTF-8">
     <title>Meus Pedidos - HomeServices</title>
-    <link rel="stylesheet" href="css/orcamento.css">
     <link rel="stylesheet" href="css/pedidos.css">
     <link rel="stylesheet" href="css/global.css">
 </head>
@@ -80,17 +79,14 @@ try {
 <body class="fundo-claro">
 
 
-    <header class="header-simples">
-        <div class="header-container">
-            <h1 class="logo-texto">HomeServices</h1>
-            <nav class="menu-topo">
-                <a href="buscar.php">Buscar Serviços</a>
-                <a href="pedidos.php">Meus Pedidos</a>
-                <a href="perfil_cliente.php" class="foto"
-                    title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
-
-            </nav>
-        </div>
+    <header class="cabecalho">
+        <h1 class="logo">HomeServices</h1>
+        <nav class="links">
+            <a href="buscar.php">Buscar Serviços</a>
+            <a href="pedidos.php">Meus Pedidos</a>
+            <a href="perfil_cliente.php" class="foto"
+                title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
+        </nav>
     </header>
 
 
