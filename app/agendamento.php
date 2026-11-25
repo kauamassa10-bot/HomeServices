@@ -50,7 +50,8 @@ if (!$propostaDoCliente) {
     exit;
 }
 
-$iniciaisAvatar = pegarIniciais($cliente['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? ''));
+$nomeCompleto = $dadosUsuario['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? 'Usuário');
+$iniciais = pegarIniciais($nomeCompleto);
 $mensagem   = '';
 $jaAgendado = read($pdo, 'agendamento', 'id_proposta = ?', [$idProposta]);
 $podeAgendar = strtoupper((string) $proposta['status_proposta']) === 'ENVIADA' && !$jaAgendado;
@@ -114,9 +115,7 @@ $dataDesejada = !empty($solicitacao['data_solicitacao'])
         <nav class="links">
             <a href="buscar.php">Buscar Serviços</a>
             <a href="pedidos.php">Meus Pedidos</a>
-            <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
-            <a href="logout.php">Sair</a>
-            <div class="foto"><?= htmlspecialchars($iniciaisAvatar, ENT_QUOTES, 'UTF-8') ?></div>
+            <a href="perfil_cliente.php" class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
         </nav>
     </header>
 

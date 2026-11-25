@@ -46,23 +46,24 @@ $notaMedia = count($avaliacoes) > 0 ? ($somaNotas / count($avaliacoes)) : 0;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil e Avaliações - HomeServices</title>
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/perfil.css">
 </head>
 
 <body>
 
-    <header class="dashboard-header">
-        <div class="dashboard-logo">HomeServices</div>
-        <nav class="dashboard-nav">
+    <header class="cabecalho">
+        <div class="logo">HomeServices</div>
+        <nav class="links">
             <a href="dashboard_prestador.php">Visão Geral</a>
             <a href="mural_solicitacoes.php">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
+            <div class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>">
+                <a href="perfil.php"><?= htmlspecialchars($iniciais) ?></a>
+            </div>
         </nav>
-        <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
-            <a href="perfil.php"><?= htmlspecialchars($iniciais) ?></a>
-        </div>
+
     </header>
 
     <main class="perfil-main">
@@ -106,13 +107,14 @@ $notaMedia = count($avaliacoes) > 0 ? ($somaNotas / count($avaliacoes)) : 0;
                     <?php if (count($avaliacoes) > 0): ?>
                         <?php foreach ($avaliacoes as $av): ?>
                             <?php
-                                $avaliador = $usuarioPorId[$av['id_avaliador']] ?? [];
-                                $nota = (int) $av['numero_nota'];
-                                $estrelas = str_repeat('★', $nota) . str_repeat('☆', max(0, 5 - $nota));
-                                $dataAv = !empty($av['data_avaliacao']) ? date('d/m', strtotime($av['data_avaliacao'])) : '';
+                            $avaliador = $usuarioPorId[$av['id_avaliador']] ?? [];
+                            $nota = (int) $av['numero_nota'];
+                            $estrelas = str_repeat('★', $nota) . str_repeat('☆', max(0, 5 - $nota));
+                            $dataAv = !empty($av['data_avaliacao']) ? date('d/m', strtotime($av['data_avaliacao'])) : '';
                             ?>
                             <div class="card-avaliacao">
-                                <div class="header-avaliacao"><?= $estrelas ?> (<?= $nota ?>/5) · <?= htmlspecialchars($avaliador['nome_usuario'] ?? 'Cliente') ?> · <?= $dataAv ?></div>
+                                <div class="header-avaliacao"><?= $estrelas ?> (<?= $nota ?>/5) ·
+                                    <?= htmlspecialchars($avaliador['nome_usuario'] ?? 'Cliente') ?> · <?= $dataAv ?></div>
                                 <p class="texto-avaliacao"><?= htmlspecialchars($av['desc_comentario'] ?? '') ?></p>
                             </div>
                         <?php endforeach; ?>

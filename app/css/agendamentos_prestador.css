@@ -51,6 +51,7 @@ body {
 }
 
 .tab-btn {
+    display: inline-block;
     background-color: #ffffff;
     color: var(--cinza);
     border: 1px solid var(--borda-forte);
@@ -61,6 +62,16 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+/* Remove o risco (sublinhado) em todos os estados */
+.tab-btn,
+.tab-btn:hover,
+.tab-btn:focus,
+.tab-btn:active,
+.tab-btn:visited {
+    text-decoration: none;
 }
 
 .tab-btn:hover {
@@ -170,6 +181,7 @@ body {
 }
 
 .btn-passo {
+    display: inline-block;
     padding: 9px 16px;
     border-radius: var(--raio-controle);
     font-family: inherit;
@@ -178,6 +190,15 @@ body {
     border: 1px solid transparent;
     cursor: pointer;
     transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-passo,
+.btn-passo:hover,
+.btn-passo:focus,
+.btn-passo:active,
+.btn-passo:visited {
+    text-decoration: none;
 }
 
 .btn-passo.inativo {
@@ -209,4 +230,3 @@ body {
     color: #ffffff;
     box-shadow: 0 4px 10px rgba(34, 91, 117, 0.25);
 }
-

@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+/* ==========================================================
+   HOMESERVICES - IDENTIDADE VISUAL
+   Laranja #ec7a46 (só para ações) | Turquesa #33ad98 (detalhes)
+   Cinza #575757 (textos)          | Azure #225b75 (marca)
+   Branco #fbfbfb
+   ========================================================== */
+   
 :root {
     --laranja: #ec7a46;
     --laranja-escuro: #d66532;
@@ -25,6 +32,14 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+main {
+    max-width: 1200px;
+    margin: 32px auto 56px;
+    padding: 0 24px;
+    gap: 24px;
+    align-items: start;
 }
 
 body {
@@ -61,6 +76,10 @@ textarea:focus-visible {
     position: sticky;
     top: 0;
     z-index: 100;
+}
+
+.cabecalho .active{
+    border-bottom: 2px solid #33ad98;
 }
 
 .header-simples .header-container {
@@ -147,6 +166,7 @@ textarea:focus-visible {
     justify-content: center;
     text-transform: uppercase;
     user-select: none;
+    text-decoration: none;
     box-shadow: 0 2px 8px rgba(34, 91, 117, 0.25);
     transition: transform 0.2s ease;
 }

@@ -25,24 +25,21 @@ $agendamentos = readAll($pdo, 'agendamento', 'id_cliente = ?', [$idCliente]);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil do Cliente - HomeServices</title>
     <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/perfil.css">
 </head>
 
 <body>
 
-    <header class="dashboard-header">
-        <div class="dashboard-logo">HomeServices</div>
-        <nav class="dashboard-nav">
+    <header class="cabecalho">
+        <div class="logo">HomeServices</div>
+        <nav class="links">
             <a href="buscar.php">Buscar Serviços</a>
             <a href="pedidos.php">Meus Pedidos</a>
-            <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
-            <a href="perfil_cliente.php" class="active">Perfil</a>
-            <a href="logout.php">Sair</a>
-        </nav>
-        <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
+            <div class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>">
             <?= htmlspecialchars($iniciais) ?>
         </div>
+        </nav>
+        
     </header>
 
     <main class="perfil-main">

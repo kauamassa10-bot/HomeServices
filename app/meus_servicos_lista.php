@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/init.php';
 
-/** @var PDO $pdo */
+
 
 if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'PRESTADOR') {
     header("Location: login_profissional.php?erro=acesso_negado");
@@ -42,23 +42,24 @@ $categoriaPorId = array_column($categorias, null, 'id_categoria');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Serviços - HomeServices</title>
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/lista_servicos.css">
 </head>
 
 <body>
 
-    <header class="dashboard-header">
-        <div class="dashboard-logo">HomeServices</div>
-        <nav class="dashboard-nav">
+    <header class="cabecalho">
+        <div class="logo">HomeServices</div>
+        <nav class="links">
             <a href="dashboard_prestador.php">Visão Geral</a>
             <a href="mural_solicitacoes.php">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php" class="active">Meus Serviços</a>
-        </nav>
-        <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
+            <div class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>">
             <a href="perfil.php"><?= htmlspecialchars($iniciais) ?></a>
         </div>
+        </nav>
+        
     </header>
 
     <main class="meus-servicos-main">
