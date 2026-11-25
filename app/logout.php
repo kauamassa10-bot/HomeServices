@@ -3,16 +3,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Identifica para qual tela de login redirecionar antes de apagar a sessão
-$tipo = strtoupper($_SESSION['tipo_usuario'] ?? '');
-$destino = 'login_cliente.php'; // Padrão
-
-if ($tipo === 'ADMIN') {
-    $destino = 'login_cliente.php';
-} elseif ($tipo === 'PRESTADOR') {
-    $destino = 'login_profissional.php';
-}
-
 // Limpa todas as variáveis da sessão
 $_SESSION = [];
 
@@ -33,11 +23,6 @@ if (ini_get("session.use_cookies")) {
 // Destrói a sessão no servidor
 session_destroy();
 
-// Garante que o redirecionamento funcione mesmo se algum output já tiver sido enviado
-if (!headers_sent()) {
-    header("Location: " . $destino);
-    exit;
-} else {
-    echo "<script>window.location.href='" . htmlspecialchars($destino, ENT_QUOTES, 'UTF-8') . "';</script>";
-    exit;
-}
+// Redireciona sempre para a página inicial (index.php)
+header("Location: index.php");
+exit;
