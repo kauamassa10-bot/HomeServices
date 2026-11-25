@@ -1,6 +1,32 @@
-/* =========================================
-   RESET E BASE DA PÁGINA BUSCAR
-   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ==========================================================
+   HOMESERVICES - IDENTIDADE VISUAL
+   Laranja #ec7a46 (só para ações) | Turquesa #33ad98 (detalhes)
+   Cinza #575757 (textos)          | Azure #225b75 (marca)
+   Branco #fbfbfb
+   ========================================================== */
+:root {
+    --laranja: #ec7a46;
+    --laranja-escuro: #d66532;
+    --turquesa: #33ad98;
+    --turquesa-escuro: #227a6b;
+    --turquesa-claro: #e6f5f2;
+    --cinza: #575757;
+    --azure: #225b75;
+    --azure-escuro: #17425a;
+    --azure-hover: #194559;
+    --branco: #fbfbfb;
+    --fundo: #f3f7f9;
+    --borda: #e2e8ea;
+    --borda-forte: #d1d9dc;
+
+    --raio-card: 16px;
+    --raio-controle: 10px;
+    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
+    --sombra-hover: 0 12px 30px rgba(34, 91, 117, 0.16);
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -8,19 +34,31 @@
 }
 
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-color: #f4f6f9;
-    color: #1e293b;
+    font-family: 'Inter', 'Clear Sans', sans-serif;
+    background-color: var(--fundo);
+    color: var(--cinza);
     line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* =========================================
-   CABEÇALHO (HEADER)
-   ========================================= */
+/* Foco visível para navegação por teclado */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid rgba(51, 173, 152, 0.45);
+    outline-offset: 2px;
+}
+
+/* ==========================================================
+   CABEÇALHO
+   ========================================================== */
 .cabecalho {
-    background-color: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-    padding: 16px 40px;
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--borda);
+    box-shadow: 0 2px 12px rgba(34, 91, 117, 0.05);
+    padding: 14px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -30,35 +68,55 @@ body {
 }
 
 .cabecalho .logo p {
-    font-size: 1.45rem;
-    font-weight: 700;
-    color: #0f172a;
-    letter-spacing: -0.5px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--azure);
+    letter-spacing: -0.6px;
 }
 
 .cabecalho .links {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 28px;
 }
 
 .cabecalho .links a {
+    position: relative;
     text-decoration: none;
-    color: #334155;
+    color: var(--cinza);
     font-weight: 500;
     font-size: 0.95rem;
+    padding: 4px 0;
     transition: color 0.2s ease;
 }
 
+/* Sublinhado turquesa que cresce no hover */
+.cabecalho .links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background-color: var(--turquesa);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+}
+
 .cabecalho .links a:hover {
-    color: #2563eb;
+    color: var(--azure);
+}
+
+.cabecalho .links a:hover::after {
+    transform: scaleX(1);
 }
 
 .cabecalho .foto {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background-color: #2563eb;
+    background: linear-gradient(135deg, var(--azure), var(--turquesa));
     color: #ffffff;
     font-weight: 700;
     font-size: 0.85rem;
@@ -67,14 +125,15 @@ body {
     justify-content: center;
     text-transform: uppercase;
     user-select: none;
+    box-shadow: 0 2px 8px rgba(34, 91, 117, 0.25);
 }
 
-/* =========================================
-   LAYOUT PRINCIPAL (GRID)
-   ========================================= */
+/* ==========================================================
+   LAYOUT PRINCIPAL
+   ========================================================== */
 main {
     max-width: 1200px;
-    margin: 32px auto;
+    margin: 32px auto 56px;
     padding: 0 24px;
     display: grid;
     grid-template-columns: 270px 1fr;
@@ -86,23 +145,35 @@ main {
     align-items: start;
 }
 
-/* =========================================
-   SEÇÃO DE BUSCA (TOPO)
-   ========================================= */
+/* ==========================================================
+   BUSCA (HERO)
+   ========================================================== */
 .busca {
     grid-area: busca;
-    background-color: #ffffff;
-    padding: 28px 32px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    position: relative;
+    overflow: hidden;
+    padding: 48px 40px 52px;
+    border-radius: 20px;
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 92% 12%, rgba(51, 173, 152, 0.45), transparent 42%),
+        radial-gradient(circle at 8% 110%, rgba(236, 122, 70, 0.18), transparent 38%),
+        linear-gradient(135deg, var(--azure) 0%, var(--azure-escuro) 100%);
+    box-shadow: 0 14px 36px rgba(34, 91, 117, 0.25);
 }
 
 .busca h2 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #0f172a;
-    margin-bottom: 16px;
+    position: relative;
+    font-size: 2.1rem;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    line-height: 1.15;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.formulario-busca {
+    position: relative;
 }
 
 .formulario-busca form {
@@ -112,50 +183,60 @@ main {
 }
 
 .formulario-busca label {
-    display: none; /* Oculta visualmente mantendo acessibilidade */
+    display: none;
 }
 
 .formulario-busca input[type="text"] {
     flex: 1;
-    padding: 12px 16px;
-    font-size: 0.95rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    background-color: #f8fafc;
-    color: #0f172a;
-    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+    padding: 16px 22px;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: var(--cinza);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+    transition: all 0.2s ease;
+}
+
+.formulario-busca input[type="text"]::placeholder {
+    color: #8a9599;
 }
 
 .formulario-busca input[type="text"]:focus {
     outline: none;
-    background-color: #ffffff;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    border-color: var(--turquesa);
+    box-shadow: 0 0 0 4px rgba(51, 173, 152, 0.3), 0 6px 20px rgba(0, 0, 0, 0.14);
 }
 
+/* Botão de busca em laranja: contrasta com o fundo azul e é a ação principal */
 .btn-busca {
-    padding: 12px 26px;
-    background-color: #2b4c8c;
+    padding: 16px 34px;
+    background-color: var(--laranja);
     color: #ffffff;
-    font-weight: 600;
-    font-size: 0.95rem;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1rem;
     border: none;
-    border-radius: 8px;
+    border-radius: 999px;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 6px 16px rgba(236, 122, 70, 0.4);
+    transition: all 0.2s ease;
 }
 
 .btn-busca:hover {
-    background-color: #1e3a8a;
+    background-color: var(--laranja-escuro);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(236, 122, 70, 0.45);
 }
 
 .btn-busca:active {
-    transform: scale(0.98);
+    transform: translateY(0);
 }
 
-/* =========================================
-   BARRA DE CATEGORIAS (PILLS)
-   ========================================= */
+/* ==========================================================
+   CATEGORIAS (CHIPS)
+   ========================================================== */
 .categorias {
     grid-area: categorias;
     display: flex;
@@ -166,31 +247,45 @@ main {
 .categorias a {
     text-decoration: none;
     background-color: #ffffff;
-    color: #475569;
-    border: 1px solid #cbd5e1;
-    padding: 8px 18px;
+    color: var(--cinza);
+    border: 1px solid var(--borda-forte);
+    padding: 9px 20px;
     border-radius: 999px;
     font-size: 0.88rem;
     font-weight: 600;
+    /* Padroniza o texto: "ENCANADOR" e "encanador" ficam iguais.
+       Dica: o ideal é também remover duplicatas no cadastro. */
+    text-transform: capitalize;
     transition: all 0.2s ease;
 }
 
 .categorias a:hover {
-    background-color: #eff6ff;
-    color: #1d4ed8;
-    border-color: #93c5fd;
+    background-color: var(--turquesa-claro);
+    border-color: var(--turquesa);
+    color: var(--turquesa-escuro);
+    transform: translateY(-1px);
 }
 
-/* =========================================
+/* Chip ativo: preenchido em Azure */
+.categorias a.ativo {
+    background-color: var(--azure);
+    border-color: var(--azure);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(34, 91, 117, 0.25);
+}
+
+/* ==========================================================
    SIDEBAR DE FILTROS
-   ========================================= */
+   ========================================================== */
 .sidebar {
     grid-area: sidebar;
+    position: sticky;
+    top: 88px;
     background-color: #ffffff;
-    padding: 24px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    padding: 26px 24px;
+    border-radius: var(--raio-card);
+    border: 1px solid var(--borda);
+    box-shadow: var(--sombra-card);
 }
 
 .sidebar aside {
@@ -204,7 +299,7 @@ main {
     flex-direction: column;
     gap: 10px;
     padding-bottom: 18px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid #eef2f3;
 }
 
 .gp-filtros:last-of-type {
@@ -213,10 +308,12 @@ main {
 }
 
 .gp-filtros h4 {
-    font-size: 0.95rem;
+    font-size: 0.98rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--azure);
     margin-bottom: 4px;
+    padding-left: 10px;
+    border-left: 3px solid var(--turquesa);
 }
 
 .gp-filtros label {
@@ -224,17 +321,18 @@ main {
     align-items: center;
     gap: 8px;
     font-size: 0.88rem;
-    color: #475569;
+    color: var(--cinza);
     cursor: pointer;
-    transition: color 0.15s ease;
+    padding: 4px 0;
+    transition: color 0.2s ease;
 }
 
 .gp-filtros label:hover {
-    color: #0f172a;
+    color: var(--azure);
 }
 
 .gp-filtros input[type="radio"] {
-    accent-color: #2563eb;
+    accent-color: var(--turquesa);
     width: 16px;
     height: 16px;
     cursor: pointer;
@@ -242,8 +340,9 @@ main {
 
 .btn-filtros {
     width: 100%;
-    padding: 10px 14px;
-    border-radius: 8px;
+    padding: 11px 14px;
+    border-radius: var(--raio-controle);
+    font-family: inherit;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -251,30 +350,33 @@ main {
 }
 
 button[type="submit"].btn-filtros {
-    background-color: #2b4c8c;
+    background-color: var(--azure);
     color: #ffffff;
     border: none;
 }
 
 button[type="submit"].btn-filtros:hover {
-    background-color: #1e3a8a;
+    background-color: var(--azure-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(34, 91, 117, 0.25);
 }
 
 button[type="reset"].btn-filtros {
-    background-color: #f8fafc;
-    color: #475569;
-    border: 1px solid #cbd5e1;
+    background-color: transparent;
+    color: var(--cinza);
+    border: 1px solid var(--borda-forte);
     margin-top: -10px;
 }
 
 button[type="reset"].btn-filtros:hover {
-    background-color: #f1f5f9;
-    color: #0f172a;
+    background-color: var(--turquesa-claro);
+    border-color: var(--turquesa);
+    color: var(--azure);
 }
 
-/* =========================================
-   CONTEÚDO PRINCIPAL E LISTA DE SERVIÇOS
-   ========================================= */
+/* ==========================================================
+   CONTEÚDO E CARDS
+   ========================================================== */
 .conteudo-principal {
     grid-area: conteudo;
 }
@@ -282,52 +384,58 @@ button[type="reset"].btn-filtros:hover {
 .servicos {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
 }
 
 .servicos > p {
     background-color: #ffffff;
-    padding: 32px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    padding: 40px 32px;
+    border-radius: var(--raio-card);
+    border: 1px dashed var(--borda-forte);
     text-align: center;
-    color: #64748b;
-    font-size: 0.95rem;
+    color: var(--cinza);
 }
 
-/* =========================================
-   CARD DE SERVIÇO
-   ========================================= */
 .card-servico {
+    position: relative;
     background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 20px 24px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-card);
+    padding: 26px 28px;
     display: flex;
     align-items: center;
-    gap: 20px;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    gap: 24px;
+    box-shadow: var(--sombra-card);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .card-servico:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
-    border-color: #cbd5e1;
+    transform: translateY(-3px);
+    box-shadow: var(--sombra-hover);
+    border-color: rgba(51, 173, 152, 0.6);
 }
 
 .card-foto {
-    width: 76px;
-    height: 76px;
-    border-radius: 12px;
-    background-color: #e2e8f0;
-    color: #64748b;
-    font-weight: 600;
+    width: 92px;
+    height: 92px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--turquesa-claro), rgba(34, 91, 117, 0.12));
+    color: var(--azure);
+    font-weight: 700;
     font-size: 0.85rem;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
+}
+
+/* Quando você colocar fotos reais (<img> dentro de .card-foto) */
+.card-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .card-info {
@@ -335,59 +443,86 @@ button[type="reset"].btn-filtros:hover {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
 }
 
 .card-info h3 {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 700;
-    color: #0f172a;
+    line-height: 1.3;
+    color: var(--azure);
 }
 
 .txt-primario {
-    color: #2563eb;
+    color: var(--turquesa);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
 }
 
 .txt-secundario {
-    font-size: 0.9rem;
-    color: #475569;
+    font-size: 0.92rem;
+    color: var(--cinza);
 }
 
 .estrelas-nota {
-    color: #f59e0b;
+    color: var(--laranja);
     letter-spacing: 1px;
     font-size: 0.95rem;
 }
 
 .badge-verificada {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     width: fit-content;
     margin-top: 2px;
-    padding: 3px 10px;
+    padding: 4px 12px;
     border-radius: 999px;
-    background-color: #dcfce7;
-    color: #15803d;
+    background-color: rgba(51, 173, 152, 0.14);
+    color: var(--turquesa-escuro);
     font-size: 0.78rem;
     font-weight: 600;
+}
+
+/* Ícone de check antes do texto "Verificado(a)" */
+.badge-verificada::before {
+    content: "✓";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: var(--turquesa);
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 800;
 }
 
 .card-acao {
     flex-shrink: 0;
 }
 
+/* Laranja exclusivo para ações (CTA) */
 .btn-orcamento {
     display: inline-block;
     text-decoration: none;
-    background-color: #2b4c8c;
+    background-color: var(--laranja);
     color: #ffffff;
-    font-weight: 600;
-    font-size: 0.9rem;
-    padding: 11px 20px;
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 13px 26px;
+    border-radius: var(--raio-controle);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(236, 122, 70, 0.3);
 }
 
 .btn-orcamento:hover {
-    background-color: #1e3a8a;
+    background-color: var(--laranja-escuro);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(236, 122, 70, 0.4);
+}
+
+.btn-orcamento:active {
+    transform: translateY(0);
 }

@@ -1,50 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --laranja: #ec7a46;
+    --laranja-escuro: #d66532;
+    --turquesa: #33ad98;
+    --turquesa-escuro: #227a6b;
+    --turquesa-claro: #e6f5f2;
+    --cinza: #575757;
+    --azure: #225b75;
+    --azure-escuro: #17425a;
+    --fundo: #f3f7f9;
+    --borda: #e2e8ea;
+    --borda-forte: #d1d9dc;
+    --raio-card: 16px;
+    --raio-controle: 10px;
+    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
+}
 
 .conteudo {
-    max-width: 1024px;
-    margin: 40px auto 80px;
+    max-width: 1080px;
+    margin: 36px auto 72px;
     padding: 0 24px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', 'Clear Sans', sans-serif;
+    color: var(--cinza);
 }
 
 .titulo {
+    padding: 32px 36px;
+    border-radius: 20px;
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 92% 12%, rgba(51, 173, 152, 0.42), transparent 44%),
+        linear-gradient(135deg, var(--azure) 0%, var(--azure-escuro) 100%);
+    box-shadow: 0 12px 30px rgba(34, 91, 117, 0.22);
     margin-bottom: 32px;
 }
 
 .titulo h1 {
-    font-size: 28px;
-    font-weight: 700;
-    color: #1a202c;
-    margin-bottom: 8px;
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+    color: #ffffff;
+    margin-bottom: 6px;
 }
 
 .titulo p {
-    color: #718096;
-    font-size: 15px;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 0.98rem;
 }
 
 .bloco-agendamento {
     display: grid;
     grid-template-columns: 1fr 380px;
-    gap: 32px;
+    gap: 28px;
     align-items: start;
 }
 
 .caixa {
     background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 32px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-card);
+    padding: 30px;
+    box-shadow: var(--sombra-card);
 }
 
 .caixa h3 {
-    font-size: 18px;
-    font-weight: 600;
-    color: #2d3748;
+    font-size: 1.12rem;
+    font-weight: 700;
+    color: var(--azure);
     margin-bottom: 20px;
+    padding-left: 12px;
+    border-left: 3px solid var(--turquesa);
 }
 
 .mt-40 {
-    margin-top: 40px;
+    margin-top: 36px;
 }
 
 .dias-semana {
@@ -55,112 +85,123 @@
 
 .dia-card {
     background: #ffffff;
-    border: 1px solid #cbd5e0;
-    border-radius: 6px;
-    padding: 12px 16px;
-    min-width: 72px;
+    border: 1px solid var(--borda-forte);
+    border-radius: 12px;
+    padding: 14px 16px;
+    min-width: 78px;
     display: flex;
     flex-direction: column;
     align-items: center;
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease;
 }
 
 .dia-card:hover {
-    border-color: #3182ce;
+    border-color: var(--turquesa);
+    background-color: var(--turquesa-claro);
+    transform: translateY(-2px);
 }
 
 .dia-card.ativo {
-    background: #3182ce;
-    border-color: #3182ce;
+    background: linear-gradient(135deg, var(--azure), var(--turquesa));
+    border-color: transparent;
     color: #ffffff;
+    box-shadow: 0 6px 16px rgba(34, 91, 117, 0.28);
 }
 
 .dia-nome {
-    font-size: 12px;
+    font-size: 0.72rem;
     text-transform: uppercase;
-    font-weight: 600;
-    color: #718096;
+    font-weight: 700;
+    color: var(--cinza);
     margin-bottom: 4px;
 }
 
 .dia-card.ativo .dia-nome,
 .dia-card.ativo .dia-mes {
-    color: #ebf8ff;
+    color: rgba(255, 255, 255, 0.92);
 }
 
 .dia-numero {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 4px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin-bottom: 2px;
 }
 
 .dia-mes {
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 500;
-    color: #718096;
+    color: var(--cinza);
 }
 
 .grade-horarios {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
     gap: 12px;
 }
 
 .horario-slot {
     background: #ffffff;
-    border: 1px solid #cbd5e0;
-    border-radius: 6px;
+    border: 1px solid var(--borda-forte);
+    border-radius: var(--raio-controle);
     padding: 12px 0;
-    font-size: 14px;
-    font-weight: 500;
-    color: #2d3748;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--cinza);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     text-align: center;
 }
 
 .horario-slot:hover {
-    border-color: #3182ce;
-    color: #3182ce;
+    border-color: var(--turquesa);
+    background-color: var(--turquesa-claro);
+    color: var(--azure);
 }
 
 .horario-slot.ativo {
-    background: #3b5998;
-    border-color: #3b5998;
+    background-color: var(--azure);
+    border-color: var(--azure);
     color: #ffffff;
+    box-shadow: 0 4px 12px rgba(34, 91, 117, 0.25);
 }
 
 .horario-slot.ocupado {
-    background: #edf2f7;
-    color: #a0aec0;
-    border-color: #e2e8f0;
+    background: #eef2f4;
+    color: #9aa5aa;
+    border-color: var(--borda);
     cursor: not-allowed;
     text-decoration: line-through;
 }
 
 .campo-texto {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #cbd5e0;
-    border-radius: 6px;
-    background-color: #ffffff;
-    font-size: 14px;
-    color: #2d3748;
+    padding: 14px 16px;
+    border: 1px solid var(--borda-forte);
+    border-radius: var(--raio-controle);
+    background-color: var(--fundo);
+    font-family: inherit;
+    font-size: 0.94rem;
+    color: var(--cinza);
     resize: vertical;
-    min-height: 80px;
+    min-height: 92px;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .campo-texto:focus {
-    border-color: #3182ce;
+    background-color: #ffffff;
+    border-color: var(--turquesa);
+    box-shadow: 0 0 0 3px rgba(51, 173, 152, 0.2);
 }
 
 .resumo-agendamento {
-    background: #f0f4f8;
-    border: none;
-    padding: 32px;
+    position: sticky;
+    top: 88px;
+    background: #ffffff;
+    border: 1px solid var(--borda);
+    border-top: 4px solid var(--azure);
+    padding: 30px;
 }
 
 .detalhes-resumo {
@@ -176,26 +217,27 @@
 }
 
 .item-resumo span {
-    font-size: 12px;
-    color: #718096;
+    font-size: 0.74rem;
+    color: var(--cinza);
     text-transform: uppercase;
-    font-weight: 600;
+    letter-spacing: 0.4px;
+    font-weight: 700;
 }
 
 .item-resumo strong {
-    font-size: 14px;
-    color: #1a202c;
-    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--azure);
+    font-weight: 600;
 }
 
 .destaque-verde {
-    color: #38a169 !important;
+    color: var(--turquesa-escuro) !important;
 }
 
 .divisor-resumo {
     height: 1px;
-    background: #e2e8f0;
-    margin: 24px 0;
+    background: var(--borda);
+    margin: 22px 0;
 }
 
 .valor-total {
@@ -206,36 +248,33 @@
 }
 
 .valor-total span {
-    font-size: 14px;
+    font-size: 0.92rem;
     font-weight: 600;
-    color: #4a5568;
+    color: var(--cinza);
 }
 
 .valor-total strong {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1a202c;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--azure);
 }
 
 .botao {
     width: 100%;
-    background: #3b5998;
+    background: var(--laranja);
     color: #ffffff;
     border: none;
-    border-radius: 6px;
-    padding: 14px 0;
-    font-size: 15px;
-    font-weight: 600;
+    border-radius: var(--raio-controle);
+    padding: 15px 0;
+    font-size: 0.98rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s;
+    box-shadow: 0 6px 16px rgba(236, 122, 70, 0.35);
+    transition: all 0.2s ease;
 }
 
 .botao:hover {
-    background: #2d4373;
-}
-
-@media (max-width: 860px) {
-    .bloco-agendamento {
-        grid-template-columns: 1fr;
-    }
+    background: var(--laranja-escuro);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(236, 122, 70, 0.42);
 }

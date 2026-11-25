@@ -48,7 +48,9 @@ if (isset($_SESSION['id_usuario'])) {
         </div>
     </header>
 
-    <main>
+   <main>
+        <img src="imagens/Code_Generated_Image (1).png" alt="Símbolo HomeServices" class="logo-casa-topo">
+
         <section class="hero">
             <h2>Encontre o profissional certo ou ofereça os seus serviços.</h2>
             <p>A HomeServices liga clientes que precisam de ajuda em casa a profissionais qualificados da sua região. Rápido, prático e seguro.</p>
@@ -58,6 +60,8 @@ if (isset($_SESSION['id_usuario'])) {
                 <a href="login_profissional.php" class="btn-grande btn-profissional">Sou Profissional</a>
             </div>
         </section>
+
+        <img src="imagens/homeservices.png" alt="HomeServices" class="logo-wordmark-base">
     </main>
 
     <!-- O link de Administração foi movido para o rodapé -->

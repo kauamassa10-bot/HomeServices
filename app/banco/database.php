@@ -11,7 +11,7 @@ function database(): PDO
     }
 
     $host = getenv('DB_HOST') ?: '127.0.0.1';
-    $port = getenv('DB_PORT') ?: '3307';
+    $port = getenv('DB_PORT') ?: '3307g';
     $database = getenv('DB_DATABASE') ?: 'HomeServices';
     $username = getenv('DB_USERNAME') ?: 'root';
     $password = getenv('DB_PASSWORD') ?: 'Senai@123';

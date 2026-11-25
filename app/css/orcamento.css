@@ -1,108 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --laranja: #ec7a46;
+    --laranja-escuro: #d66532;
+    --turquesa: #33ad98;
+    --turquesa-escuro: #227a6b;
+    --turquesa-claro: #e6f5f2;
+    --cinza: #575757;
+    --azure: #225b75;
+    --azure-escuro: #17425a;
+    --fundo: #f3f7f9;
+    --borda: #e2e8ea;
+    --borda-forte: #d1d9dc;
+    --raio-card: 16px;
+    --raio-controle: 10px;
+    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+}
+
 .fundo-claro {
-    background-color: #f8f9fa;
-    font-family: Arial, sans-serif;
+    background-color: var(--fundo);
+    font-family: 'Inter', 'Clear Sans', sans-serif;
     margin: 0;
     padding: 0;
-    color: #333;
+    color: var(--cinza);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
 }
 
 .header-simples {
-    background-color: #ffffff;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 15px 0;
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--borda);
+    box-shadow: 0 2px 12px rgba(34, 91, 117, 0.05);
+    padding: 14px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .header-container {
-    max-width: 1000px;
+    max-width: 1120px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    padding: 0 24px;
 }
 
 .logo-texto {
-    font-size: 22px;
-    color: #111;
+    font-size: 1.5rem;
+    color: var(--azure);
     margin: 0;
-    font-weight: bold;
+    font-weight: 800;
+    letter-spacing: -0.6px;
 }
 
 .menu-topo {
     display: flex;
-    gap: 20px;
+    gap: 28px;
 }
 
 .menu-topo a {
-    color: #555;
+    position: relative;
+    color: var(--cinza);
     text-decoration: none;
-    font-size: 15px;
-    font-weight: bold;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 4px 0;
+    transition: color 0.2s ease;
+}
+
+.menu-topo a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background-color: var(--turquesa);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
 }
 
 .menu-topo a:hover {
-    color: #2854C5;
+    color: var(--azure);
+}
+
+.menu-topo a:hover::after {
+    transform: scaleX(1);
 }
 
 .layout-duas-colunas {
-    max-width: 1000px;
-    margin: 40px auto;
+    max-width: 1120px;
+    margin: 40px auto 64px;
     display: flex;
-    gap: 40px;
-    padding: 0 20px;
+    gap: 32px;
+    padding: 0 24px;
+    align-items: flex-start;
 }
 
 .coluna-esquerda {
     flex: 2;
+    background-color: #ffffff;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-card);
+    padding: 36px;
+    box-shadow: var(--sombra-card);
 }
 
 .coluna-esquerda h2 {
-    font-size: 26px;
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
     margin-top: 0;
-    margin-bottom: 5px;
-    color: #111;
+    margin-bottom: 6px;
+    color: var(--azure);
 }
 
 .subtitulo {
-    color: #666;
-    margin-bottom: 25px;
-    font-size: 15px;
+    color: var(--cinza);
+    margin-top: 0;
+    margin-bottom: 28px;
+    font-size: 0.95rem;
 }
 
 .form-pedido-leitura {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 18px;
 }
 
 .campo-simples input,
 .campo-simples textarea {
     width: 100%;
-    padding: 15px;
-    border: 1px solid #b3b3b3;
-    border-radius: 6px;
-    font-size: 15px;
-    color: #333;
-    box-sizing: border-box;
-    background-color: #fff;
+    padding: 14px 16px;
+    border: 1px solid var(--borda-forte);
+    border-radius: var(--raio-controle);
+    font-size: 0.95rem;
+    color: var(--cinza);
+    background-color: #ffffff;
     font-family: inherit;
+    transition: all 0.2s ease;
 }
 
 .campo-simples input:focus,
 .campo-simples textarea:focus {
-    border-color: #2854C5;
+    border-color: var(--turquesa);
     outline: none;
-    box-shadow: 0 0 5px rgba(40, 84, 197, 0.2);
+    box-shadow: 0 0 0 4px rgba(51, 173, 152, 0.18);
 }
 
 .campo-simples textarea {
-    min-height: 120px;
+    min-height: 130px;
     resize: vertical;
 }
 
 .linha-dupla {
     display: flex;
-    gap: 15px;
+    gap: 16px;
 }
 
 .linha-dupla .campo-simples {
@@ -110,52 +171,66 @@
 }
 
 .botoes-rodape {
-    margin-top: 15px;
+    margin-top: 12px;
 }
 
 .btn-solido {
-    background-color: #3b5998;
-    color: white;
+    background-color: var(--laranja);
+    color: #ffffff;
     border: none;
-    padding: 15px;
-    border-radius: 6px;
-    font-weight: bold;
-    font-size: 16px;
+    padding: 14px 28px;
+    border-radius: var(--raio-controle);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.98rem;
     cursor: pointer;
-    transition: background-color 0.3s;
+    box-shadow: 0 4px 14px rgba(236, 122, 70, 0.32);
+    transition: all 0.2s ease;
     text-align: center;
 }
 
 .btn-solido:hover {
-    background-color: #2e467c;
+    background-color: var(--laranja-escuro);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(236, 122, 70, 0.42);
 }
 
 .btn-solido a {
-    color: white;
+    color: #ffffff;
     text-decoration: none;
 }
 
-/* Coluna Direita (Cartão de Informações) */
+/* Coluna Direita (Cartão de Informações em destaque Azure) */
 .coluna-direita {
     flex: 1;
+    position: sticky;
+    top: 88px;
 }
 
 .card-resumo {
-    background-color: #f0f4f8;
-    border-radius: 8px;
-    padding: 30px;
+    background:
+        radial-gradient(circle at 90% 10%, rgba(51, 173, 152, 0.35), transparent 50%),
+        linear-gradient(145deg, var(--azure) 0%, var(--azure-escuro) 100%);
+    color: #ffffff;
+    border-radius: var(--raio-card);
+    padding: 32px 28px;
+    box-shadow: 0 12px 30px rgba(34, 91, 117, 0.22);
 }
 
 .detalhes-resumo strong {
     display: block;
-    color: #333;
-    margin-bottom: 10px;
-    font-size: 16px;
+    color: #ffffff;
+    margin-bottom: 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    padding-left: 10px;
+    border-left: 3px solid var(--turquesa);
 }
 
 .detalhes-resumo p {
-    margin: 8px 0;
-    color: #555;
-    font-size: 14px;
-    line-height: 1.5;
+    margin: 10px 0;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.92rem;
+    line-height: 1.6;
 }
+
