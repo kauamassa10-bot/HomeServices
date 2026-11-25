@@ -15,6 +15,7 @@ $categorias = readAll($pdo, "categoria");
 // $iniciaisUsuarios = pegarIniciais($_SESSION['nome_usuario'] ?? '');
 $nomeCompleto = $dadosUsuario['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? 'Usuário');
 $iniciais = pegarIniciais($nomeCompleto);
+$categoriaSelecionada = trim($_GET['categoria'] ?? '');
 ?>
 
 <!DOCTYPE html>
@@ -53,9 +54,11 @@ $iniciais = pegarIniciais($nomeCompleto);
             </div>
         </section>
         <div class="categorias">
-            <a href="buscar.php">Todos</a>
+            <a href="buscar.php" class="<?= $categoriaSelecionada === '' ? 'categoria-ativa' : '' ?>">Todos</a>
             <?php foreach ($categorias as $categoria): ?>
-                <a href="buscar.php?categoria=<?= urlencode($categoria['nome_categoria']); ?>">
+                <?php $isAtiva = ($categoriaSelecionada === $categoria['nome_categoria']); ?>
+                <a href="buscar.php?categoria=<?= urlencode($categoria['nome_categoria']); ?>"
+                   class="<?= $isAtiva ? 'categoria-ativa' : '' ?>">
                     <?= htmlspecialchars($categoria['nome_categoria'], ENT_QUOTES, 'UTF-8'); ?>
                 </a>
             <?php endforeach; ?>
@@ -144,7 +147,7 @@ $iniciais = pegarIniciais($nomeCompleto);
             $idUsuario = array_column($usuarios, null, 'id_usuario');
             $idCategorias = array_column($categorias, null, 'id_categoria');
 
-            
+
             $servicos = [];
             $prefAvaliacao = $_GET['pref-avaliacao'] ?? '';
 
@@ -153,7 +156,7 @@ $iniciais = pegarIniciais($nomeCompleto);
                 $categoria = $idCategorias[$servico['id_categoria']] ?? null;
 
                 if ($prestador === null || $categoria === null) {
-                    continue; 
+                    continue;
                 }
 
                 $dadosNota = $notasPorPrestador[$servico['id_prestador']] ?? ['total' => 0, 'soma' => 0.0];
@@ -188,7 +191,7 @@ $iniciais = pegarIniciais($nomeCompleto);
             $solicitacoesCliente = readAll($pdo, 'solicitacao', 'id_cliente = ?', [$idClienteLogado]);
 
 
-                //Verifica se há solicitações do cliente para buscar as propostas relacionadas
+            //Verifica se há solicitações do cliente para buscar as propostas relacionadas
             if ($solicitacoesCliente !== []) {
 
                 //Buscando todas as propostas relacionadas às solicitações do cliente
@@ -237,7 +240,7 @@ $iniciais = pegarIniciais($nomeCompleto);
                             <div class="card-info">
                                 <h3>
                                     <?= htmlspecialchars($servico['nome_servico'], ENT_QUOTES, 'UTF-8') ?>
-                                    <span class="txt-primario">&middot; <?= htmlspecialchars($servico['nome_categoria'], ENT_QUOTES, 'UTF-8') ?></span>
+                                    <span class="txt-primario">· <?= htmlspecialchars($servico['nome_categoria'], ENT_QUOTES, 'UTF-8') ?></span>
                                 </h3>
                                 <p class="txt-secundario"><?= htmlspecialchars($servico['nome_prestador'], ENT_QUOTES, 'UTF-8') ?></p>
                                 <p class="txt-secundario">
@@ -261,6 +264,8 @@ $iniciais = pegarIniciais($nomeCompleto);
                                 <a href="orcamento.php?id_prestador=<?= (int) $servico['id_prestador'] ?>&id_servico=<?= (int) $servico['id_servico'] ?>" class="btn-orcamento">Pedir Orçamento</a>
                             </div>
                         </div>
+
+
                     <?php endforeach; ?>
                 <?php else: ?>
                     <p>Nenhum serviço encontrado.</p>
