@@ -64,7 +64,6 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
         <nav class="links">
             <a href="buscar.php">Buscar Serviços</a>
             <a href="pedidos.php">Meus Pedidos</a>
-            <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
             <a href="logout.php">Sair</a>
             <div class="foto"><?= $iniciaisAvatar ?></div>
         </nav>
