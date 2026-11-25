@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Cadastrar Serviço - HomeServices</title>
     <link rel="stylesheet" href="css/orcamento.css">
-    <link rel="stylesheet" href="css/cadastros.css">
+    <link rel="stylesheet" href="css/cadastro.css">
     <link rel="stylesheet" href="css/global.css">
 </head>
 <body class="fundo-claro">
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="detalhes-resumo">
                     <strong>Dica</strong>
                     <?php if ($isAdmin): ?>
-                        <p>Caso o profissional ainda não apareça na lista, cadastre-o primeiro na aba <strong>Novo Profissional</strong>.</p>
+                        <p>Caso o profissional ainda não apareça na lista, cadastre-o primeiro na aba <strong>Novo Profissional</strong>Certifique-se de que o profissional esteja com o cadastro ativo para que ele apareça disponível na lista de vínculo de serviços.</p>
                     <?php else: ?>
                         <p>Descreva bem o seu serviço! Uma boa descrição ajuda os clientes a entenderem exatamente o que está incluso no valor base.</p>
                     <?php endif; ?>

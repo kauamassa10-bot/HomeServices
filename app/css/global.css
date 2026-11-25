@@ -102,6 +102,15 @@ textarea:focus-visible {
     text-decoration: none;
 }
 
+.logo-texto a,
+.logo-texto a:link,
+.logo-texto a:visited,
+.logo-texto a:hover,
+.logo-texto a:active {
+    color: inherit;
+    text-decoration: none;
+}
+
 .links,
 .menu-topo {
     display: flex;
@@ -220,4 +229,99 @@ textarea:focus-visible {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* ==========================================================
+   CABEÇALHO PADRÃO E SIMPLES
+   ========================================================== */
+.cabecalho,
+.header-simples {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background:
+        radial-gradient(circle at 92% 12%, rgba(51, 173, 152, 0.45), transparent 44%),
+        radial-gradient(circle at 8% 108%, rgba(236, 122, 70, 0.22), transparent 40%),
+        linear-gradient(135deg, rgba(34, 91, 117, 0.88) 0%, rgba(23, 66, 90, 0.92) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 16px rgba(34, 91, 117, 0.22);
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-simples .header-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo,
+.logo p,
+.logo a,
+.logo-texto,
+.logo-texto a,
+.logo-texto a:link,
+.logo-texto a:visited,
+.logo-texto a:active {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--turquesa);
+    letter-spacing: -0.6px;
+    margin: 0;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.logo a:hover,
+.logo-texto a:hover {
+    color: var(--turquesa-claro);
+}
+
+.links,
+.menu-topo {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.links a,
+.menu-topo a {
+    position: relative;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.88);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 4px 0;
+    transition: color 0.2s ease;
+}
+
+.links a::after,
+.menu-topo a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background-color: var(--turquesa);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+}
+
+.links a:hover,
+.menu-topo a:hover {
+    color: #ffffff;
+}
+
+.links a:hover::after,
+.menu-topo a:hover::after {
+    transform: scaleX(1);
 }
