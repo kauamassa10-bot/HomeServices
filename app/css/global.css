@@ -1,4 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --laranja: #ec7a46;
+    --laranja-escuro: #d66532;
+    --turquesa: #33ad98;
+    --turquesa-escuro: #227a6b;
+    --turquesa-claro: #e6f5f2;
+    --cinza: #575757;
+    --azure: #225b75;
+    --azure-escuro: #17425a;
+    --azure-hover: #194559;
+    --branco: #fbfbfb;
+    --fundo: #f3f7f9;
+    --borda: #e2e8ea;
+    --borda-forte: #d1d9dc;
+
+    --raio-card: 16px;
+    --raio-controle: 10px;
+    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
+    --sombra-hover: 0 12px 30px rgba(34, 91, 117, 0.16);
+}
 
 * {
     margin: 0;
@@ -7,144 +28,173 @@
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f3f4f6;
-    color: #111827;
-    line-height: 1.6;
+    font-family: 'Inter', 'Clear Sans', sans-serif;
+    background-color: var(--fundo);
+    color: var(--cinza);
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
 }
 
-.cabecalho {
-    background: #ffffff;
-    padding: 0 40px;
-    height: 72px;
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(51, 173, 152, 0.45);
+    outline-offset: 2px;
+}
+
+/* ==========================================================
+   CABEÇALHO PADRÃO E SIMPLES
+   ========================================================== */
+.cabecalho,
+.header-simples {
+    background-color: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--borda);
+    box-shadow: 0 2px 12px rgba(34, 91, 117, 0.05);
+    padding: 14px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #e5e7eb;
     position: sticky;
     top: 0;
-    z-index: 50;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    z-index: 100;
 }
 
-.logo {
-    font-size: 22px;
-    font-weight: 700;
-    color: #111827;
-    letter-spacing: -0.5px;
-    transition: transform 0.3s ease;
+.header-simples .header-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.logo:hover {
-    transform: scale(1.05);
+.logo,
+.logo p,
+.logo-texto {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--azure);
+    letter-spacing: -0.6px;
+    margin: 0;
+    text-decoration: none;
 }
 
-.links {
+.links,
+.menu-topo {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 28px;
 }
 
-.links a {
-    text-decoration: none;
-    color: #6b7280;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
+.links a,
+.menu-topo a {
     position: relative;
+    text-decoration: none;
+    color: var(--cinza);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 4px 0;
+    transition: color 0.2s ease;
 }
 
-.links a::after {
-    content: '';
+.links a::after,
+.menu-topo a::after {
+    content: "";
     position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -4px;
     left: 0;
-    background-color: #111827;
-    transition: width 0.3s ease;
-}
-
-.links a:hover {
-    color: #111827;
-}
-
-.links a:hover::after {
+    bottom: -2px;
     width: 100%;
+    height: 2px;
+    background-color: var(--turquesa);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+}
+
+.links a:hover,
+.menu-topo a:hover {
+    color: var(--azure);
+}
+
+.links a:hover::after,
+.menu-topo a:hover::after {
+    transform: scaleX(1);
 }
 
 .foto {
     width: 40px;
     height: 40px;
-    background: #f3f4f6;
-    color: #374151;
     border-radius: 50%;
+    background: linear-gradient(135deg, var(--azure), var(--turquesa));
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 14px;
-    border: 1px solid #d1d5db;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    text-transform: uppercase;
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(34, 91, 117, 0.25);
+    transition: transform 0.2s ease;
 }
 
 .foto:hover {
-    background: #e5e7eb;
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.botao, .botaosecundario {
+/* ==========================================================
+   BOTÕES GLOBAIS
+   ========================================================== */
+.botao,
+.botaosecundario {
     width: 100%;
-    padding: 14px 20px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 500;
-    font-family: 'Poppins', sans-serif;
+    padding: 13px 22px;
+    border-radius: var(--raio-controle);
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     border: none;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     text-decoration: none;
     display: inline-block;
     text-align: center;
-    box-sizing: border-box;
 }
 
 .botao {
-    background: #111827;
+    background-color: var(--laranja);
     color: #ffffff;
-    box-shadow: 0 4px 10px rgba(17, 24, 39, 0.2);
+    box-shadow: 0 4px 12px rgba(236, 122, 70, 0.3);
 }
 
 .botao:hover {
-    background: #374151;
+    background-color: var(--laranja-escuro);
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(17, 24, 39, 0.3);
-}
-
-.botao:active {
-    transform: translateY(0);
+    box-shadow: 0 8px 18px rgba(236, 122, 70, 0.4);
 }
 
 .botaosecundario {
-    background: #ffffff;
-    color: #374151;
-    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    color: var(--azure);
+    border: 1px solid var(--borda-forte);
 }
 
 .botaosecundario:hover {
-    background: #f9fafb;
-    border-color: #9ca3af;
-    transform: translateY(-2px);
+    background-color: var(--turquesa-claro);
+    border-color: var(--turquesa);
+    color: var(--azure);
+    transform: translateY(-1px);
 }
 
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(16px);
     }
     to {
         opacity: 1;

@@ -1,125 +1,158 @@
-/* Estilos específicos para a página de Enviar Proposta */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --laranja: #ec7a46;
+    --laranja-escuro: #d66532;
+    --turquesa: #33ad98;
+    --turquesa-escuro: #227a6b;
+    --turquesa-claro: #e6f5f2;
+    --cinza: #575757;
+    --azure: #225b75;
+    --fundo: #f3f7f9;
+    --borda: #e2e8ea;
+    --borda-forte: #d1d9dc;
+    --raio-card: 16px;
+    --raio-controle: 10px;
+    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
+}
+
 body {
-    background-color: #f7f8fa;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--fundo);
+    font-family: 'Inter', 'Clear Sans', sans-serif;
     margin: 0;
     padding: 0;
-    color: #333;
+    color: var(--cinza);
 }
 
 .proposta-main {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 0 20px;
+    max-width: 860px;
+    margin: 40px auto 64px;
+    padding: 0 24px;
 }
 
 .card-form-proposta {
-    background-color: white;
-    border: 1px solid #e1e5eb;
-    border-radius: 12px;
+    background-color: #ffffff;
+    border: 1px solid var(--borda);
+    border-top: 4px solid var(--azure);
+    border-radius: var(--raio-card);
     padding: 40px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    box-shadow: var(--sombra-card);
 }
 
 .card-form-proposta h2 {
-    margin-top: 0;
-    font-size: 22px;
-    margin-bottom: 25px;
+    margin: 0 0 24px 0;
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--azure);
+    padding-left: 14px;
+    border-left: 4px solid var(--turquesa);
 }
 
-/* Caixa de resumo da solicitação */
 .resumo-solicitacao {
-    background-color: #f2f5f9;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 30px;
+    background-color: var(--turquesa-claro);
+    border: 1px solid rgba(51, 173, 152, 0.3);
+    border-left: 4px solid var(--turquesa);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
 }
 
 .resumo-solicitacao strong {
     display: block;
-    font-size: 15px;
-    color: #111;
-    margin-bottom: 5px;
+    font-size: 1.05rem;
+    color: var(--azure);
+    margin-bottom: 6px;
 }
 
 .resumo-solicitacao p {
-    margin: 0 0 5px 0;
-    font-size: 14px;
-    color: #444;
+    margin: 0 0 4px 0;
+    font-size: 0.92rem;
+    color: var(--cinza);
     line-height: 1.5;
 }
 
-/* Campos do formulário */
 .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 22px;
 }
 
 .form-group label {
     display: block;
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: 700;
+    font-size: 0.92rem;
     margin-bottom: 8px;
-    color: #222;
+    color: var(--azure);
 }
 
 .form-control {
     width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
+    padding: 13px 16px;
+    border: 1px solid var(--borda-forte);
+    border-radius: var(--raio-controle);
+    background-color: var(--fundo);
+    font-size: 0.95rem;
     font-family: inherit;
+    color: var(--cinza);
     box-sizing: border-box;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .form-control:focus {
-    border-color: #719df2;
+    background-color: #ffffff;
+    border-color: var(--turquesa);
+    box-shadow: 0 0 0 3px rgba(51, 173, 152, 0.2);
 }
 
 textarea.form-control {
     resize: vertical;
-    min-height: 120px;
+    min-height: 130px;
 }
 
-/* Botões */
 .botoes-acao {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 40px;
+    gap: 16px;
+    margin-top: 32px;
 }
 
 .btn-cancelar {
-    background-color: white;
-    color: #555;
-    border: 1px solid #ccc;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 14px;
+    background-color: #ffffff;
+    color: var(--cinza);
+    border: 1px solid var(--borda-forte);
+    padding: 13px 26px;
+    border-radius: var(--raio-controle);
+    font-size: 0.94rem;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .btn-cancelar:hover {
-    background-color: #f0f0f0;
+    background-color: var(--turquesa-claro);
+    border-color: var(--turquesa);
+    color: var(--azure);
 }
 
 .btn-enviar-proposta {
-    background-color: #10b981; /* Verde do layout */
-    color: white;
+    background-color: var(--laranja);
+    color: #ffffff;
     border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: 13px 28px;
+    border-radius: var(--raio-controle);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.2s;
+    box-shadow: 0 6px 16px rgba(236, 122, 70, 0.35);
+    transition: all 0.2s ease;
 }
 
 .btn-enviar-proposta:hover {
-    background-color: #059669;
+    background-color: var(--laranja-escuro);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(236, 122, 70, 0.42);
 }
+

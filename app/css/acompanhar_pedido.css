@@ -1,110 +1,86 @@
-/* =========================================
-   BASE DA PÁGINA (ACOMPANHAR PEDIDO)
-   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --laranja: #ec7a46;
+    --laranja-escuro: #d66532;
+    --turquesa: #33ad98;
+    --turquesa-escuro: #227a6b;
+    --turquesa-claro: #e6f5f2;
+    --cinza: #575757;
+    --azure: #225b75;
+    --azure-escuro: #17425a;
+    --fundo: #f3f7f9;
+    --borda: #e2e8ea;
+    --borda-forte: #d1d9dc;
+    --raio-card: 16px;
+    --raio-controle: 10px;
+    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
+}
+
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background-color: #f4f6f9;
-    color: #1e293b;
+    font-family: 'Inter', 'Clear Sans', sans-serif;
+    background-color: var(--fundo);
+    color: var(--cinza);
     margin: 0;
     padding: 0;
 }
 
-/* =========================================
-   CABEÇALHO (Caso não esteja no global.css)
-   ========================================= */
-.cabecalho {
-    background-color: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-    padding: 16px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.cabecalho .logo p {
-    font-size: 1.45rem;
-    font-weight: 700;
-    color: #0f172a;
-    margin: 0;
-    letter-spacing: -0.5px;
-}
-
-.cabecalho .links {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-}
-
-.cabecalho .links a {
-    text-decoration: none;
-    color: #334155;
-    font-weight: 500;
-    font-size: 0.95rem;
-    transition: color 0.2s ease;
-}
-
-.cabecalho .links a:hover {
-    color: #2563eb;
-}
-
-.cabecalho .foto {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background-color: #2563eb;
-    color: #ffffff;
-    font-weight: 700;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-transform: uppercase;
-}
-
-/* =========================================
-   CONTEÚDO PRINCIPAL
-   ========================================= */
 .conteudo {
-    max-width: 900px;
-    margin: 40px auto;
+    max-width: 980px;
+    margin: 36px auto 60px;
     padding: 0 24px;
 }
 
+/* Cabeçalho da página estilo Hero */
+.titulo {
+    padding: 32px 36px;
+    border-radius: 20px;
+    color: #ffffff;
+    background:
+        radial-gradient(circle at 92% 12%, rgba(51, 173, 152, 0.4), transparent 44%),
+        linear-gradient(135deg, var(--azure) 0%, var(--azure-escuro) 100%);
+    box-shadow: 0 12px 30px rgba(34, 91, 117, 0.2);
+    margin-bottom: 32px;
+}
+
 .titulo h1 {
-    font-size: 1.8rem;
-    color: #0f172a;
-    margin-bottom: 8px;
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+    color: #ffffff;
+    margin-bottom: 6px;
 }
 
 .titulo p {
-    font-size: 1rem;
-    color: #64748b;
-    margin-top: 0;
+    font-size: 0.98rem;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
 }
 
-/* =========================================
+/* ==========================================================
    BARRA DE PROGRESSO (PASSOS)
-   ========================================= */
+   ========================================================== */
 .passos {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin: 40px 0 48px 0;
+    background-color: #ffffff;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombra-card);
+    padding: 32px 28px;
+    margin-bottom: 28px;
     position: relative;
 }
 
-/* Linha de fundo conectando as bolinhas */
 .passos::before {
     content: '';
     position: absolute;
-    top: 18px; /* Metade da altura da bolinha (36px/2) */
-    left: 40px;
-    right: 40px;
+    top: 52px;
+    left: 72px;
+    right: 72px;
     height: 4px;
-    background-color: #e2e8f0;
+    background-color: var(--borda);
     z-index: 1;
     border-radius: 4px;
 }
@@ -115,191 +91,150 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100px;
+    width: 110px;
     text-align: center;
 }
 
 .bolinha {
-    width: 40px;
-    height: 40px;
-    background-color: #f1f5f9;
-    border: 4px solid #ffffff;
-    color: #94a3b8;
+    width: 44px;
+    height: 44px;
+    background-color: #ffffff;
+    border: 3px solid var(--borda-forte);
+    color: var(--cinza);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
     font-size: 1rem;
-    margin-bottom: 12px;
-    box-shadow: 0 0 0 1px #cbd5e1;
+    margin-bottom: 10px;
     transition: all 0.3s ease;
 }
 
 .passo span {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #64748b;
+    color: var(--cinza);
 }
 
-/* Estado Ativo (Preenchido) */
 .passo.ativo .bolinha {
-    background-color: #22c55e; /* Verde de sucesso */
-    color: #ffffff;
-    box-shadow: 0 0 0 2px #22c55e;
+    background: linear-gradient(135deg, var(--turquesa), var(--azure));
     border-color: #ffffff;
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(51, 173, 152, 0.25);
 }
 
 .passo.ativo span {
-    color: #166534;
+    color: var(--azure);
+    font-weight: 700;
 }
 
-/* =========================================
+/* ==========================================================
    GRID DE DETALHES E AÇÕES
-   ========================================= */
+   ========================================================== */
 .bloco {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: 1.45fr 1fr;
     gap: 24px;
 }
 
 .caixa {
     background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-card);
     padding: 28px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    box-shadow: var(--sombra-card);
 }
 
 .caixa h3 {
-    font-size: 1.2rem;
-    color: #0f172a;
-    margin-top: 0;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #f1f5f9;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--azure);
+    margin: 0 0 20px 0;
+    padding-left: 12px;
+    border-left: 3px solid var(--turquesa);
 }
 
-/* Caixa Histórico (Esquerda) */
 .itemhistorico {
     margin-bottom: 14px;
-    font-size: 0.95rem;
-    color: #475569;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eef2f3;
+    font-size: 0.94rem;
+    color: var(--cinza);
     line-height: 1.6;
 }
 
-.itemhistorico strong {
-    color: #1e293b;
-    display: inline-block;
-    width: 110px;
+.itemhistorico:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
-/* Caixa Ações (Direita) */
+.itemhistorico strong {
+    color: var(--azure);
+    display: inline-block;
+    min-width: 115px;
+}
+
 .acoes .tempo {
-    font-size: 0.95rem;
-    color: #475569;
-    margin-bottom: 24px;
+    font-size: 0.94rem;
+    color: var(--cinza);
+    margin-bottom: 22px;
 }
 
 .acoes .tempo strong {
-    color: #2563eb;
-    background-color: #eff6ff;
-    padding: 4px 10px;
-    border-radius: 6px;
+    color: var(--turquesa-escuro);
+    background-color: var(--turquesa-claro);
+    padding: 5px 12px;
+    border-radius: 999px;
     margin-left: 4px;
+    font-weight: 700;
 }
 
-/* =========================================
-   FORMULÁRIOS E BOTÕES
-   ========================================= */
-.botao {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    background-color: #2b4c8c;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    text-align: center;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-    box-sizing: border-box;
-}
-
-.botao:hover {
-    background-color: #1e3a8a;
-}
-
-.botaosecundario {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    background-color: #ffffff;
-    color: #dc2626;
-    border: 1px solid #fca5a5;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    text-align: center;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-    margin-top: 12px;
-    box-sizing: border-box;
-}
-
-.botaosecundario:hover {
-    background-color: #fef2f2;
-}
-
-/* Elemento <details> de enviar mensagem */
 .caixa-details details {
-    background-color: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 12px;
+    background-color: var(--fundo);
+    border: 1px solid var(--borda-forte);
+    border-radius: var(--raio-controle);
+    padding: 14px;
+    margin-bottom: 14px;
 }
 
 .caixa-details summary {
     font-weight: 600;
-    color: #1e293b;
+    color: var(--azure);
     cursor: pointer;
-    outline: none;
 }
 
 .caixa-details textarea,
 .caixa-avaliacao textarea,
 .caixa-avaliacao select {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
+    padding: 12px 14px;
+    border: 1px solid var(--borda-forte);
+    border-radius: var(--raio-controle);
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 0.94rem;
     margin-top: 12px;
-    box-sizing: border-box;
     background-color: #ffffff;
+    color: var(--cinza);
+    transition: all 0.2s ease;
 }
 
 .caixa-details textarea:focus,
 .caixa-avaliacao textarea:focus,
 .caixa-avaliacao select:focus {
     outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    border-color: var(--turquesa);
+    box-shadow: 0 0 0 3px rgba(51, 173, 152, 0.2);
 }
 
 .caixa-details textarea {
-    min-height: 90px;
+    min-height: 92px;
     resize: vertical;
 }
 
-/* Avaliação */
 .caixa-avaliacao h4 {
     margin: 0 0 12px 0;
-    color: #0f172a;
+    color: var(--azure);
 }
+

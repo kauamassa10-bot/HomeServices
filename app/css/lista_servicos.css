@@ -1,98 +1,119 @@
-/* Estilos específicos para a página de Meus Serviços (Tabela) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --laranja: #ec7a46;
+    --laranja-escuro: #d66532;
+    --turquesa: #33ad98;
+    --turquesa-escuro: #227a6b;
+    --turquesa-claro: #e6f5f2;
+    --cinza: #575757;
+    --azure: #225b75;
+    --fundo: #f3f7f9;
+    --borda: #e2e8ea;
+    --raio-card: 16px;
+    --raio-controle: 10px;
+    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
+}
+
 body {
-    background-color: #f7f8fa;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--fundo);
+    font-family: 'Inter', 'Clear Sans', sans-serif;
     margin: 0;
     padding: 0;
-    color: #333;
+    color: var(--cinza);
 }
 
 .meus-servicos-main {
     max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
+    margin: 36px auto 56px;
+    padding: 0 24px;
 }
 
-/* Cabeçalho da página (Título + Botão) */
 .header-acoes {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    gap: 16px;
+    margin-bottom: 28px;
 }
 
 .titulo-pagina {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.6px;
     margin: 0;
-    color: #111;
+    color: var(--azure);
+    padding-left: 14px;
+    border-left: 4px solid var(--turquesa);
 }
 
 .btn-novo-servico {
-    background-color: #719df2;
-    color: white;
+    background-color: var(--laranja);
+    color: #ffffff;
     border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: var(--raio-controle);
+    font-size: 0.92rem;
+    font-weight: 700;
     text-decoration: none;
-    transition: background-color 0.2s;
+    box-shadow: 0 4px 12px rgba(236, 122, 70, 0.3);
+    transition: all 0.2s ease;
 }
 
 .btn-novo-servico:hover {
-    background-color: #5c85d6;
+    background-color: var(--laranja-escuro);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(236, 122, 70, 0.4);
 }
 
-/* Container da Tabela */
 .tabela-container {
-    background-color: white;
-    border: 1px solid #e1e5eb;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    background-color: #ffffff;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombra-card);
     overflow: hidden;
 }
 
-/* Barra de ferramentas tipo Notion (ícones) */
 .toolbar-tabela {
-    padding: 12px 20px;
-    border-bottom: 1px solid #e1e5eb;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--borda);
     display: flex;
-    gap: 15px;
-    color: #666;
-    font-size: 14px;
+    gap: 18px;
+    color: var(--cinza);
+    font-size: 0.88rem;
+    background-color: #fbfdfe;
 }
 
 .toolbar-tabela span {
     cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .toolbar-tabela span:hover {
-    color: #111;
+    color: var(--azure);
 }
 
-/* Tabela */
 .tabela-servicos {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
 }
 
-.tabela-servicos th, 
+.tabela-servicos th,
 .tabela-servicos td {
-    padding: 15px 20px;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 14px;
+    padding: 16px 24px;
+    border-bottom: 1px solid #eef2f3;
+    font-size: 0.92rem;
 }
 
 .tabela-servicos th {
-    color: #555;
-    font-weight: 600;
-    background-color: #fafbfc;
+    color: #ffffff;
+    font-weight: 700;
+    background-color: var(--azure);
 }
 
 .tabela-servicos td {
-    color: #444;
+    color: var(--cinza);
 }
 
 .tabela-servicos tbody tr:last-child td {
@@ -100,40 +121,44 @@ body {
 }
 
 .tabela-servicos tbody tr:hover {
-    background-color: #f8fafc;
+    background-color: var(--turquesa-claro);
 }
 
-/* Coluna de ID/Número */
 .col-id {
-    color: #999 !important;
-    width: 30px;
+    color: #849095 !important;
+    font-weight: 600;
+    width: 40px;
 }
 
-/* Badges de Status */
 .badge-status {
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
     display: inline-block;
 }
 
 .status-ativo {
-    background-color: #86efac; /* Verde claro */
-    color: #166534;
+    background-color: var(--turquesa-claro);
+    color: var(--turquesa-escuro);
 }
 
 .status-inativo {
-    background-color: #e5e7eb; /* Cinza claro */
-    color: #4b5563;
+    background-color: rgba(87, 87, 87, 0.12);
+    color: var(--cinza);
 }
 
-/* Linha final com botão de + */
 .linha-adicionar {
-    padding: 12px 20px;
-    border-top: 1px solid #e1e5eb;
-    color: #666;
-    font-size: 18px;
+    padding: 14px 24px;
+    border-top: 1px solid var(--borda);
+    color: var(--azure);
+    font-size: 1.15rem;
+    font-weight: 700;
     cursor: pointer;
-    background-color: #fafbfc;
+    background-color: #fbfdfe;
+    transition: background-color 0.2s ease;
+}
+
+.linha-adicionar:hover {
+    background-color: var(--turquesa-claro);
 }

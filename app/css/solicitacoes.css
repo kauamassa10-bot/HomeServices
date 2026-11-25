@@ -1,125 +1,180 @@
-/* Estilos específicos para a página de Solicitações */
-body {
-    background-color: #f7f8fa;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    color: #333;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --laranja: #ec7a46;
+    --laranja-escuro: #d66532;
+    --turquesa: #33ad98;
+    --turquesa-escuro: #227a6b;
+    --turquesa-claro: #e6f5f2;
+    --cinza: #575757;
+    --azure: #225b75;
+    --azure-escuro: #17425a;
+    --fundo: #f3f7f9;
+    --borda: #e2e8ea;
+    --borda-forte: #d1d9dc;
+    --raio-card: 16px;
+    --raio-controle: 10px;
+    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
+    --sombra-hover: 0 12px 30px rgba(34, 91, 117, 0.16);
 }
 
-/* MAIN CONTENT */
+body {
+    background-color: var(--fundo);
+    font-family: 'Inter', 'Clear Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--cinza);
+}
+
 .solicitacoes-main {
     max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
+    margin: 32px auto 56px;
+    padding: 0 24px;
 }
 
 .titulo-pagina {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 25px;
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+    margin-bottom: 20px;
+    color: var(--azure);
+    padding-left: 14px;
+    border-left: 4px solid var(--turquesa);
 }
 
-/* BARRA DE FILTROS */
+/* Barra de filtros destacada com gradiente Azure */
 .filtros-container {
     display: flex;
-    gap: 15px;
-    margin-bottom: 40px;
+    gap: 12px;
+    padding: 26px 28px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+    background:
+        radial-gradient(circle at 92% 15%, rgba(51, 173, 152, 0.4), transparent 45%),
+        linear-gradient(135deg, var(--azure) 0%, var(--azure-escuro) 100%);
+    box-shadow: 0 12px 30px rgba(34, 91, 117, 0.22);
 }
 
 .input-filtro {
     flex: 1;
-    padding: 12px 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    color: #555;
+    padding: 14px 18px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.94rem;
+    color: var(--cinza);
+    background-color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
     outline: none;
+    transition: all 0.2s ease;
 }
 
 .input-filtro:focus {
-    border-color: #719df2;
+    border-color: var(--turquesa);
+    box-shadow: 0 0 0 4px rgba(51, 173, 152, 0.28);
 }
 
 .btn-filtrar {
-    background-color: #719df2;
-    color: white;
+    background-color: var(--laranja);
+    color: #ffffff;
     border: none;
-    padding: 0 30px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: 0 32px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.2s;
+    box-shadow: 0 6px 16px rgba(236, 122, 70, 0.38);
+    transition: all 0.2s ease;
 }
 
 .btn-filtrar:hover {
-    background-color: #5c85d6;
+    background-color: var(--laranja-escuro);
+    transform: translateY(-2px);
 }
 
-/* GRID DE SOLICITAÇÕES */
+/* Grid de Solicitações */
 .solicitacoes-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 22px;
 }
 
-/* CARD DE SOLICITAÇÃO */
 .card-solicitacao {
-    background-color: #f2f5f9;
-    border-radius: 12px;
-    padding: 25px;
+    background-color: #ffffff;
+    border: 1px solid var(--borda);
+    border-top: 4px solid var(--turquesa);
+    border-radius: var(--raio-card);
+    padding: 26px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 220px;
+    min-height: 250px;
+    box-shadow: var(--sombra-card);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-solicitacao:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sombra-hover);
+    border-color: rgba(51, 173, 152, 0.55);
+    border-top-color: var(--azure);
 }
 
 .conteudo-solicitacao h4 {
     margin: 0 0 10px 0;
-    font-size: 16px;
+    font-size: 1.12rem;
     font-weight: 700;
-    color: #111;
+    color: var(--azure);
+    line-height: 1.3;
 }
 
 .detalhe-solicitacao {
-    font-size: 14px;
-    color: #333;
-    margin-bottom: 5px;
-    line-height: 1.4;
+    font-size: 0.9rem;
+    color: var(--cinza);
+    margin-bottom: 6px;
+    line-height: 1.45;
 }
 
 .detalhe-solicitacao.categoria {
-    color: #555;
+    color: var(--turquesa-escuro);
+    font-weight: 600;
 }
 
 .detalhe-solicitacao.descricao {
     margin-top: 10px;
-    margin-bottom: 15px;
-    color: #444;
+    margin-bottom: 14px;
+    color: var(--cinza);
 }
 
 .detalhe-solicitacao.data {
-    color: #666;
-    font-size: 13px;
-    margin-top: auto;
+    color: #849095;
+    font-size: 0.82rem;
+    font-weight: 500;
 }
 
-/* BOTAO FAZER PROPOSTA */
 .btn-proposta {
-    background-color: #719df2;
-    color: white;
+    background-color: var(--laranja);
+    color: #ffffff;
     border: none;
-    padding: 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: 13px 16px;
+    border-radius: var(--raio-controle);
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 700;
     cursor: pointer;
     width: 100%;
-    margin-top: 20px;
-    transition: background-color 0.2s;
+    margin-top: 18px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    box-shadow: 0 4px 12px rgba(236, 122, 70, 0.28);
+    transition: all 0.2s ease;
 }
 
 .btn-proposta:hover {
-    background-color: #5c85d6;
+    background-color: var(--laranja-escuro);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(236, 122, 70, 0.38);
 }
+
