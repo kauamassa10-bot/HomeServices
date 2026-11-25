@@ -162,11 +162,7 @@ $servicos = $pdo->query($sqlServicos)->fetchAll(PDO::FETCH_ASSOC);
 
     <header class="header-simples">
         <div class="header-container">
-            <h1 class="logo-texto">HomeServices</h1>
-            <nav class="menu-topo">
-                <a href="cadastro_servicos.php">Novo Serviço</a>
-                <a href="registros.php">Painel Admin</a>
-            </nav>
+            <h1 class="logo-texto"><a href="index.php">HomeServices</a></h1>
             <div class='foto'>
                 <?= $iniciaisUsuario ?>
             </div>
