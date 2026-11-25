@@ -83,7 +83,7 @@ try {
         <h1 class="logo">HomeServices</h1>
         <nav class="links">
             <a href="buscar.php">Buscar Serviços</a>
-            <a href="pedidos.php">Meus Pedidos</a>
+            <a href="pedidos.php" class="active">Meus Pedidos</a>
             <a href="perfil_cliente.php" class="foto"
                 title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
         </nav>

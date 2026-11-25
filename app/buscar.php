@@ -34,7 +34,7 @@ $iniciais = pegarIniciais($nomeCompleto);
             <p>HomeServices</p>
         </div>
         <nav class="links">
-            <a href="buscar.php">Buscar Serviços</a>
+            <a href="buscar.php" class="active">Buscar Serviços</a>
             <a href="pedidos.php">Meus Pedidos</a>
             <a href="perfil_cliente.php" class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
 
