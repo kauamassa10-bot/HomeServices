@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$solicitacao) {
         $mensagem = 'Solicitação não encontrada para este profissional.';
     } elseif (!$podeEnviar) {
-        $mensagem = 'Esta solicitação já recebeu uma proposta.';
+        $mensagem = 'Esta solicitação não está mais aberta para proposta.';
     } else {
         $valorBruto = trim(str_replace(['R$', ' '], '', $valorInformado));
         if (str_contains($valorBruto, ',')) {
@@ -33,24 +33,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $valor = (float) $valorBruto;
         $descricao = trim($descricaoInformada);
-        $jaExiste = read($pdo, 'proposta', 'id_solicitacao = ? AND id_prestador = ?', [$idSolicitacao, $idPrestador]);
 
         if ($valor <= 0 || $descricao === '') {
             $mensagem = 'Informe um valor maior que zero e a descrição da proposta.';
-        } elseif ($jaExiste) {
-            $mensagem = 'Você já enviou uma proposta para esta solicitação.';
-            $podeEnviar = false;
         } else {
             try {
-                $pdo->beginTransaction();
-                create($pdo, 'proposta', [
+                $jaExiste = read($pdo, 'proposta', 'id_solicitacao = ? AND id_prestador = ?', [$idSolicitacao, $idPrestador]);
+
+                $dadosProposta = [
                     'id_solicitacao' => $idSolicitacao,
-                    'id_prestador' => $idPrestador,
+                    'id_prestador'   => $idPrestador,
                     'valor_proposta' => number_format($valor, 2, '.', ''),
-                    'desc_proposta' => $descricao,
+                    'desc_proposta'  => $descricao,
                     'status_proposta' => 'ENVIADA',
-                    'data_proposta' => date('Y-m-d'),
-                ]);
+                    'data_proposta'  => date('Y-m-d'),
+                ];
+
+                if ($jaExiste) {
+                    update(
+                        $pdo,
+                        'proposta',
+                        $dadosProposta,
+                        'id_proposta = ?',
+                        [$jaExiste['id_proposta']]
+                    );
+                } else {
+                    create($pdo, 'proposta', $dadosProposta);
+                }
+
                 update(
                     $pdo,
                     'solicitacao',
@@ -58,14 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'id_solicitacao = ? AND id_prestador = ?',
                     [$idSolicitacao, $idPrestador]
                 );
-                $pdo->commit();
 
                 header('Location: mural_solicitacoes.php');
                 exit;
             } catch (Throwable $e) {
-                if ($pdo->inTransaction()) {
-                    $pdo->rollBack();
-                }
                 $mensagem = 'Não foi possível enviar a proposta. Tente novamente.';
             }
         }
@@ -90,10 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="mural_solicitacoes.php" class="active">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
-            <a href="perfil.php">Perfil</a>
         </nav>
         <div class="avatar" title="<?= htmlspecialchars($nomeCompleto, ENT_QUOTES, 'UTF-8') ?>">
-            <?= htmlspecialchars($iniciais, ENT_QUOTES, 'UTF-8') ?>
+            <a href="perfil.php"><?= htmlspecialchars($iniciais, ENT_QUOTES, 'UTF-8') ?></a>
         </div>
     </header>
 
