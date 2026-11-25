@@ -60,24 +60,23 @@ usort($agendamentos, static function (array $a, array $b): int {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Agendamentos - HomeServices</title>
     <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/agendamentos_prestador.css">
 </head>
 
 <body>
 
-    <header class="dashboard-header">
-        <div class="dashboard-logo">HomeServices</div>
-        <nav class="dashboard-nav">
+    <header class="cabecalho">
+        <div class="logo">HomeServices</div>
+        <nav class="links">
             <a href="dashboard_prestador.php">Visão Geral</a>
             <a href="mural_solicitacoes.php">Solicitações</a>
             <a href="agendamentos_prestador.php" class="active">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
-            <a href="perfil.php">Perfil</a>
-        </nav>
-        <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
+            <div class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>">
             <a href="perfil.php" class="sem-sublinhado"><?= htmlspecialchars($iniciais) ?></a>
         </div>
+        </nav>
+        
     </header>
 
     <main class="agendamentos-main">

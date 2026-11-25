@@ -1,37 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-:root {
-    --laranja: #ec7a46;
-    --laranja-escuro: #d66532;
-    --turquesa: #33ad98;
-    --turquesa-escuro: #227a6b;
-    --turquesa-claro: #e6f5f2;
-    --cinza: #575757;
-    --azure: #225b75;
-    --azure-escuro: #17425a;
-    --fundo: #f3f7f9;
-    --borda: #e2e8ea;
-    --borda-forte: #d1d9dc;
-
-    --raio-card: 16px;
-    --raio-controle: 10px;
-    --sombra-card: 0 4px 16px rgba(34, 91, 117, 0.08);
-    --sombra-hover: 0 12px 30px rgba(34, 91, 117, 0.16);
-}
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    background-color: var(--fundo);
-    font-family: 'Inter', 'Clear Sans', sans-serif;
-    margin: 0;
-    padding: 0;
-    color: var(--cinza);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-}
 
 a:focus-visible,
 button:focus-visible {

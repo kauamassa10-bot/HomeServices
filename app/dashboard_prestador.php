@@ -103,17 +103,18 @@ usort($proximosAgendamentos, function ($a, $b) {
 </head>
 <body>
 
-    <header class="dashboard-header">
-        <div class="dashboard-logo">HomeServices</div>
-        <nav class="dashboard-nav">
+    <header class="cabecalho">
+        <div class="logo">HomeServices</div>
+        <nav class="links">
             <a href="dashboard_prestador.php" class="active">Visão Geral</a>
             <a href="mural_solicitacoes.php">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
-        </nav>
-        <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
+            <div class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>">
             <a href="perfil.php"><?= htmlspecialchars($iniciais) ?></a>
         </div>
+        </nav>
+        
     </header>
 
     <main class="dashboard-main">

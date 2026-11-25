@@ -1,14 +1,11 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
-require_once __DIR__ . '/banco/database.php';
 
-/** @var PDO $pdo */
-
+$nomeCompleto = $dadosUsuario['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? 'Usuário');
+$iniciais = pegarIniciais($nomeCompleto);
 $tipo_usuario = strtoupper($_SESSION['tipo_usuario'] ?? '');
 $id_usuario = (int) ($_SESSION['id_usuario'] ?? 0);
+
 
 // Redireciona se não estiver logado
 if (!$id_usuario) {
@@ -16,78 +13,100 @@ if (!$id_usuario) {
     exit;
 }
 
+
 $pedidos = [];
 
+
 try {
-    // Adicionamos o "a.id_agendamento" e os JOINS para vincular a solicitação ao agendamento (se existir)
     if ($tipo_usuario === 'CLIENTE') {
-        $sql = "SELECT s.*, a.id_agendamento 
-                FROM solicitacao s 
-                LEFT JOIN agendamento a ON s.id_solicitacao = a.id_solicitacao 
-                WHERE s.id_cliente = :id 
-                ORDER BY s.id_solicitacao DESC";
+        $solicitacoes = readAll($pdo, 'solicitacao', 'id_cliente = ?', [$id_usuario]);
+        $agendamentos = readAll($pdo, 'agendamento', 'id_cliente = ?', [$id_usuario]);
+
+
+        // Mapeia o agendamento mais recente por solicitação
+        $agendamentoPorSolicitacao = [];
+        foreach ($agendamentos as $ag) {
+            $idSol = (int) $ag['id_solicitacao'];
+            if (!isset($agendamentoPorSolicitacao[$idSol]) || (int) $ag['id_agendamento'] > (int) $agendamentoPorSolicitacao[$idSol]['id_agendamento']) {
+                $agendamentoPorSolicitacao[$idSol] = $ag;
+            }
+        }
+
+
+        foreach ($solicitacoes as $sol) {
+            $ag = $agendamentoPorSolicitacao[(int) $sol['id_solicitacao']] ?? null;
+            $sol['id_agendamento'] = $ag['id_agendamento'] ?? null;
+            $pedidos[] = $sol;
+        }
     } elseif ($tipo_usuario === 'PRESTADOR') {
-        $sql = "SELECT s.*, a.id_agendamento 
-                FROM solicitacao s 
-                INNER JOIN agendamento a ON s.id_solicitacao = a.id_solicitacao 
-                WHERE a.id_prestador = :id 
-                ORDER BY s.id_solicitacao DESC";
+        $agendamentos = readAll($pdo, 'agendamento', 'id_prestador = ?', [$id_usuario]);
+        $todasSolicitacoes = readAll($pdo, 'solicitacao');
+        $solicitacaoPorId = array_column($todasSolicitacoes, null, 'id_solicitacao');
+
+
+        foreach ($agendamentos as $ag) {
+            $sol = $solicitacaoPorId[$ag['id_solicitacao']] ?? null;
+            if ($sol) {
+                $sol['id_agendamento'] = $ag['id_agendamento'];
+                $pedidos[] = $sol;
+            }
+        }
     } else {
         // Admin não tem painel de pedidos próprio, volta para registros
         header("Location: registros.php");
         exit;
     }
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $id_usuario]);
-    $pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    echo "Erro ao carregar pedidos: " . $e->getMessage();
+
+    // Ordena do ID de solicitação mais recente para o mais antigo
+    usort($pedidos, static function (array $a, array $b): int {
+        return (int) $b['id_solicitacao'] <=> (int) $a['id_solicitacao'];
+    });
+} catch (Throwable $e) {
+    echo "Erro ao carregar pedidos: " . htmlspecialchars($e->getMessage());
 }
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>Meus Pedidos - HomeServices</title>
-    <link rel="stylesheet" href="css/orcamento.css">
     <link rel="stylesheet" href="css/pedidos.css">
     <link rel="stylesheet" href="css/global.css">
 </head>
+
 <body class="fundo-claro">
 
-    <header class="header-simples">
-        <div class="header-container">
-            <h1 class="logo-texto">HomeServices</h1>
-            <nav class="menu-topo">
-                <?php if ($tipo_usuario === 'CLIENTE'): ?>
-                    <a href="buscar.php">Buscar Serviços</a>
-                    <a href="pedidos.php">Meus Pedidos</a>
-                    <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
-                <?php elseif ($tipo_usuario === 'PRESTADOR'): ?>
-                    <a href="pedidos.php">Meus Serviços e Pedidos</a>
-                    <a href="cadastro_servicos.php">Adicionar Serviço</a>
-                <?php endif; ?>
-                <a href="logout.php">Sair</a>
-            </nav>
-        </div>
+
+    <header class="cabecalho">
+        <h1 class="logo">HomeServices</h1>
+        <nav class="links">
+            <a href="buscar.php">Buscar Serviços</a>
+            <a href="pedidos.php">Meus Pedidos</a>
+            <a href="perfil_cliente.php" class="foto"
+                title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
+        </nav>
     </header>
+
 
     <main class="container-pedidos">
         <h2>Meus Pedidos</h2>
         <p class="subtitulo">Acompanhe os serviços e orçamentos</p>
+
 
         <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == '1'): ?>
             <div class="alerta-sucesso">
                 Orçamento enviado com sucesso! Ele já está listado na tabela abaixo.
             </div>
         <?php endif; ?>
-        
+
         <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == 'servico_criado'): ?>
             <div class="alerta-sucesso">
                 Novo serviço adicionado ao seu perfil com sucesso!
             </div>
         <?php endif; ?>
+
 
         <?php if (empty($pedidos)): ?>
             <div class="vazio-box">
@@ -106,7 +125,7 @@ try {
                         <th>Endereço / CEP</th>
                         <th>Data Desejada</th>
                         <th>Status</th>
-                        <th>Ação</th> <!-- Nova Coluna Adicionada -->
+                        <th>Ação</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,15 +135,16 @@ try {
                             <td><strong><?= htmlspecialchars($pedido['desc_titulo']) ?></strong></td>
                             <td><?= htmlspecialchars($pedido['desc_solicitacao']) ?></td>
                             <td><?= htmlspecialchars($pedido['desc_endereco_atendimento']) ?></td>
-                            <td><?= !empty($pedido['data_solicitacao']) ? date('d/m/Y', strtotime($pedido['data_solicitacao'])) : '—' ?></td>
+                            <td><?= !empty($pedido['data_solicitacao']) ? date('d/m/Y', strtotime($pedido['data_solicitacao'])) : '—' ?>
+                            </td>
                             <td><?= htmlspecialchars(ucfirst($pedido['status_solicitacao'])) ?></td>
-                            
-                            <!-- Botão que envia o ID do agendamento pela URL -->
+
                             <td>
                                 <?php if (!empty($pedido['id_agendamento'])): ?>
-                                    <button><a href="acompanhar_pedido.php?id=<?= $pedido['id_agendamento'] ?>" class="btn-solido">Acompanhar</a></button>
+                                    <button><a href="acompanhar_pedido.php?id=<?= (int) $pedido['id_agendamento'] ?>"
+                                            class="btn-solido">Acompanhar</a></button>
                                 <?php else: ?>
-                                    <span style="font-size: 0.85rem; color: #888; font-style: italic;">Aguardando Profissional</span>
+                                    <span class="texto-aguardando">Aguardando Profissional</span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -134,5 +154,7 @@ try {
         <?php endif; ?>
     </main>
 
+
 </body>
+
 </html>

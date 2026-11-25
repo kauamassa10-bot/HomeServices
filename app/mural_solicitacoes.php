@@ -60,23 +60,24 @@ foreach ($solicitacoes as $solicitacao) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mural de Solicitações - HomeServices</title>
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/solicitacoes.css">
 </head>
 
 <body>
 
-    <header class="dashboard-header">
-        <div class="dashboard-logo">HomeServices</div>
-        <nav class="dashboard-nav">
+    <header class="cabecalho">
+        <div class="logo">HomeServices</div>
+        <nav class="links">
             <a href="dashboard_prestador.php">Visão Geral</a>
             <a href="mural_solicitacoes.php" class="active">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
-        </nav>
-        <div class="avatar" title="<?= htmlspecialchars($nomeCompleto) ?>">
+            <div class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>">
             <a href="perfil.php"><?= htmlspecialchars($iniciais) ?></a>
         </div>
+        </nav>
+        
     </header>
 
     <main class="solicitacoes-main">
