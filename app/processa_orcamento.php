@@ -36,7 +36,7 @@ if ($descricao === '' || $endereco === '') {
 }
 
 try {
-    $idSolicitacao = create($pdo, 'solicitacao', [
+    create($pdo, 'solicitacao', [
         'id_cliente'                => $idCliente,
         'id_prestador'              => $servico['id_prestador'],
         'id_categoria'              => $servico['id_categoria'],
@@ -45,17 +45,8 @@ try {
         'desc_endereco_atendimento' => $endereco,
         'status_solicitacao'        => 'ABERTA',
     ]);
-
-    $idProposta = create($pdo, 'proposta', [
-        'id_solicitacao'  => $idSolicitacao,
-        'id_prestador'    => $servico['id_prestador'],
-        'valor_proposta'  => $servico['valor_base'],
-        'desc_proposta'   => 'Valor base do serviço: ' . $servico['nome_servico'],
-        'status_proposta' => 'ENVIADA',
-        'data_proposta'   => date('Y-m-d'),
-    ]);
 } catch (Throwable $e) {
-    error_log('Erro ao criar solicitação/proposta: ' . $e->getMessage());
+    error_log('Erro ao criar solicitação: ' . $e->getMessage());
     $_SESSION['orcamento_erro'] = 'Não foi possível enviar a solicitação. Tente novamente.';
     $_SESSION['orcamento_old'] = [
         'desc_solicitacao'          => $descricao,
@@ -66,3 +57,4 @@ try {
 }
 
 header('Location: buscar.php');
+exit;

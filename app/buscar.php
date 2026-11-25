@@ -211,7 +211,7 @@ $categoriaSelecionada = trim($_GET['categoria'] ?? '');
                         continue; // Para cada proposta, descobre a solicitação dela. Se não achar, pula.
                     }
 
-                    $chave = $propostaItem['id_prestador'] . '-' . $solicitacaoItem['id_categoria']; // A proposta traz o prestador, mas a categoria só existe na solicitação.
+                    $chave = $propostaItem['id_prestador'] . '-' . $solicitacaoItem['id_categoria'] . '-' . mb_strtolower(trim((string) $solicitacaoItem['desc_titulo'])); // A proposta traz o prestador, mas a categoria só existe na solicitação.
                     $atual = $propostasPorChave[$chave] ?? null; // Verifica se já existe uma proposta armazenada para essa combinação de prestador e categoria
                     $novaEnviada = strtoupper((string) $propostaItem['status_proposta']) === 'ENVIADA'; // Verifica se a proposta atual está com status "ENVIADA"
                     $atualEnviada = $atual !== null && strtoupper((string) $atual['status_proposta']) === 'ENVIADA'; // Verifica se a proposta armazenada anteriormente está com status "ENVIADA"
@@ -231,12 +231,11 @@ $categoriaSelecionada = trim($_GET['categoria'] ?? '');
                         <?php
                         $notaArredondada = (int) round((float) $servico['nota_media']);
                         $estrelas = str_repeat('★', $notaArredondada) . str_repeat('☆', 5 - $notaArredondada);
-                        $chaveProposta = $servico['id_prestador'] . '-' . $servico['id_categoria'];
+                        $chaveProposta = $servico['id_prestador'] . '-' . $servico['id_categoria'] . '-' . mb_strtolower(trim((string) $servico['nome_servico']));
                         $propostaCard = $propostasPorChave[$chaveProposta] ?? null; // Obtém a proposta mais recente para o prestador e categoria do serviço atual
                         $propostaEnviada = $propostaCard !== null && strtoupper((string) $propostaCard['status_proposta']) === 'ENVIADA'; // Verifica se a proposta mais recente está com status "ENVIADA"
                         ?>
                         <div class="card-servico">
-                            <div class="card-foto">Foto</div>
                             <div class="card-info">
                                 <h3>
                                     <?= htmlspecialchars($servico['nome_servico'], ENT_QUOTES, 'UTF-8') ?>

@@ -64,10 +64,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 update(
                     $pdo,
                     'solicitacao',
-                    ['status_solicitacao' => 'EM_ORCAMENTO'],
-                    'id_solicitacao = ? AND id_prestador = ?',
-                    [$idSolicitacao, $idPrestador]
+                    [
+                        'status_solicitacao' => 'EM_ORCAMENTO',
+                        'id_prestador'       => $idPrestador,
+                    ],
+                    'id_solicitacao = ?',
+                    [$idSolicitacao]
                 );
+
 
                 header('Location: mural_solicitacoes.php');
                 exit;
@@ -80,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/proposta.css">
 </head>
+
 <body>
 
     <header class="dashboard-header">
@@ -156,4 +162,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
 
 </body>
+
 </html>
