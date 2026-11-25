@@ -92,3 +92,10 @@ CREATE TABLE IF NOT EXISTS avaliacao (
 
 UPDATE servico SET id_servico = 503 WHERE id_servico = 0;
 ALTER TABLE servico MODIFY id_servico BIGINT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE solicitacao DROP FOREIGN KEY solicitacao_ibfk_1;
+
+ALTER TABLE solicitacao
+ADD CONSTRAINT solicitacao_ibfk_1
+FOREIGN KEY (id_cliente) REFERENCES usuario(id_usuario)
+ON DELETE CASCADE;

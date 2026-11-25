@@ -7,6 +7,9 @@ INSERT INTO usuario (id_usuario, nome_usuario, email, senha, telefone, tipo_usua
 (2001, 'Ana Maria Silva', 'ana.maria@email.com', '123456', '11911112222', 'CLIENTE', true, '2026-10-29 10:30:00'),
 (2002, 'João Pedro Santos', 'joao.pedro@email.com', '123456', '11933334444', 'CLIENTE', true, '2026-10-29 10:35:00');
 
+INSERT INTO usuario (nome_usuario, email, senha, telefone, tipo_usuario, status_ativo, data_cadastro)
+VALUES ('Administrador Geral', 'admin@homeservices.com', 'admin123', '11999990000', 'ADMIN', 1, NOW());
+
 INSERT INTO categoria (id_categoria, nome_categoria, desc_categoria, status_ativo) VALUES
 (10, 'Elétrica', 'Instalações e manutenções elétricas residenciais', true),
 (20, 'Hidráulica', 'Reparos em canos, vazamentos, torneiras e sifões', true),
