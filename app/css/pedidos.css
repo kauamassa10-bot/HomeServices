@@ -126,3 +126,49 @@ body {
     box-shadow: 0 10px 22px rgba(236, 122, 70, 0.42);
 }
 
+.btn-acompanhar {
+    display: inline-block;
+    background-color: var(--turquesa);
+    color: #ffffff;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: var(--raio-controle);
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-acompanhar:hover {
+    background-color: var(--turquesa-escuro);
+    transform: translateY(-1px);
+}
+
+.badge-pedido {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.badge-aberta {
+    background-color: #fef3c7;
+    color: #b45309;
+}
+
+.badge-orcamento {
+    background-color: #e0f2fe;
+    color: var(--azure);
+}
+
+.badge-agendada {
+    background-color: var(--turquesa-claro);
+    color: var(--turquesa-escuro);
+}
+
+.badge-cancelada {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}

@@ -1,29 +1,25 @@
 <?php
 require_once __DIR__ . '/init.php';
 
-$nomeCompleto = $dadosUsuario['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? 'Usuário');
-$iniciais = pegarIniciais($nomeCompleto);
 $tipo_usuario = strtoupper($_SESSION['tipo_usuario'] ?? '');
 $id_usuario = (int) ($_SESSION['id_usuario'] ?? 0);
 
-
-// Redireciona se não estiver logado
 if (!$id_usuario) {
     header("Location: login_cliente.php?erro=acesso_negado");
     exit;
 }
 
+$dadosUsuario = read($pdo, 'usuario', 'id_usuario = ?', [$id_usuario]) ?: [];
+$nomeCompleto = !empty($dadosUsuario['nome_usuario']) ? $dadosUsuario['nome_usuario'] : ($_SESSION['nome_usuario'] ?? 'Usuário');
+$iniciais = pegarIniciais($nomeCompleto);
 
 $pedidos = [];
-
 
 try {
     if ($tipo_usuario === 'CLIENTE') {
         $solicitacoes = readAll($pdo, 'solicitacao', 'id_cliente = ?', [$id_usuario]);
         $agendamentos = readAll($pdo, 'agendamento', 'id_cliente = ?', [$id_usuario]);
 
-
-        // Mapeia o agendamento mais recente por solicitação
         $agendamentoPorSolicitacao = [];
         foreach ($agendamentos as $ag) {
             $idSol = (int) $ag['id_solicitacao'];
@@ -31,7 +27,6 @@ try {
                 $agendamentoPorSolicitacao[$idSol] = $ag;
             }
         }
-
 
         foreach ($solicitacoes as $sol) {
             $ag = $agendamentoPorSolicitacao[(int) $sol['id_solicitacao']] ?? null;
@@ -43,7 +38,6 @@ try {
         $todasSolicitacoes = readAll($pdo, 'solicitacao');
         $solicitacaoPorId = array_column($todasSolicitacoes, null, 'id_solicitacao');
 
-
         foreach ($agendamentos as $ag) {
             $sol = $solicitacaoPorId[$ag['id_solicitacao']] ?? null;
             if ($sol) {
@@ -52,13 +46,10 @@ try {
             }
         }
     } else {
-        // Admin não tem painel de pedidos próprio, volta para registros
         header("Location: registros.php");
         exit;
     }
 
-
-    // Ordena do ID de solicitação mais recente para o mais antigo
     usort($pedidos, static function (array $a, array $b): int {
         return (int) $b['id_solicitacao'] <=> (int) $a['id_solicitacao'];
     });
@@ -71,6 +62,7 @@ try {
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Pedidos - HomeServices</title>
     <link rel="stylesheet" href="css/pedidos.css">
     <link rel="stylesheet" href="css/global.css">
@@ -78,22 +70,18 @@ try {
 
 <body class="fundo-claro">
 
-
     <header class="cabecalho">
-        <h1 class="logo">HomeServices</h1>
+        <div class="logo">HomeServices</div>
         <nav class="links">
             <a href="buscar.php">Buscar Serviços</a>
             <a href="pedidos.php" class="active">Meus Pedidos</a>
-            <a href="perfil_cliente.php" class="foto"
-                title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
+            <a href="perfil_cliente.php" class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
         </nav>
     </header>
-
 
     <main class="container-pedidos">
         <h2>Meus Pedidos</h2>
         <p class="subtitulo">Acompanhe os serviços e orçamentos</p>
-
 
         <?php if (isset($_GET['sucesso']) && $_GET['sucesso'] == '1'): ?>
             <div class="alerta-sucesso">
@@ -107,12 +95,11 @@ try {
             </div>
         <?php endif; ?>
 
-
         <?php if (empty($pedidos)): ?>
             <div class="vazio-box">
                 <p>Nenhum serviço ou pedido encontrado no momento.</p>
                 <?php if ($tipo_usuario === 'CLIENTE'): ?>
-                    <a href="buscar.php" class="btn-solido btn-novo-pedido">Buscar profissionais agora</a>
+                    <a href="buscar.php" class="btn-novo-pedido">Buscar profissionais agora</a>
                 <?php endif; ?>
             </div>
         <?php else: ?>
@@ -130,19 +117,27 @@ try {
                 </thead>
                 <tbody>
                     <?php foreach ($pedidos as $pedido): ?>
+                        <?php
+                            $st = strtoupper($pedido['status_solicitacao'] ?? '');
+                            $classeBadge = 'badge-aberta';
+                            if ($st === 'EM_ORCAMENTO') {
+                                $classeBadge = 'badge-orcamento';
+                            } elseif (in_array($st, ['AGENDADA', 'CONFIRMADO', 'A_CAMINHO', 'EM_EXECUCAO', 'CONCLUIDO', 'AVALIADO'], true)) {
+                                $classeBadge = 'badge-agendada';
+                            } elseif ($st === 'CANCELADA' || $st === 'CANCELADO') {
+                                $classeBadge = 'badge-cancelada';
+                            }
+                        ?>
                         <tr>
-                            <td><?= htmlspecialchars($pedido['id_solicitacao']) ?></td>
+                            <td>#<?= htmlspecialchars($pedido['id_solicitacao']) ?></td>
                             <td><strong><?= htmlspecialchars($pedido['desc_titulo']) ?></strong></td>
                             <td><?= htmlspecialchars($pedido['desc_solicitacao']) ?></td>
                             <td><?= htmlspecialchars($pedido['desc_endereco_atendimento']) ?></td>
-                            <td><?= !empty($pedido['data_solicitacao']) ? date('d/m/Y', strtotime($pedido['data_solicitacao'])) : '—' ?>
-                            </td>
-                            <td><?= htmlspecialchars(ucfirst($pedido['status_solicitacao'])) ?></td>
-
+                            <td><?= !empty($pedido['data_solicitacao']) ? date('d/m/Y', strtotime($pedido['data_solicitacao'])) : '—' ?></td>
+                            <td><span class="badge-pedido <?= $classeBadge ?>"><?= htmlspecialchars($st) ?></span></td>
                             <td>
                                 <?php if (!empty($pedido['id_agendamento'])): ?>
-                                    <button><a href="acompanhar_pedido.php?id=<?= (int) $pedido['id_agendamento'] ?>"
-                                            class="btn-solido">Acompanhar</a></button>
+                                    <a href="acompanhar_pedido.php?id=<?= (int) $pedido['id_agendamento'] ?>" class="btn-acompanhar">Acompanhar</a>
                                 <?php else: ?>
                                     <span class="texto-aguardando">Aguardando Profissional</span>
                                 <?php endif; ?>
@@ -153,7 +148,6 @@ try {
             </table>
         <?php endif; ?>
     </main>
-
 
 </body>
 
