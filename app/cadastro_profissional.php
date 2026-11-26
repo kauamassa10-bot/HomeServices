@@ -1,14 +1,7 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
-require_once __DIR__ . '/banco/database.php';
-
-/** @var PDO $pdo */
 
 $mensagem = '';
-// Verifica se o usuário atual logado é um Administrador
 $isAdmin = (strtoupper($_SESSION['tipo_usuario'] ?? '') === 'ADMIN');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,37 +10,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $telefone = trim($_POST['telefone'] ?? '');
     $senha    = trim($_POST['senha'] ?? '');
 
-    // Verifica se o e-mail já existe no banco
-    $check = $pdo->prepare("SELECT id_usuario FROM usuario WHERE email = :email LIMIT 1");
-    $check->execute([':email' => $email]);
+    $jaExiste = read($pdo, 'usuario', 'email = ?', [$email]);
 
-    if ($check->fetch()) {
-        $mensagem = "<div class='erro' style='color: red; margin-bottom: 15px;'>Este e-mail já está cadastrado. Tente fazer login ou use outro e-mail.</div>";
+    if ($jaExiste) {
+        $mensagem = 'Este e-mail já está cadastrado. Tente fazer login ou use outro e-mail.';
     } else {
-        $sql = "INSERT INTO usuario (nome_usuario, email, senha, telefone, tipo_usuario, status_ativo, data_cadastro) 
-                VALUES (:nome, :email, :senha, :telefone, 'PRESTADOR', 1, NOW())";
-
-        $stmt = $pdo->prepare($sql);
-
         try {
-            $stmt->execute([
-                ':nome'     => $nome,
-                ':email'    => $email,
-                ':senha'    => $senha,
-                ':telefone' => $telefone
+            create($pdo, 'usuario', [
+                'nome_usuario'  => $nome,
+                'email'         => $email,
+                'senha'         => $senha,
+                'telefone'      => $telefone,
+                'tipo_usuario'  => 'PRESTADOR',
+                'status_ativo'  => 1,
+                'data_cadastro' => date('Y-m-d'),
             ]);
 
-            // Redirecionamento inteligente
             if ($isAdmin) {
-                // Se for o dono do sistema cadastrando
                 header("Location: registros.php?sucesso=profissional");
             } else {
-                // Se for o próprio profissional se cadastrando
                 header("Location: login_profissional.php?sucesso=cadastro");
             }
             exit;
-        } catch (PDOException $e) {
-            $mensagem = "<div class='erro' style='color: red; margin-bottom: 15px;'>Erro ao cadastrar profissional: " . htmlspecialchars($e->getMessage()) . "</div>";
+        } catch (Throwable $e) {
+            $mensagem = 'Erro ao cadastrar profissional: ' . $e->getMessage();
         }
     }
 }
@@ -76,10 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a href="logout.php">Sair</a>
                 </nav>
             <?php else: ?>
-                 <nav class="menu-topo">
-                     <a href="index.php">Início</a>
-                     <a href="login_profissional.php">Fazer Login</a>
-                 </nav>
+                <nav class="menu-topo">
+                    <a href="index.php">Início</a>
+                    <a href="login_profissional.php">Fazer Login</a>
+                </nav>
             <?php endif; ?>
         </div>
     </header>
@@ -89,7 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h2><?= $isAdmin ? 'Cadastrar Profissional' : 'Cadastro de Profissional' ?></h2>
             <p class="subtitulo">Registre-se como prestador de serviços na plataforma</p>
 
-            <?= $mensagem ?>
+            <?php if ($mensagem !== ''): ?>
+                <div class="alerta-erro"><?= htmlspecialchars($mensagem) ?></div>
+            <?php endif; ?>
 
             <form method="POST" action="" class="form-pedido-leitura">
                 <div class="campo-simples">
@@ -114,14 +102,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="botoes-rodape">
-                    <button type="submit" class="btn-solido" style="width: 100%;">
+                    <button type="submit" class="btn-solido btn-largura-total">
                         <?= $isAdmin ? 'Salvar Profissional' : 'Concluir Cadastro' ?>
                     </button>
                 </div>
 
                 <?php if (!$isAdmin): ?>
-                    <div style="margin-top: 15px; text-align: center; font-size: 0.9rem;">
-                        Já possui conta profissional? <a href="login_profissional.php" style="color: #0284c7; font-weight: bold;">Faça login aqui</a>
+                    <div class="rodape-login">
+                        Já possui conta profissional? <a href="login_profissional.php" class="link-destaque">Faça login aqui</a>
                     </div>
                 <?php endif; ?>
             </form>
@@ -132,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="detalhes-resumo">
                     <strong>Vantagens da Plataforma</strong>
                     <p>Após o cadastro, você terá acesso ao Portal do Profissional onde poderá:</p>
-                    <ul style="margin-top: 10px; padding-left: 20px; color: #ffffff; font-size: 0.9rem; line-height: 1.6;">
+                    <ul class="lista-vantagens">
                         <li>Cadastrar e divulgar todos os seus serviços;</li>
                         <li>Receber pedidos de orçamentos de clientes;</li>
                         <li>Acompanhar o status dos seus atendimentos.</li>
