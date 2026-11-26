@@ -8,87 +8,61 @@ if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '
 
 $idPrestador = (int) $_SESSION['id_usuario'];
 
-// ---------- Nome e iniciais ----------
 $usuarioPrestador = read($pdo, 'usuario', 'id_usuario = ?', [$idPrestador]);
-
-$nomeCompleto = 'Profissional';
-if ($usuarioPrestador) {
-    $nomeCompleto = $usuarioPrestador['nome_usuario'];
-}
-
-$partesDoNome = explode(' ', $nomeCompleto);
+$nomeCompleto = $usuarioPrestador ? $usuarioPrestador['nome_usuario'] : 'Profissional';
+$partesDoNome = explode(' ', trim($nomeCompleto));
 $primeiroNome = $partesDoNome[0];
 $iniciais     = pegarIniciais($nomeCompleto);
 
-// ---------- Busca dos dados ----------
 $listaAgendamentos = readAll($pdo, 'agendamento', 'id_prestador = ?', [$idPrestador]);
 $listaPropostas    = readAll($pdo, 'proposta', 'id_prestador = ?', [$idPrestador]);
 $listaAvaliacoes   = readAll($pdo, 'avaliacao', 'id_avaliado = ?', [$idPrestador]);
 
-// ---------- Total de propostas ----------
 $totalPropostas = count($listaPropostas);
 
-// ---------- Nota média ----------
 $somaDasNotas = 0;
 foreach ($listaAvaliacoes as $avaliacao) {
-    $somaDasNotas = $somaDasNotas + $avaliacao['numero_nota'];
+    $somaDasNotas += (int) $avaliacao['numero_nota'];
 }
+$notaMedia = count($listaAvaliacoes) > 0 ? ($somaDasNotas / count($listaAvaliacoes)) : 0;
 
-$notaMedia = 0;
-if (count($listaAvaliacoes) > 0) {
-    $notaMedia = $somaDasNotas / count($listaAvaliacoes);
-}
-
-// ---------- Concluídos e faturamento do mês ----------
 $totalConcluidos = 0;
 $faturamentoMes  = 0;
 $mesAtual        = date('Y-m');
 
 foreach ($listaAgendamentos as $agendamento) {
-    if ($agendamento['status_agendamento'] !== 'CONCLUIDO') {
+    $st = strtoupper($agendamento['status_agendamento'] ?? '');
+    if ($st !== 'CONCLUIDO' && $st !== 'AVALIADO') {
         continue;
     }
 
-    $totalConcluidos = $totalConcluidos + 1;
+    $totalConcluidos++;
 
     $mesDoAgendamento = substr($agendamento['data_agendamento'], 0, 7);
     if ($mesDoAgendamento === $mesAtual) {
         $propostaDoAgendamento = read($pdo, 'proposta', 'id_proposta = ?', [$agendamento['id_proposta']]);
-
         if ($propostaDoAgendamento) {
-            $faturamentoMes = $faturamentoMes + $propostaDoAgendamento['valor_proposta'];
+            $faturamentoMes += (float) $propostaDoAgendamento['valor_proposta'];
         }
     }
 }
 
-// ---------- Próximos agendamentos ----------
 $proximosAgendamentos = [];
-
 foreach ($listaAgendamentos as $agendamento) {
-    $status = $agendamento['status_agendamento'];
-
-    if ($status === 'CONCLUIDO' || $status === 'CANCELADO') {
+    $status = strtoupper($agendamento['status_agendamento'] ?? '');
+    if (in_array($status, ['CONCLUIDO', 'AVALIADO', 'CANCELADO'], true)) {
         continue;
     }
 
     $cliente     = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_cliente']]);
     $solicitacao = read($pdo, 'solicitacao', 'id_solicitacao = ?', [$agendamento['id_solicitacao']]);
 
-    $agendamento['nome_cliente'] = '';
-    if ($cliente) {
-        $agendamento['nome_cliente'] = $cliente['nome_usuario'];
-    }
-
-    $agendamento['desc_endereco_atendimento'] = '';
-    if ($solicitacao) {
-        $agendamento['desc_endereco_atendimento'] = $solicitacao['desc_endereco_atendimento'];
-    }
-
+    $agendamento['nome_cliente'] = $cliente ? $cliente['nome_usuario'] : 'Cliente';
+    $agendamento['desc_endereco_atendimento'] = $solicitacao ? $solicitacao['desc_endereco_atendimento'] : '';
     $proximosAgendamentos[] = $agendamento;
 }
 
-// Ordena por data e depois por hora
-usort($proximosAgendamentos, function ($a, $b) {
+usort($proximosAgendamentos, static function ($a, $b) {
     return strcmp($a['data_agendamento'] . $a['hora_agendamento'], $b['data_agendamento'] . $b['hora_agendamento']);
 });
 ?>
@@ -98,8 +72,8 @@ usort($proximosAgendamentos, function ($a, $b) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard do Prestador - HomeServices</title>
-    <link rel="stylesheet" href="css/global.css"> 
-    <link rel="stylesheet" href="css/dashboard.css"> 
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 <body>
 
@@ -110,11 +84,8 @@ usort($proximosAgendamentos, function ($a, $b) {
             <a href="mural_solicitacoes.php">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
-            <div class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>">
-            <a href="perfil.php"><?= htmlspecialchars($iniciais) ?></a>
-        </div>
+            <a href="perfil.php" class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
         </nav>
-        
     </header>
 
     <main class="dashboard-main">
@@ -163,17 +134,17 @@ usort($proximosAgendamentos, function ($a, $b) {
                         <div class="agendamento-item">
                             <div class="agendamento-info">
                                 <strong><?= htmlspecialchars($dataFormatada) ?> · <?= htmlspecialchars($horaFormatada) ?></strong>
-                                <span>Cliente: <?= htmlspecialchars($ag['nome_cliente'] ?? 'Cliente') ?></span>
-                                <span><?= htmlspecialchars($ag['desc_endereco_atendimento'] ?? '') ?></span>
+                                <span>Cliente: <?= htmlspecialchars($ag['nome_cliente']) ?></span>
+                                <span><?= htmlspecialchars($ag['desc_endereco_atendimento']) ?></span>
                             </div>
                             <div class="agendamento-acoes">
                                 <span class="badge <?= $classeBadge ?>"><?= $textoBadge ?></span>
-                                <a href="agendamentos_prestador.php" class="btn-acao" style="text-decoration: none;">Ver Detalhes / Atualizar Status</a>
+                                <a href="agendamentos_prestador.php" class="btn-acao sem-sublinhado">Ver Detalhes / Atualizar Status</a>
                             </div>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <p style="color: #666; padding: 15px 0;">Nenhum agendamento próximo no momento.</p>
+                    <p class="mensagem-vazia">Nenhum agendamento próximo no momento.</p>
                 <?php endif; ?>
             </div>
         </div>

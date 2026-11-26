@@ -16,13 +16,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_agendamento'], $_P
     $permitidos = ['CONFIRMADO', 'A_CAMINHO', 'EM_EXECUCAO', 'CONCLUIDO', 'CANCELADO'];
 
     if (in_array($novoStatus, $permitidos, true)) {
-        update(
-            $pdo,
-            'agendamento',
-            ['status_agendamento' => $novoStatus],
-            'id_agendamento = ? AND id_prestador = ?',
-            [$idAgendamento, $idPrestador]
-        );
+        $agAtual = read($pdo, 'agendamento', 'id_agendamento = ? AND id_prestador = ?', [$idAgendamento, $idPrestador]);
+
+        if ($agAtual) {
+            update(
+                $pdo,
+                'agendamento',
+                ['status_agendamento' => $novoStatus],
+                'id_agendamento = ? AND id_prestador = ?',
+                [$idAgendamento, $idPrestador]
+            );
+
+            $statusSol = ($novoStatus === 'CANCELADO') ? 'CANCELADA' : $novoStatus;
+            update(
+                $pdo,
+                'solicitacao',
+                ['status_solicitacao' => $statusSol],
+                'id_solicitacao = ?',
+                [$agAtual['id_solicitacao']]
+            );
+        }
     }
     $abaAtual = $_GET['aba'] ?? 'abertos';
     header("Location: agendamentos_prestador.php?aba=" . urlencode($abaAtual));
@@ -41,7 +54,7 @@ foreach ($todosAgendamentos as $ag) {
         $agendamentos[] = $ag;
     } elseif ($aba === 'execucao' && $st === 'EM_EXECUCAO') {
         $agendamentos[] = $ag;
-    } elseif ($aba === 'concluidos' && $st === 'CONCLUIDO') {
+    } elseif ($aba === 'concluidos' && in_array($st, ['CONCLUIDO', 'AVALIADO'], true)) {
         $agendamentos[] = $ag;
     } elseif ($aba === 'cancelados' && $st === 'CANCELADO') {
         $agendamentos[] = $ag;
@@ -59,8 +72,8 @@ usort($agendamentos, static function (array $a, array $b): int {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Agendamentos - HomeServices</title>
-    <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/agendamentos_prestador.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 
 <body>
@@ -72,11 +85,8 @@ usort($agendamentos, static function (array $a, array $b): int {
             <a href="mural_solicitacoes.php">Solicitações</a>
             <a href="agendamentos_prestador.php" class="active">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
-            <div class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>">
-            <a href="perfil.php" class="sem-sublinhado"><?= htmlspecialchars($iniciais) ?></a>
-        </div>
+            <a href="perfil.php" class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
         </nav>
-        
     </header>
 
     <main class="agendamentos-main">
@@ -128,7 +138,7 @@ usort($agendamentos, static function (array $a, array $b): int {
                                 <button type="submit" name="novo_status" value="CONFIRMADO" class="btn-passo <?= $st === 'CONFIRMADO' ? 'laranja-ativo' : 'inativo' ?>">Confirmar</button>
                                 <button type="submit" name="novo_status" value="A_CAMINHO" class="btn-passo <?= $st === 'A_CAMINHO' ? 'azul-ativo' : 'inativo' ?>">A Caminho</button>
                                 <button type="submit" name="novo_status" value="EM_EXECUCAO" class="btn-passo <?= $st === 'EM_EXECUCAO' ? 'azul-ativo' : 'inativo' ?>">Em Execução</button>
-                                <button type="submit" name="novo_status" value="CONCLUIDO" class="btn-passo <?= $st === 'CONCLUIDO' ? 'verde-concluido' : 'inativo' ?>">Concluir</button>
+                                <button type="submit" name="novo_status" value="CONCLUIDO" class="btn-passo <?= ($st === 'CONCLUIDO' || $st === 'AVALIADO') ? 'verde-concluido' : 'inativo' ?>">Concluir</button>
                             </form>
                         </div>
                     </div>

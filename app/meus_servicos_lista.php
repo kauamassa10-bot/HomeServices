@@ -1,8 +1,6 @@
 <?php
 require_once __DIR__ . '/init.php';
 
-
-
 if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'PRESTADOR') {
     header("Location: login_profissional.php?erro=acesso_negado");
     exit;
@@ -12,7 +10,6 @@ $idPrestador = (int) $_SESSION['id_usuario'];
 $nomeCompleto = $_SESSION['nome_usuario'] ?? 'Profissional';
 $iniciais = pegarIniciais($nomeCompleto);
 
-// Alternar status Ativo / Inativo usando read() e update() do CRUD
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_id'])) {
     $idServico = (int) $_POST['toggle_id'];
     $servicoAtual = read($pdo, 'servico', 'id_servico = ? AND id_prestador = ?', [$idServico, $idPrestador]);
@@ -42,8 +39,8 @@ $categoriaPorId = array_column($categorias, null, 'id_categoria');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Serviços - HomeServices</title>
-    <link rel="stylesheet" href="css/global.css">
     <link rel="stylesheet" href="css/lista_servicos.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 
 <body>
@@ -55,11 +52,8 @@ $categoriaPorId = array_column($categorias, null, 'id_categoria');
             <a href="mural_solicitacoes.php">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php" class="active">Meus Serviços</a>
-            <div class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>">
-            <a href="perfil.php"><?= htmlspecialchars($iniciais) ?></a>
-        </div>
+            <a href="perfil.php" class="foto" title="<?= htmlspecialchars($nomeCompleto) ?>"><?= htmlspecialchars($iniciais) ?></a>
         </nav>
-        
     </header>
 
     <main class="meus-servicos-main">
@@ -107,9 +101,9 @@ $categoriaPorId = array_column($categorias, null, 'id_categoria');
                                 <td><?= htmlspecialchars($s['desc_servico'] ?? '') ?></td>
                                 <td>R$ <?= number_format((float) $s['valor_base'], 2, ',', '.') ?></td>
                                 <td>
-                                    <form method="POST" action="" style="display: inline;">
+                                    <form method="POST" action="" class="form-inline">
                                         <input type="hidden" name="toggle_id" value="<?= (int) $s['id_servico'] ?>">
-                                        <button type="submit" class="badge-status <?= $ativo ? 'status-ativo' : 'status-inativo' ?>" style="border: none; cursor: pointer;" title="Clique para alternar o status">
+                                        <button type="submit" class="badge-status btn-sem-borda <?= $ativo ? 'status-ativo' : 'status-inativo' ?>" title="Clique para alternar o status">
                                             <?= $ativo ? 'Ativo' : 'Inativo' ?>
                                         </button>
                                     </form>
@@ -118,7 +112,7 @@ $categoriaPorId = array_column($categorias, null, 'id_categoria');
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: 20px; color: #666;">
+                            <td colspan="6" class="mensagem-vazia">
                                 Nenhum serviço cadastrado ainda. Clique em <strong>+ Cadastrar Novo Serviço</strong> para começar.
                             </td>
                         </tr>
@@ -126,7 +120,7 @@ $categoriaPorId = array_column($categorias, null, 'id_categoria');
                 </tbody>
             </table>
 
-            <a href="cadastro_servicos.php" class="linha-adicionar" title="Adicionar nova linha" style="display: block; text-decoration: none;">
+            <a href="cadastro_servicos.php" class="linha-adicionar bloco-adicionar" title="Adicionar nova linha">
                 +
             </a>
 

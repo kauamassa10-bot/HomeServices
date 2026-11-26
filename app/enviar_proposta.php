@@ -89,20 +89,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enviar Proposta - HomeServices</title>
-    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/proposta.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 
 <body>
 
-    <header class="dashboard-header">
-        <div class="dashboard-logo">HomeServices</div>
-        <nav class="dashboard-nav">
+    <header class="cabecalho">
+        <div class="logo">HomeServices</div>
+        <nav class="links">
             <a href="dashboard_prestador.php">Visão Geral</a>
             <a href="mural_solicitacoes.php" class="active">Solicitações</a>
             <a href="agendamentos_prestador.php">Meus Agendamentos</a>
             <a href="meus_servicos_lista.php">Meus Serviços</a>
+            <a href="perfil.php" class="foto" title="<?= htmlspecialchars($nomeCompleto, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($iniciais, ENT_QUOTES, 'UTF-8') ?></a>
         </nav>
+    </header>
         <div class="avatar" title="<?= htmlspecialchars($nomeCompleto, ENT_QUOTES, 'UTF-8') ?>">
             <a href="perfil.php"><?= htmlspecialchars($iniciais, ENT_QUOTES, 'UTF-8') ?></a>
         </div>
