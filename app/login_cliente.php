@@ -1,11 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
-require_once __DIR__ . '/banco/database.php';
-
-/** @var PDO $pdo */
 
 if (isset($_SESSION['id_usuario']) && strtoupper($_SESSION['tipo_usuario'] ?? '') === 'CLIENTE') {
     header("Location: buscar.php");
@@ -27,10 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $senha = trim($_POST['senha'] ?? '');
 
-    $sql = "SELECT * FROM usuario WHERE email = :email AND tipo_usuario = 'CLIENTE' AND status_ativo = 1 ORDER BY id_usuario DESC LIMIT 1";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':email' => $email]);
-    $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+    $cliente = read($pdo, 'usuario', "email = ? AND tipo_usuario = 'CLIENTE' AND status_ativo = 1", [$email]);
 
     if ($cliente && ($senha === $cliente['senha'] || password_verify($senha, $cliente['senha']))) {
         session_regenerate_id(true);
@@ -59,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <header class="header-simples">
         <div class="header-container">
-           <h1 class="logo-texto"><a href="index.php">HomeServices</a></h1>
+            <h1 class="logo-texto"><a href="index.php">HomeServices</a></h1>
         </div>
     </header>
 
@@ -93,8 +84,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn-solido btn-entrar">Entrar como Cliente</button>
             </form>
 
-            <div style="margin-top: 15px; text-align: center; font-size: 0.9rem;">
-                Ainda não tem cadastro? <a href="cadastro_cliente.php">Cadastre-se aqui</a>
+            <div class="rodape-login">
+                Ainda não tem cadastro? <a href="cadastro_cliente.php" class="link-destaque">Cadastre-se aqui</a>
             </div>
         </div>
     </main>

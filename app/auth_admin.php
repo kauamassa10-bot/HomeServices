@@ -5,6 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Bloqueia acesso se não estiver logado ou se não for ADMIN
 if (!isset($_SESSION['id_usuario']) || ($_SESSION['tipo_usuario'] ?? '') !== 'ADMIN') {
-    header("Location: login.php?erro=acesso_negado");
+    header("Location: login_admin.php?erro=acesso_negado");
     exit;
 }

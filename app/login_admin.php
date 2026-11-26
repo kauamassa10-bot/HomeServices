@@ -1,9 +1,7 @@
 <?php
-session_start();
 require_once __DIR__ . '/init.php';
 
-// Se já estiver logado como admin, vai direto para registros.php
-if (isset($_SESSION['id_usuario']) && ($_SESSION['tipo_usuario'] ?? '') === 'ADMIN') {
+if (isset($_SESSION['id_usuario']) && strtoupper($_SESSION['tipo_usuario'] ?? '') === 'ADMIN') {
     header("Location: registros.php");
     exit;
 }
@@ -18,13 +16,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $senha = trim($_POST['senha'] ?? '');
 
-    $sql = "SELECT * FROM usuario WHERE email = :email AND tipo_usuario = 'ADMIN' AND status_ativo = 1 LIMIT 1";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':email' => $email]);
-    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+    $admin = read($pdo, 'usuario', "email = ? AND tipo_usuario = 'ADMIN' AND status_ativo = 1", [$email]);
 
     if ($admin && ($senha === $admin['senha'] || password_verify($senha, $admin['senha']))) {
-        $_SESSION['id_usuario'] = $admin['id_usuario'];
+        $_SESSION['id_usuario']   = $admin['id_usuario'];
         $_SESSION['nome_usuario'] = $admin['nome_usuario'];
         $_SESSION['tipo_usuario'] = $admin['tipo_usuario'];
 
@@ -49,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <header class="header-simples">
         <div class="header-container">
-           <h1 class="logo-texto"><a href="index.php">HomeServices</a></h1>
+            <h1 class="logo-texto"><a href="index.php">HomeServices</a></h1>
         </div>
     </header>
 

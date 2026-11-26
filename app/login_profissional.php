@@ -1,10 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/init.php';
-
-/** @var PDO $pdo */
 
 if (isset($_SESSION['id_usuario']) && strtoupper($_SESSION['tipo_usuario'] ?? '') === 'PRESTADOR') {
     header("Location: dashboard_prestador.php");
@@ -27,13 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senha = trim($_POST['senha'] ?? '');
 
     if (!empty($email) && !empty($senha)) {
-        $sql = "SELECT * FROM usuario WHERE email = :email AND tipo_usuario = 'PRESTADOR' AND status_ativo = 1 LIMIT 1";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':email' => $email]);
-        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+        $usuario = read($pdo, 'usuario', "email = ? AND tipo_usuario = 'PRESTADOR' AND status_ativo = 1", [$email]);
 
-        if ($usuario && $usuario['senha'] === $senha) {
-            $_SESSION['id_usuario'] = $usuario['id_usuario'];
+        if ($usuario && ($senha === $usuario['senha'] || password_verify($senha, $usuario['senha']))) {
+            $_SESSION['id_usuario']   = $usuario['id_usuario'];
             $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'];
             $_SESSION['nome_usuario'] = $usuario['nome_usuario'];
             
@@ -59,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <header class="header-simples">
         <div class="header-container">
-         <h1 class="logo-texto"><a href="index.php">HomeServices</a></h1>
+            <h1 class="logo-texto"><a href="index.php">HomeServices</a></h1>
         </div>
     </header>
 
@@ -93,8 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn-solido">Entrar no Painel</button>
             </form>
 
-            <div style="margin-top: 24px; text-align: center; font-size: 0.9rem; color: #64748b;">
-                Ainda não é cadastrado? <a href="cadastro_profissional.php">Crie sua conta aqui</a>
+            <div class="rodape-login">
+                Ainda não é cadastrado? <a href="cadastro_profissional.php" class="link-destaque">Crie sua conta aqui</a>
             </div>
         </div>
     </main>
