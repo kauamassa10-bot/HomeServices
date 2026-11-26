@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://googleapis.com');
 
 :root {
     --laranja: #ec7a46;
@@ -13,6 +13,10 @@
     --borda: #e2e8ea;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     display: flex;
     flex-direction: column;
@@ -24,13 +28,12 @@ body {
 }
 
 main {
-    flex: 1;
     display: flex;
-    flex-direction: column; /* Faz os itens ficarem um embaixo do outro */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 24px; /* Espaço entre as imagens e o bloco azul */
-    padding: 40px 24px;
+    gap: 24px;
+    padding: 40px 24px 20px;
 }
 
 .logo-casa-topo {
@@ -44,13 +47,15 @@ main {
     max-width: 90%;
     height: auto;
 }
+
 .hero {
     width: 100%;
-    max-width: 960px;
+    max-width: 1120px;
     text-align: center;
     padding: 68px 48px;
     border-radius: 24px;
     color: #ffffff;
+    box-sizing: border-box;
     background:
         radial-gradient(circle at 92% 12%, rgba(51, 173, 152, 0.45), transparent 44%),
         radial-gradient(circle at 8% 108%, rgba(236, 122, 70, 0.22), transparent 40%),
@@ -71,7 +76,7 @@ main {
 .hero p {
     font-size: 1.08rem;
     color: rgba(255, 255, 255, 0.88);
-    max-width: 600px;
+    max-width: 640px;
     margin: 0 auto 38px auto;
     line-height: 1.65;
 }
@@ -121,62 +126,28 @@ main {
     box-shadow: 0 8px 20px rgba(51, 173, 152, 0.35);
 }
 
-/* Rodapé */
-.footer-simples {
-    text-align: center;
-    padding: 24px 20px;
-    border-top: 1px solid var(--borda);
-    background-color: #ffffff;
-    font-size: 0.85rem;
-    color: var(--cinza);
-}
-
-.footer-simples p {
-    margin-bottom: 6px;
-}
-
-.footer-simples a {
-    color: var(--azure);
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.footer-simples a:hover {
-    color: var(--laranja);
-}
-
-.status-db {
-    display: inline-block;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--turquesa-escuro);
-    background-color: var(--turquesa-claro);
-    padding: 4px 12px;
-    border-radius: 999px;
-    margin-top: 12px;
-}
-
-.status-db.erro {
-    color: #b44314;
-    background-color: rgba(236, 122, 70, 0.16);
-}
-
+/* Cabeçalho */
 .header-simples {
+    position: sticky;
     top: 0;
+    z-index: 1000;
     background:
         radial-gradient(circle at 92% 12%, rgba(51, 173, 152, 0.45), transparent 44%),
         radial-gradient(circle at 8% 108%, rgba(236, 122, 70, 0.22), transparent 40%),
-        linear-gradient(135deg, rgba(34, 91, 117, 0.88) 0%, rgba(23, 66, 90, 0.92) 100%);
+        linear-gradient(135deg, rgba(34, 91, 117, 0.94) 0%, rgba(23, 66, 90, 0.96) 100%);
+    backdrop-filter: blur(10px);
     box-shadow: 0 4px 16px rgba(34, 91, 117, 0.22);
 }
 
 .header-simples .header-container {
-    max-width: 100%;
-    margin: 0;
-    padding: 14px 18px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 32px;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
 .header-simples .logo-texto,
@@ -193,4 +164,314 @@ main {
 
 .header-simples .logo-texto a:hover {
     color: var(--turquesa-claro);
+}
+
+.menu-topo {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+}
+
+.menu-topo a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+}
+
+.menu-topo a:hover {
+    color: var(--turquesa);
+}
+
+/* =========================================================
+   SEÇÃO INSTITUCIONAL & PITCH (LARGURA AMPLA PROFISSIONAL)
+   ========================================================= */
+
+.sobre-wrapper {
+    width: 100%;
+    margin-top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+}
+
+.sobre-container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 32px;
+    box-sizing: border-box;
+}
+
+.sobre-cabecalho {
+    text-align: center;
+    max-width: 820px;
+    margin: 0 auto 48px;
+}
+
+.tag-pitch {
+    display: inline-block;
+    background-color: var(--turquesa-claro);
+    color: var(--turquesa-escuro);
+    font-weight: 800;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+}
+
+.sobre-cabecalho h3 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--azure);
+    margin: 0 0 16px;
+    letter-spacing: -0.8px;
+    line-height: 1.2;
+}
+
+.sobre-cabecalho p {
+    font-size: 1.08rem;
+    color: var(--cinza);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.grid-pitch {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+}
+
+.card-pitch {
+    background: #ffffff;
+    border: 1px solid var(--borda);
+    border-radius: 20px;
+    padding: 36px 32px;
+    box-shadow: 0 8px 24px rgba(34, 91, 117, 0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-pitch:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px rgba(34, 91, 117, 0.14);
+}
+
+.card-pitch.destaque-cliente {
+    border-top: 5px solid var(--turquesa);
+}
+
+.card-pitch.destaque-prestador {
+    border-top: 5px solid var(--azure);
+}
+
+.card-pitch.destaque-investidor {
+    border-top: 5px solid var(--laranja);
+}
+
+.numero-card {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1rem;
+    background-color: var(--fundo);
+    color: var(--azure);
+}
+
+.destaque-cliente .numero-card {
+    background-color: var(--turquesa-claro);
+    color: var(--turquesa-escuro);
+}
+
+.destaque-investidor .numero-card {
+    background-color: rgba(236, 122, 70, 0.15);
+    color: var(--laranja-escuro);
+}
+
+.card-pitch h4 {
+    font-size: 1.28rem;
+    font-weight: 800;
+    color: var(--azure);
+    margin: 0;
+    letter-spacing: -0.3px;
+}
+
+.card-pitch p {
+    font-size: 0.98rem;
+    color: var(--cinza);
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* Faixa de Investimento de ponta a ponta */
+.faixa-investimento {
+    width: 100%;
+    background:
+        radial-gradient(circle at 90% 15%, rgba(51, 173, 152, 0.35), transparent 45%),
+        radial-gradient(circle at 10% 90%, rgba(236, 122, 70, 0.2), transparent 40%),
+        linear-gradient(135deg, var(--azure) 0%, var(--azure-escuro) 100%);
+    padding: 64px 0;
+    color: #ffffff;
+}
+
+.investimento-conteudo {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 32px;
+    box-sizing: border-box;
+}
+
+.investimento-topo {
+    max-width: 820px;
+    margin-bottom: 40px;
+}
+
+.tag-investidor {
+    display: inline-block;
+    background-color: rgba(236, 122, 70, 0.22);
+    color: #ffb08c;
+    font-weight: 800;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+}
+
+.investimento-topo h3 {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 14px;
+    letter-spacing: -0.6px;
+}
+
+.investimento-topo p {
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.88);
+    line-height: 1.65;
+    margin: 0;
+}
+
+.metricas-pitch {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.item-metrica {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+    padding: 28px;
+    backdrop-filter: blur(6px);
+}
+
+.item-metrica .destaque-dado {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--turquesa);
+    margin-bottom: 6px;
+}
+
+.item-metrica strong {
+    display: block;
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.item-metrica span {
+    font-size: 0.94rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
+}
+
+/* Seção Nossa Equipe */
+.bloco-equipe {
+    background: #ffffff;
+    border: 1px solid var(--borda);
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(34, 91, 117, 0.07);
+    margin-bottom: 48px;
+}
+
+.bloco-equipe h3 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--azure);
+    margin: 0 0 14px;
+}
+
+.bloco-equipe p {
+    color: var(--cinza);
+    max-width: 760px;
+    margin: 0 auto 32px;
+    font-size: 1.02rem;
+    line-height: 1.65;
+}
+
+.grid-equipe {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.card-membro {
+    background-color: var(--fundo);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    padding: 20px 16px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.card-membro:hover {
+    border-color: var(--turquesa);
+    transform: translateY(-3px);
+}
+
+.card-membro strong {
+    display: block;
+    color: var(--azure);
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.card-membro span {
+    font-size: 0.85rem;
+    color: var(--turquesa-escuro);
+    font-weight: 600;
+}
+
+/* Rodapé */
+.footer-simples {
+    text-align: center;
+    padding: 28px 20px;
+    border-top: 1px solid var(--borda);
+    background-color: #ffffff;
+    font-size: 0.85rem;
+    color: var(--cinza);
+}
+
+.footer-simples p {
+    margin-bottom: 6px;
+}
+
+.footer-simples a {
+    color: var(--azure);
+    font-weight: 600;
 }
