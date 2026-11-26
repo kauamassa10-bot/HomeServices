@@ -1,38 +1,41 @@
 <?php
 require_once __DIR__ . '/init.php';
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
 if (!isset($_SESSION['id_usuario']) || strtoupper($_SESSION['tipo_usuario'] ?? '') !== 'CLIENTE') {
     header("Location: login_cliente.php?erro=acesso_negado");
-    exit; 
-}
-
-$id_agendamento = $_GET['id'] ?? null;
-
-if ($id_agendamento) {
-    $agendamento = read($pdo, 'agendamento', 'id_agendamento = ?', [$id_agendamento]);
-} else {
-    $agendamento = read($pdo, 'agendamento', '1=1 ORDER BY id_agendamento DESC LIMIT 1');
-}
-
-if (!$agendamento) {
-    echo "Nenhum agendamento encontrado no banco de dados.";
     exit;
 }
 
-$solicitacao = read($pdo, 'solicitacao', 'id_solicitacao = ?', [$agendamento['id_solicitacao']]);
-$prestador   = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_prestador']]);
-$cliente     = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_cliente']]);
-$proposta    = read($pdo, 'proposta', 'id_proposta = ?', [$agendamento['id_proposta']]);
+$idCliente = (int) $_SESSION['id_usuario'];
+$id_agendamento = (int) ($_GET['id'] ?? 0);
 
-$iniciaisAvatar = pegarIniciais($cliente['nome_usuario']);
+if ($id_agendamento > 0) {
+    $agendamento = read($pdo, 'agendamento', 'id_agendamento = ? AND id_cliente = ?', [$id_agendamento, $idCliente]);
+} else {
+    $meusAgendamentos = readAll($pdo, 'agendamento', 'id_cliente = ?', [$idCliente]);
+    usort($meusAgendamentos, static fn($a, $b) => (int) $b['id_agendamento'] <=> (int) $a['id_agendamento']);
+    $agendamento = $meusAgendamentos ?: false;
+}
+
+if (!$agendamento) {
+    header("Location: pedidos.php");
+    exit;
+}
+
+if (strtoupper($agendamento['status_agendamento'] ?? '') === 'AVALIADO') {
+    header("Location: pedidos.php");
+    exit;
+}
+
+$solicitacao = read($pdo, 'solicitacao', 'id_solicitacao = ?', [$agendamento['id_solicitacao']]) ?: [];
+$prestador   = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_prestador']]) ?: [];
+$cliente     = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_cliente']]) ?: [];
+$proposta    = read($pdo, 'proposta', 'id_proposta = ?', [$agendamento['id_proposta']]) ?: [];
+
+$iniciaisAvatar = pegarIniciais($cliente['nome_usuario'] ?? ($_SESSION['nome_usuario'] ?? 'Cliente'));
 $dataFormatada = date('d/m/Y', strtotime($agendamento['data_agendamento']));
 $horaFormatada = substr($agendamento['hora_agendamento'] ?? '00:00', 0, 5);
 $dataHora = $dataFormatada . ' às ' . $horaFormatada;
-
-
 
 $statusMap = [
     'SOLICITADO'  => 1,
@@ -40,9 +43,9 @@ $statusMap = [
     'AGENDADO'    => 2,
     'A_CAMINHO'   => 3,
     'EM_EXECUCAO' => 4,
-    'CONCLUIDO'   => 5
+    'CONCLUIDO'   => 5,
 ];
-$passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
+$passoAtual = $statusMap[strtoupper($agendamento['status_agendamento'] ?? '')] ?? 1;
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -50,7 +53,7 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acompanhar Pedido</title>
+    <title>Acompanhar Pedido - HomeServices</title>
     <link rel="stylesheet" href="css/acompanhar_pedido.css">
     <link rel="stylesheet" href="css/global.css">
 </head>
@@ -58,21 +61,18 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
 <body>
 
     <header class="cabecalho">
-        <div class="logo">
-            <p>HomeServices</p>
-        </div>
+        <div class="logo">HomeServices</div>
         <nav class="links">
             <a href="buscar.php">Buscar Serviços</a>
             <a href="pedidos.php">Meus Pedidos</a>
-            <a href="logout.php">Sair</a>
-            <div class="foto"><?= $iniciaisAvatar ?></div>
+            <a href="perfil_cliente.php" class="foto" title="<?= htmlspecialchars($cliente['nome_usuario'] ?? 'Perfil') ?>"><?= htmlspecialchars($iniciaisAvatar) ?></a>
         </nav>
     </header>
 
     <main class="conteudo">
         <div class="titulo">
-            <h1>Pedido #<?= $agendamento['id_agendamento'] ?></h1>
-            <p><?= htmlspecialchars($solicitacao['desc_titulo']) ?> com <?= htmlspecialchars($prestador['nome_usuario']) ?> · <?= $dataHora ?></p>
+            <h1>Pedido #<?= (int) $agendamento['id_agendamento'] ?></h1>
+            <p><?= htmlspecialchars($solicitacao['desc_titulo'] ?? '') ?> com <?= htmlspecialchars($prestador['nome_usuario'] ?? '') ?> · <?= $dataHora ?></p>
         </div>
 
         <div class="passos">
@@ -100,33 +100,31 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
 
         <div class="bloco">
             <div class="caixa historico">
-    <h3>Detalhes do Pedido</h3>
-    <div class="itemhistorico"><strong>Serviço:</strong> <?= htmlspecialchars($solicitacao['desc_titulo']) ?></div>
-    <div class="itemhistorico"><strong>Descrição:</strong> <?= htmlspecialchars($solicitacao['desc_solicitacao']) ?></div>
-    <div class="itemhistorico"><strong>Endereço:</strong> <?= htmlspecialchars($solicitacao['desc_endereco_atendimento']) ?></div>
-    <div class="itemhistorico"><strong>Valor Aceito:</strong> R$ <?= number_format((float)$proposta['valor_proposta'], 2, ',', '.') ?></div>
-    <div class="itemhistorico"><strong>Prestador:</strong> <?= htmlspecialchars($prestador['nome_usuario']) ?> (<?= htmlspecialchars($prestador['telefone']) ?>)</div>
-    <?php if (!empty($agendamento['observacoes'])): ?>
-        <div class="itemhistorico">
-            <strong>Mensagens / Observações:</strong><br>
-            <?= nl2br(htmlspecialchars($agendamento['observacoes'])) ?>
-        </div>
-    <?php endif; ?>
-</div>
-
+                <h3>Detalhes do Pedido</h3>
+                <div class="itemhistorico"><strong>Serviço:</strong> <?= htmlspecialchars($solicitacao['desc_titulo'] ?? '') ?></div>
+                <div class="itemhistorico"><strong>Descrição:</strong> <?= htmlspecialchars($solicitacao['desc_solicitacao'] ?? '') ?></div>
+                <div class="itemhistorico"><strong>Endereço:</strong> <?= htmlspecialchars($solicitacao['desc_endereco_atendimento'] ?? '') ?></div>
+                <div class="itemhistorico"><strong>Valor Aceito:</strong> R$ <?= number_format((float) ($proposta['valor_proposta'] ?? 0), 2, ',', '.') ?></div>
+                <div class="itemhistorico"><strong>Prestador:</strong> <?= htmlspecialchars($prestador['nome_usuario'] ?? '') ?> (<?= htmlspecialchars($prestador['telefone'] ?? 'Não informado') ?>)</div>
+                <?php if (!empty($agendamento['observacoes'])): ?>
+                    <div class="itemhistorico">
+                        <strong>Mensagens / Observações:</strong><br>
+                        <?= nl2br(htmlspecialchars($agendamento['observacoes'])) ?>
+                    </div>
+                <?php endif; ?>
+            </div>
 
             <div class="caixa acoes">
                 <h3>Status do Serviço</h3>
                 <p class="tempo">Situação atual: <strong><?= htmlspecialchars($agendamento['status_agendamento']) ?></strong></p>
 
                 <?php if ($passoAtual < 5): ?>
-                    <!-- Formulário de Mensagem usando o seu <details> -->
                     <div class="botao caixa-details">
                         <details>
                             <summary>Enviar mensagem</summary>
                             <form action="processar_mensagem.php" method="POST" class="form-mensagem">
-                                <input type="hidden" name="id_agendamento" value="<?= $agendamento['id_agendamento'] ?>">
-                                <input type="hidden" name="id_prestador" value="<?= $agendamento['id_prestador'] ?>">
+                                <input type="hidden" name="id_agendamento" value="<?= (int) $agendamento['id_agendamento'] ?>">
+                                <input type="hidden" name="id_prestador" value="<?= (int) $agendamento['id_prestador'] ?>">
                                 
                                 <textarea name="mensagem" required placeholder="Escreva a sua mensagem..."></textarea>
                                 <button type="submit" class="botao">Enviar</button>
@@ -134,14 +132,14 @@ $passoAtual = $statusMap[$agendamento['status_agendamento']] ?? 1;
                         </details>
                     </div>
 
-                    <a href="cancelar_pedido.php?id=<?= $agendamento['id_agendamento'] ?>" class="botaosecundario">Reagendar ou cancelar</a>
+                    <a href="cancelar_pedido.php?id=<?= (int) $agendamento['id_agendamento'] ?>" class="botaosecundario">Reagendar ou cancelar</a>
                 
                 <?php else: ?>
                     <div class="caixa-avaliacao">
                         <h4>Avalie o serviço</h4>
                         <form action="processar_avaliacao.php" method="POST" class="form-avaliacao">
-                            <input type="hidden" name="id_agendamento" value="<?= $agendamento['id_agendamento'] ?>">
-                            <input type="hidden" name="id_prestador" value="<?= $agendamento['id_prestador'] ?>">
+                            <input type="hidden" name="id_agendamento" value="<?= (int) $agendamento['id_agendamento'] ?>">
+                            <input type="hidden" name="id_prestador" value="<?= (int) $agendamento['id_prestador'] ?>">
                             
                             <select name="nota" required class="input-avaliacao">
                                 <option value="" disabled selected>Escolha uma nota...</option>

@@ -20,7 +20,10 @@ if (!$agendamento) {
 
 $solicitacao = read($pdo, 'solicitacao', 'id_solicitacao = ?', [$agendamento['id_solicitacao']]) ?: [];
 $prestador   = read($pdo, 'usuario', 'id_usuario = ?', [$agendamento['id_prestador']]) ?: [];
-$iniciaisAvatar = pegarIniciais($_SESSION['nome_usuario'] ?? '');
+$cliente     = read($pdo, 'usuario', 'id_usuario = ?', [$idCliente]) ?: [];
+
+$nomeCliente = !empty($cliente['nome_usuario']) ? $cliente['nome_usuario'] : ($_SESSION['nome_usuario'] ?? 'Cliente');
+$iniciaisAvatar = pegarIniciais($nomeCliente);
 $hoje = date('Y-m-d');
 $erro = '';
 
@@ -93,15 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
 <body>
 
     <header class="cabecalho">
-        <div class="logo">
-            <p>HomeServices</p>
-        </div>
+        <div class="logo">HomeServices</div>
         <nav class="links">
             <a href="buscar.php">Buscar Serviços</a>
             <a href="pedidos.php">Meus Pedidos</a>
-            <a href="acompanhar_pedido.php">Acompanhar Pedido</a>
-            <a href="logout.php">Sair</a>
-            <div class="foto"><?= $iniciaisAvatar ?></div>
+            <a href="perfil_cliente.php" class="foto" title="<?= htmlspecialchars($nomeCliente) ?>"><?= htmlspecialchars($iniciaisAvatar) ?></a>
         </nav>
     </header>
 
@@ -112,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
         </div>
 
         <?php if ($erro !== ''): ?>
-            <p style="color: #b91c1c; font-weight: bold; margin-bottom: 15px;"><?= htmlspecialchars($erro) ?></p>
+            <div class="alerta-erro-pedido"><?= htmlspecialchars($erro) ?></div>
         <?php endif; ?>
 
         <div class="bloco">
@@ -123,12 +122,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
                     <input type="hidden" name="acao" value="reagendar">
 
                     <div class="itemhistorico">
-                        <label for="data_agendamento"><strong>Nova Data:</strong></label><br>
+                        <label for="data_agendamento"><strong>Nova Data:</strong></label>
                         <input type="date" id="data_agendamento" name="data_agendamento" min="<?= $hoje ?>" value="<?= htmlspecialchars(max($hoje, $agendamento['data_agendamento'] ?? $hoje)) ?>" required>
                     </div>
 
                     <div class="itemhistorico">
-                        <label for="hora_agendamento"><strong>Novo Horário:</strong></label><br>
+                        <label for="hora_agendamento"><strong>Novo Horário:</strong></label>
                         <input type="time" id="hora_agendamento" name="hora_agendamento" value="<?= htmlspecialchars(substr($agendamento['hora_agendamento'] ?? '09:00', 0, 5)) ?>" required>
                     </div>
 
@@ -143,10 +142,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
                 <form method="POST" action="">
                     <input type="hidden" name="id_agendamento" value="<?= (int) $agendamento['id_agendamento'] ?>">
                     <input type="hidden" name="acao" value="cancelar">
-                    <button type="submit" class="botaosecundario" style="width: 100%; cursor: pointer;">Cancelar Pedido</button>
+                    <button type="submit" class="botaosecundario btn-cancelar-pedido">Cancelar Pedido</button>
                 </form>
 
-                <br>
                 <a href="acompanhar_pedido.php?id=<?= (int) $agendamento['id_agendamento'] ?>" class="botaosecundario">Voltar</a>
             </div>
         </div>
