@@ -158,7 +158,9 @@ usort($servicos, static fn($a, $b) => (int) $b['id_servico'] <=> (int) $a['id_se
                 </thead>
                 <tbody>
                     <?php if (empty($categorias)): ?>
-                        <tr><td colspan="5" class="vazio-linha">Nenhuma categoria cadastrada.</td></tr>
+                        <tr>
+                            <td colspan="5" class="vazio-linha">Nenhuma categoria cadastrada.</td>
+                    </tr>
                     <?php else: ?>
                         <?php foreach ($categorias as $cat): ?>
                             <tr>
@@ -209,3 +211,145 @@ usort($servicos, static fn($a, $b) => (int) $b['id_servico'] <=> (int) $a['id_se
                 </thead>
                 <tbody>
                     <?php if (empty($clientes)): ?>
+                        <tr><td colspan="6" class="vazio-linha">Nenhum cliente cadastrado.</td></tr>
+                    <?php else: ?>
+                        <?php foreach ($clientes as $cli): ?>
+                            <tr>
+                                <td><?= $cli['id_usuario'] ?></td>
+                                <td><strong><?= htmlspecialchars($cli['nome_usuario']) ?></strong></td>
+                                <td><?= htmlspecialchars($cli['email']) ?></td>
+                                <td><?= htmlspecialchars($cli['telefone'] ?? '-') ?></td>
+                                <td>
+                                    <?php if ($cli['status_ativo']): ?>
+                                        <span class="badge-ativo">Ativo</span>
+                                    <?php else: ?>
+                                        <span class="badge-inativo">Bloqueado</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="acoes-cell">
+                                    <form method="POST" class="form-inline-acao">
+                                        <input type="hidden" name="acao" value="alternar_status">
+                                        <input type="hidden" name="id_usuario" value="<?= $cli['id_usuario'] ?>">
+                                        <input type="hidden" name="novo_status" value="<?= $cli['status_ativo'] ? 0 : 1 ?>">
+                                        <button type="submit" class="btn-acao <?= $cli['status_ativo'] ? 'btn-bloquear' : 'btn-ativar' ?>">
+                                            <?= $cli['status_ativo'] ? 'Bloquear' : 'Desbloquear' ?>
+                                        </button>
+                                    </form>
+                                    <form method="POST" class="form-inline-acao" onsubmit="return confirm('Excluir este cliente e todos os registros vinculados?');">
+                                        <input type="hidden" name="acao" value="excluir_usuario">
+                                        <input type="hidden" name="id_usuario" value="<?= $cli['id_usuario'] ?>">
+                                        <button type="submit" class="btn-acao btn-excluir">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="secao-tabela">
+            <h3>Profissionais Cadastrados (<?= count($profissionais) ?>)</h3>
+            <table class="tabela-dados">
+                <thead>
+                    <tr>
+                        <th>#ID</th>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Telefone</th>
+                        <th>Status</th>
+                        <th>Ações Admin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($profissionais)): ?>
+                        <tr>
+                            <td colspan="6" class="vazio-linha">Nenhum profissional cadastrado.</td>
+                    </tr>
+                    <?php else: ?>
+                        <?php foreach ($profissionais as $prof): ?>
+                            <tr>
+                                <td><?= $prof['id_usuario'] ?></td>
+                                <td><strong><?= htmlspecialchars($prof['nome_usuario']) ?></strong></td>
+                                <td><?= htmlspecialchars($prof['email']) ?></td>
+                                <td><?= htmlspecialchars($prof['telefone'] ?? '-') ?></td>
+                                <td>
+                                    <?php if ($prof['status_ativo']): ?>
+                                        <span class="badge-ativo">Ativo</span>
+                                    <?php else: ?>
+                                        <span class="badge-inativo">Bloqueado</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="acoes-cell">
+                                    <form method="POST" class="form-inline-acao">
+                                        <input type="hidden" name="acao" value="alternar_status">
+                                        <input type="hidden" name="id_usuario" value="<?= $prof['id_usuario'] ?>">
+                                        <input type="hidden" name="novo_status" value="<?= $prof['status_ativo'] ? 0 : 1 ?>">
+                                        <button type="submit" class="btn-acao <?= $prof['status_ativo'] ? 'btn-bloquear' : 'btn-ativar' ?>">
+                                            <?= $prof['status_ativo'] ? 'Bloquear' : 'Desbloquear' ?>
+                                        </button>
+                                    </form>
+                                    <form method="POST" class="form-inline-acao" onsubmit="return confirm('Excluir este profissional e todos os registros vinculados?');">
+                                        <input type="hidden" name="acao" value="excluir_usuario">
+                                        <input type="hidden" name="id_usuario" value="<?= $prof['id_usuario'] ?>">
+                                        <button type="submit" class="btn-acao btn-excluir">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="secao-tabela">
+            <h3>Serviços Cadastrados (<?= count($servicos) ?>)</h3>
+            <table class="tabela-dados">
+                <thead>
+                    <tr>
+                        <th>#ID</th>
+                        <th>Serviço</th>
+                        <th>Prestador</th>
+                        <th>Categoria</th>
+                        <th>Valor Base</th>
+                        <th>Status</th>
+                        <th>Ações Admin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($servicos)): ?>
+                        <tr>
+                            <td colspan="7" class="vazio-linha">Nenhum serviço cadastrado.</td>
+                    </tr>
+                    <?php else: ?>
+                        <?php foreach ($servicos as $serv): ?>
+                            <tr>
+                                <td><?= $serv['id_servico'] ?></td>
+                                <td><strong><?= htmlspecialchars($serv['nome_servico']) ?></strong></td>
+                                <td><?= htmlspecialchars($serv['nome_prestador']) ?></td>
+                                <td><?= htmlspecialchars($serv['nome_categoria']) ?></td>
+                                <td>R$ <?= number_format((float) $serv['valor_base'], 2, ',', '.') ?></td>
+                                <td>
+                                    <?php if ($serv['status_ativo']): ?>
+                                        <span class="badge-ativo">Ativo</span>
+                                    <?php else: ?>
+                                        <span class="badge-inativo">Inativo</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td class="acoes-cell">
+                                    <form method="POST" class="form-inline-acao" onsubmit="return confirm('Excluir este serviço?');">
+                                        <input type="hidden" name="acao" value="excluir_servico">
+                                        <input type="hidden" name="id_servico" value="<?= $serv['id_servico'] ?>">
+                                        <button type="submit" class="btn-acao btn-excluir">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</body>
+</html>
